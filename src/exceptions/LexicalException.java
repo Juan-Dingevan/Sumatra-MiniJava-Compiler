@@ -12,5 +12,17 @@ public class LexicalException extends CompilerException{
         this.currentCharAtMomentOfException = currentCharAtMomentOfException;
     }
 
+    public String getMessage() {
+        return getSpecificMessage() + "\n" + getErrorCode();
+    }
+
+    protected String getErrorCode() {
+        return "[Error:" + lexeme + "|" + lineNumber + "]";
+    }
+
+    protected String getSpecificMessage() {
+        return "";
+    }
+
 
 }

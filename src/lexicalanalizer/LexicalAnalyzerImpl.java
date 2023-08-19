@@ -12,12 +12,12 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
     private static final int MAX_INT_LITERAL_LENGTH = 9;
     private String lexeme;
     private char currentChar;
-    private boolean isFirstRequest;
+    private boolean characterUpdateOnCallIsNeeded;
     private SourceManager sourceManager;
 
     public LexicalAnalyzerImpl(SourceManager sourceManager) {
         this.sourceManager = sourceManager;
-        isFirstRequest = true;
+        characterUpdateOnCallIsNeeded = true;
     }
 
     private void updateLexeme() {
@@ -35,9 +35,9 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
     public Token getNextToken() throws CompilerException {
         lexeme = "";
 
-        if(isFirstRequest) {
+        if(characterUpdateOnCallIsNeeded) {
             updateCurrentChar();
-            isFirstRequest = false;
+            characterUpdateOnCallIsNeeded = false;
         }
 
         return initialState();
@@ -144,6 +144,8 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
             return endOfFile();
         }
 
+        updateLexeme();
+        characterUpdateOnCallIsNeeded = true;
         throw new InvalidCharacterException(sourceManager.getLineNumber(), sourceManager.getLineIndex(), lexeme, currentChar);
     }
 
@@ -235,6 +237,7 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
             updateCurrentChar();
             return literalString1();
         }
+
 
         throw new IncorrectlyFormedStringLiteralException(sourceManager.getLineNumber(), sourceManager.getLineIndex(), lexeme, currentChar);
     }
@@ -352,7 +355,7 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
         while(!(CharacterIdentifier.isEOL(currentChar) || CharacterIdentifier.isEOF(currentChar)))
             updateCurrentChar();
 
-        return initialState();
+        return getNextToken();
     }
 
     private Token multiLineComment0() throws CompilerException {
@@ -366,7 +369,7 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
     }
     private Token multiLineComment1() throws CompilerException {
         if(CharacterIdentifier.is(currentChar, '/'))
-            return initialState();
+            return getNextToken();
 
         return multiLineComment0();
     }

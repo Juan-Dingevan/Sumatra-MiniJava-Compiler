@@ -12,10 +12,12 @@ public class SourceManagerImpl implements SourceManager{
     BufferedReader reader;
     private int lineNumber;
     private int lineIndexNumber;
+    private boolean mustUpdateLineAndIndexOnNextCharRead;
 
     public SourceManagerImpl() {
         lineNumber = 1;
         lineIndexNumber = 0;
+        mustUpdateLineAndIndexOnNextCharRead = false;
     }
 
     @Override
@@ -36,14 +38,19 @@ public class SourceManagerImpl implements SourceManager{
         int readInt = reader.read();
         char readChar;
 
+        if(mustUpdateLineAndIndexOnNextCharRead) {
+            lineNumber++;
+            lineIndexNumber = 0;
+            mustUpdateLineAndIndexOnNextCharRead = false;
+        }
+
         if(readInt == -1)
             readChar = CharacterIdentifier.END_OF_FILE;
         else
             readChar = (char) readInt;
 
         if(CharacterIdentifier.isEOL(readChar)) {
-            lineNumber++;
-            lineIndexNumber = 0;
+            mustUpdateLineAndIndexOnNextCharRead = true;
         } else {
             lineIndexNumber++;
         }

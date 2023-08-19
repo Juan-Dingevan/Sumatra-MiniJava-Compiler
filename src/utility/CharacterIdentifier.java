@@ -41,6 +41,7 @@ public class CharacterIdentifier {
     private static final String LITERAL_STRING_VALID_CHARS = ALL_VALID_CHARS
             .replace(""+BACKWARDS_BAR, "")
             .replace(""+EOL, "")
+            .replace(""+RC, "")
             .replace(""+DOUBLE_QUOTATION, "");
 
     public static boolean isValidCharacter(char c) {
