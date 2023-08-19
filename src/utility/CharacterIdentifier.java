@@ -11,9 +11,11 @@ public class CharacterIdentifier {
     private static final char SPACE = ' ';
     private static final char TAB = '\t';
     private static final char EOL = '\n';
-    private static final String WHITE_SPACES = "" + SPACE + TAB + EOL;
+    private static final char RC = '\r';
+    private static final String WHITE_SPACES = "" + SPACE + TAB + EOL + RC;
     private static final String DIGITS = "0123456789";
-    private static final String OTHER_VALID_CHARS = "";
+    private static final String ESCAPE_CHARACTERS = "trnfb" + BACKWARDS_BAR + SINGLE_QUOTATION + DOUBLE_QUOTATION;
+    private static final String OTHER_VALID_CHARS = ":?";
     public static final char END_OF_FILE = (char) 26;
 
     private static final String ALL_VALID_CHARS = UPPER_CASE_LETTERS +
@@ -26,6 +28,7 @@ public class CharacterIdentifier {
             SPACE +
             TAB +
             EOL +
+            RC +
             DIGITS +
             OTHER_VALID_CHARS;
 
@@ -36,7 +39,9 @@ public class CharacterIdentifier {
 
     //All characters that, when processing a literal_string are not considered special cases.
     private static final String LITERAL_STRING_VALID_CHARS = ALL_VALID_CHARS
-            .replace(""+BACKWARDS_BAR, "");
+            .replace(""+BACKWARDS_BAR, "")
+            .replace(""+EOL, "")
+            .replace(""+DOUBLE_QUOTATION, "");
 
     public static boolean isValidCharacter(char c) {
         return ALL_VALID_CHARS.contains(""+c);
@@ -59,6 +64,9 @@ public class CharacterIdentifier {
     public static boolean isStringLiteralNormalCase(char c) {
         return LITERAL_STRING_VALID_CHARS.contains("" + c);
     }
+    public static boolean isEscapeCharacter(char c) {
+        return ESCAPE_CHARACTERS.contains("" + c);
+    }
     public static boolean isSingleQuotation(char c) {
         return SINGLE_QUOTATION == c;
     }
@@ -73,5 +81,8 @@ public class CharacterIdentifier {
     }
     public static boolean isEOF(char c) {
         return c == END_OF_FILE;
+    }
+    public static boolean is(char currentChar, char c) {
+        return currentChar == c;
     }
 }
