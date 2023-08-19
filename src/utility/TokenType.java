@@ -28,7 +28,7 @@ public enum TokenType {
     operand_minus,
     operand_times,
     operand_division,
-    operand_modulus,
+    operand_modulo,
     assign_normal,
     assign_plus,
     assign_minus,
