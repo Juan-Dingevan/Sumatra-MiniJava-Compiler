@@ -1,0 +1,19 @@
+public static void main(String args) {
+        try {
+            SourceManager sm = new SourceManagerImpl();
+            sm.open("src/test.minijava");
+
+            while(true) {
+                char c = sm.getNextChar();
+                System.out.println("Line: " + sm.getLineNumber() + " Index: " + sm.getLineIndex() + " Read: " + c + "(" + (int) c + ")");
+
+                if(CharacterIdentifier.isEOF(c))
+                    break;
+            }
+
+            sm.close();
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
+
+    }
