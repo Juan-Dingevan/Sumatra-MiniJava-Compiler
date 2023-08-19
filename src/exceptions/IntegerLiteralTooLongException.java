@@ -5,10 +5,8 @@ public class IntegerLiteralTooLongException extends LexicalException{
         super(lineNumber, lineIndexNumber, lexeme, currentCharAtMomentOfException);
     }
 
-    public String getMessage() {
-        String message = "The integer " + lexeme + " in line " + lineNumber + " column " + lineIndexNumber + " is too long.\n"
-                       + "The integer is " + lexeme.length() + " and the maximum is 9";
-
-        return message;
+    public String getSpecificMessage() {
+        return "The integer " + lexeme + " in line " + lineNumber + " at index " + lineIndexNumber + " is too long.\n"
+                + "The integer is " + lexeme.length() + " and the maximum is 9";
     }
 }

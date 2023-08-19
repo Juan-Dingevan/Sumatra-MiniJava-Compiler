@@ -5,4 +5,7 @@ public class IncorrectlyFormedAndOperatorException extends LexicalException{
         super(lineNumber, lineIndexNumber, lexeme, currentCharAtMomentOfException);
     }
 
+    protected String getSpecificMessage() {
+        return "Error, expected & but found " + currentCharAtMomentOfException + " (in line " + lineNumber + "at index " + lineIndexNumber + ").";
+    }
 }

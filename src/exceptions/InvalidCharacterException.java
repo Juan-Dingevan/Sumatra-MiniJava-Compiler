@@ -5,7 +5,7 @@ public class InvalidCharacterException extends LexicalException{
         super(lineNumber, lineIndexNumber, lexeme, currentCharAtMomentOfException);
     }
 
-    public String getMessage() {
-        return "Invalid character (" + (int) currentCharAtMomentOfException + ") found in line: " + lineNumber + " at index: " + lineIndexNumber + ".";
+    public String getSpecificMessage() {
+        return "Invalid character (" + currentCharAtMomentOfException + ") found in line: " + lineNumber + " at index: " + lineIndexNumber + ".";
     }
 }
