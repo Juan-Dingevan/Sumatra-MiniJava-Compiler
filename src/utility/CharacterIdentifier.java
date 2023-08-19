@@ -14,7 +14,7 @@ public class CharacterIdentifier {
     private static final String WHITE_SPACES = "" + SPACE + TAB + EOL;
     private static final String DIGITS = "0123456789";
     private static final String OTHER_VALID_CHARS = "";
-    private static final char END_OF_FILE = (char) 26;
+    public static final char END_OF_FILE = (char) 26;
 
     private static final String ALL_VALID_CHARS = UPPER_CASE_LETTERS +
             LOWER_CASE_LETTERS +
