@@ -1,6 +1,7 @@
 package lexicalanalizer;
 
 import exceptions.*;
+import reservedwordstable.ReservedWordsTable;
 import sourcemanager.SourceManager;
 import token.Token;
 import utility.CharacterIdentifier;
@@ -184,7 +185,8 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
             return identifierMethodVariable();
         }
 
-        return new Token(TokenType.id_method_variable, lexeme, sourceManager.getLineNumber());
+        TokenType identifierTokenType = ReservedWordsTable.lookUp(lexeme);
+        return new Token(identifierTokenType, lexeme, sourceManager.getLineNumber());
     }
 
     private Token literalChar0() throws CompilerException  {
@@ -362,14 +364,18 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
         while(!(CharacterIdentifier.isEOF(currentChar) || CharacterIdentifier.is(currentChar, '*')))
             updateCurrentChar();
 
-        if(CharacterIdentifier.is(currentChar, '*'))
+        if(CharacterIdentifier.is(currentChar, '*')) {
+            updateCurrentChar();
             return multiLineComment1();
+        }
 
         throw new MultiLineCommentLeftEmptyException(sourceManager.getLineNumber(), sourceManager.getLineIndex(), lexeme, currentChar);
     }
     private Token multiLineComment1() throws CompilerException {
-        if(CharacterIdentifier.is(currentChar, '/'))
+        if(CharacterIdentifier.is(currentChar, '/')) {
+            updateCurrentChar();
             return getNextToken();
+        }
 
         updateCurrentChar();
         return multiLineComment0();

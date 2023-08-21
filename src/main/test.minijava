@@ -1,7 +1,13 @@
 public static void main(String args) {
         try {
-            SourceManager sm = new SourceManagerImpl();
+            SourceManager sm = new SourceManagerImpl(); //this is a source manager, it manages the sources!
             sm.open("src/test.minijava");
+
+            /*
+                Now we go into a sort of loop thing.
+                Idk what this does, actually, but it
+                sure does look technological!!
+            */
 
             while(true) {
                 char c = sm.getNextChar();
