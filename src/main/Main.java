@@ -50,7 +50,6 @@ public class Main {
         try {
             sourceManager.open(path);
         } catch(FileNotFoundException ex) {
-            System.out.println(ex.getMessage());
             throw new UnexpectedErrorException("finding the source file: No source file found");
         }
     }

@@ -5,7 +5,7 @@ public class MultiLineCommentLeftEmptyException extends LexicalException{
         super(lineNumber, lineIndexNumber, lexeme, currentCharAtMomentOfException);
     }
 
-    public String getMessage() {
+    public String getSpecificMessage() {
         return "A multi-line comment was left empty at line: " + lineNumber + " column: " + lineIndexNumber + ".";
     }
 }

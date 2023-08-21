@@ -371,6 +371,7 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
         if(CharacterIdentifier.is(currentChar, '/'))
             return getNextToken();
 
+        updateCurrentChar();
         return multiLineComment0();
     }
 
