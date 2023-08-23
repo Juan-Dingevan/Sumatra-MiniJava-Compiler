@@ -8,21 +8,16 @@ import java.util.List;
 
 public class SourceManagerImpl implements SourceManager{
     private BufferedReader reader;
-    private List<String> linesRead;
     private String currentLine;
     private int lineNumber;
     private int lineIndexNumber;
-    private boolean mustUpdateLineAndIndexOnNextCharRead;
+    private boolean mustReadNextLine;
 
     public SourceManagerImpl() {
-        linesRead = new ArrayList<>();
         currentLine = "";
-        linesRead.add(currentLine);
-
-        lineNumber = 1;
+        lineNumber = 0;
         lineIndexNumber = 0;
-
-        mustUpdateLineAndIndexOnNextCharRead = false;
+        mustReadNextLine = true;
     }
 
     @Override
@@ -40,48 +35,38 @@ public class SourceManagerImpl implements SourceManager{
 
     @Override
     public char getNextChar() throws IOException {
-        int readInt = reader.read();
-        char readChar;
+        char currentChar = ' ';
 
-        if(mustUpdateLineAndIndexOnNextCharRead) {
+        if(mustReadNextLine) {
+            currentLine = reader.readLine();
             lineNumber++;
             lineIndexNumber = 0;
-            mustUpdateLineAndIndexOnNextCharRead = false;
-            currentLine = "";
+            mustReadNextLine = false;
         }
 
-        if(readInt == -1)
-            readChar = CharacterIdentifier.END_OF_FILE;
-        else
-            readChar = (char) readInt;
-
-        if(CharacterIdentifier.isEOL(readChar)) {
-            mustUpdateLineAndIndexOnNextCharRead = true;
-        } else {
-            currentLine += readChar;
-
-            if(linesRead.size() > 0)
-                linesRead.remove( linesRead.size() - 1);
-
+        if(lineIndexNumber < currentLine.length()) {
+            currentChar = currentLine.charAt(lineIndexNumber);
             lineIndexNumber++;
+        } else if (reader.ready()) {
+            currentChar = '\n';
+            mustReadNextLine = true;
+        } else {
+            currentChar = CharacterIdentifier.END_OF_FILE;
         }
 
-        linesRead.add(currentLine);
-
-        return readChar;
+        return currentChar;
     }
 
     @Override
     public int getLineNumber() {
         return lineNumber;
     }
-
     @Override
     public int getLineIndex() {
         return lineIndexNumber;
     }
-    public String getLine(int lineNumber) {
-        int index = lineNumber - 1;
-        return linesRead.get(index);
+    @Override
+    public String getCurrentLine() {
+        return currentLine;
     }
 }

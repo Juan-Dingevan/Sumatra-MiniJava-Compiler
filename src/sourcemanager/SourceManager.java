@@ -9,6 +9,6 @@ public interface SourceManager {
     char getNextChar() throws IOException;
     int getLineNumber();
     int getLineIndex();
-    String getLine(int lineNumber);
+    String getCurrentLine();
 
 }
