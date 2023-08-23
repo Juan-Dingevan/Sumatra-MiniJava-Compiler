@@ -28,7 +28,7 @@ public class ExceptionHandler {
 
         int lineNumber = ex.getLineNumber();
         int lineIndex = ex.getLineIndexNumber();
-        String line = sourceManager.getLine(lineNumber);
+        String line = sourceManager.getCurrentLine();
 
         Pair<Integer, String> cleanStringAndNumberOfBlanks = StringUtilities.removeAllConsecutiveWhitespacesAtTheStartOfString(line);
         String cleanLine = cleanStringAndNumberOfBlanks.getSecondElement();
