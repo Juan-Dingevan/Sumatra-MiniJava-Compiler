@@ -1,12 +1,8 @@
 package sourcemanager;
 
 import utility.CharacterIdentifier;
-
-import javax.imageio.stream.FileImageInputStream;
 import java.io.*;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
 
 public class SourceManagerImpl implements SourceManager{
     BufferedReader reader;
