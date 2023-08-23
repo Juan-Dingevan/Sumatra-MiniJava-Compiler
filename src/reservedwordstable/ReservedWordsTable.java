@@ -16,6 +16,7 @@ public class ReservedWordsTable {
             Map.entry("boolean", reserved_word_boolean),
             Map.entry("char", reserved_word_char),
             Map.entry("int", reserved_word_int),
+            Map.entry("float", reserved_word_float),
             Map.entry("if", reserved_word_if),
             Map.entry("else", reserved_word_else),
             Map.entry("while", reserved_word_while),

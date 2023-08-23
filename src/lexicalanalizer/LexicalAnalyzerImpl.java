@@ -11,6 +11,7 @@ import java.io.IOException;
 
 public class LexicalAnalyzerImpl implements LexicalAnalyzer {
     private static final int MAX_INT_LITERAL_LENGTH = 9;
+    private static final int MAX_FLOAT_LITERAL_LENGTH = 17;
     private String lexeme;
     private char currentChar;
     private boolean characterUpdateOnCallIsNeeded;
@@ -155,12 +156,38 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
             updateLexeme();
             updateCurrentChar();
             return literalInt();
+        } else if(CharacterIdentifier.is(currentChar, '.')) {
+            updateLexeme();
+            updateCurrentChar();
+            return literalFloat0();
         }
 
         if(lexeme.length() <= MAX_INT_LITERAL_LENGTH)
             return new Token(TokenType.literal_int, lexeme, sourceManager.getLineNumber());
 
         throw new IntegerLiteralTooLongException(sourceManager.getLineNumber(), sourceManager.getLineIndex(), lexeme, currentChar);
+    }
+
+    private Token literalFloat0() throws CompilerException {
+        if(CharacterIdentifier.isDigit(currentChar)) {
+            updateLexeme();
+            updateCurrentChar();
+            return literalFloat1();
+        }
+
+        throw new IncorrectlyFormedFloatLiteralException(sourceManager.getLineNumber(), sourceManager.getLineIndex(), lexeme, currentChar);
+    }
+    private Token literalFloat1() throws CompilerException {
+        if(CharacterIdentifier.isDigit(currentChar)) {
+            updateLexeme();
+            updateCurrentChar();
+            return literalFloat1();
+        }
+
+        if(lexeme.length() <= MAX_FLOAT_LITERAL_LENGTH)
+            return new Token(TokenType.literal_float, lexeme, sourceManager.getLineNumber());
+
+        throw new FloatLiteralTooLongException(sourceManager.getLineNumber(), sourceManager.getLineIndex(), lexeme, currentChar);
     }
 
     private Token identifierClass() throws CompilerException {

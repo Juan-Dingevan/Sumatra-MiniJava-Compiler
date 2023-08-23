@@ -9,6 +9,8 @@ public static void main(String args) {
                 sure does look technological!!
             */
 
+            float aFloatForNoReason = 19.122001;
+
             while(true) {
                 char c = sm.getNextChar();
                 System.out.println("Line: " + sm.getLineNumber() + " Index: " + sm.getLineIndex() + " Read: " + c + "(" + (int) c + ")");

@@ -18,9 +18,9 @@ public class Main {
         LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzerImpl(sourceManager);
 
         try {
-            validateCall(args);
-            //String path = "./src/main/test.minijava";
-            String path = args[0];
+            String path = "./src/main/test.minijava";
+            //validateCall(args);
+            //String path = args[0];
             openFile(sourceManager, path);
         } catch(CompilerException ex) {
             ExceptionHandler.handle(ex);
