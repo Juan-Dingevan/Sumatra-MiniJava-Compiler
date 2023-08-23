@@ -3,16 +3,25 @@ package sourcemanager;
 import utility.CharacterIdentifier;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SourceManagerImpl implements SourceManager{
-    BufferedReader reader;
+    private BufferedReader reader;
+    private List<String> linesRead;
+    private String currentLine;
     private int lineNumber;
     private int lineIndexNumber;
     private boolean mustUpdateLineAndIndexOnNextCharRead;
 
     public SourceManagerImpl() {
+        linesRead = new ArrayList<>();
+        currentLine = "";
+        linesRead.add(currentLine);
+
         lineNumber = 1;
         lineIndexNumber = 0;
+
         mustUpdateLineAndIndexOnNextCharRead = false;
     }
 
@@ -38,6 +47,7 @@ public class SourceManagerImpl implements SourceManager{
             lineNumber++;
             lineIndexNumber = 0;
             mustUpdateLineAndIndexOnNextCharRead = false;
+            currentLine = "";
         }
 
         if(readInt == -1)
@@ -48,8 +58,15 @@ public class SourceManagerImpl implements SourceManager{
         if(CharacterIdentifier.isEOL(readChar)) {
             mustUpdateLineAndIndexOnNextCharRead = true;
         } else {
+            currentLine += readChar;
+
+            if(linesRead.size() > 0)
+                linesRead.remove( linesRead.size() - 1);
+
             lineIndexNumber++;
         }
+
+        linesRead.add(currentLine);
 
         return readChar;
     }
@@ -62,5 +79,9 @@ public class SourceManagerImpl implements SourceManager{
     @Override
     public int getLineIndex() {
         return lineIndexNumber;
+    }
+    public String getLine(int lineNumber) {
+        int index = lineNumber - 1;
+        return linesRead.get(index);
     }
 }

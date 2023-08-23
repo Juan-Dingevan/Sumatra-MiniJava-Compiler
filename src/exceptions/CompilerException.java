@@ -1,4 +1,4 @@
 package exceptions;
 
-public class CompilerException extends Exception{
+public abstract class CompilerException extends Exception{
 }

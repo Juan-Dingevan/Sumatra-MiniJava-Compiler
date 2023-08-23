@@ -16,6 +16,7 @@ public class Main {
         boolean errores = false;
         SourceManager sourceManager = new SourceManagerImpl();
         LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzerImpl(sourceManager);
+        ExceptionHandler exceptionHandler = new ExceptionHandler(sourceManager);
 
         try {
             String path = "./src/main/test.minijava";
@@ -23,7 +24,7 @@ public class Main {
             //String path = args[0];
             openFile(sourceManager, path);
         } catch(CompilerException ex) {
-            ExceptionHandler.handle(ex);
+            exceptionHandler.handleGenericException(ex);
         }
 
         while(true) {
@@ -36,14 +37,23 @@ public class Main {
                     break;
                 }
 
-            } catch(CompilerException ex) {
+            } catch(LexicalException ex) {
                 errores = true;
-                ExceptionHandler.handle(ex);
+                exceptionHandler.handleLexicalException(ex);
+            }
+            catch(CompilerException ex) {
+                errores = true;
+                exceptionHandler.handleGenericException(ex);
             }
         }
 
         if(!errores)
             System.out.println("[SinErrores]");
+
+        /*for(int i = 1; i < 30; i++)
+            System.out.println(
+                    StringUtilities.removeAllConsecutiveWhitespacesAtTheStartOfString(sourceManager.getLine(i))
+            );*/
     }
 
     private static void openFile(SourceManager sourceManager, String path) throws UnexpectedErrorException {

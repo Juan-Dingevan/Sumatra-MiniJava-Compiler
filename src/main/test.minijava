@@ -3,13 +3,21 @@ public static void main(String args) {
             SourceManager sm = new SourceManagerImpl(); //this is a source manager, it manages the sources!
             sm.open("src/test.minijava");
 
+            char a = 'thisIsntHowThisGoes'
+            char b = 'c
+            char c = '\'
+
             /*
                 Now we go into a sort of loop thing.
                 Idk what this does, actually, but it
                 sure does look technological!!
             */
 
-            float aFloatForNoReason = 19.122001;
+            float aFloatForNoReason = 19.1220011200112001;
+            int x = 3;
+
+            String s = "oops I forgor to close
+            var ejemplo = v1 + # + close
 
             while(true) {
                 char c = sm.getNextChar();

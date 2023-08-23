@@ -15,7 +15,7 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
     private String lexeme;
     private char currentChar;
     private boolean characterUpdateOnCallIsNeeded;
-    private SourceManager sourceManager;
+    private final SourceManager sourceManager;
 
     public LexicalAnalyzerImpl(SourceManager sourceManager) {
         this.sourceManager = sourceManager;
