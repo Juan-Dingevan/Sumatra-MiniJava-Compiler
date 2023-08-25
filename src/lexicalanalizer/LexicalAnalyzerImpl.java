@@ -6,7 +6,7 @@ import sourcemanager.SourceManager;
 import token.Token;
 import utility.CharacterIdentifier;
 import utility.FloatingPointNumberValidator;
-import utility.TokenType;
+import token.TokenType;
 
 import java.io.IOException;
 

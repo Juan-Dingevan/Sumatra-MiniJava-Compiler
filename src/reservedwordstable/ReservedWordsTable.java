@@ -1,8 +1,8 @@
 package reservedwordstable;
 
-import utility.TokenType;
+import token.TokenType;
 import java.util.Map;
-import static utility.TokenType.*;
+import static token.TokenType.*;
 
 public class ReservedWordsTable {
     private static final Map<String, TokenType> reservedWordTable = Map.ofEntries(

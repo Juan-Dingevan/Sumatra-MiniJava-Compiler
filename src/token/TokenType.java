@@ -1,4 +1,4 @@
-package utility;
+package token;
 
 public enum TokenType {
     id_class,

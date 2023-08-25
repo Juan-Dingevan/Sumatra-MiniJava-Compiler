@@ -10,7 +10,7 @@ import sourcemanager.SourceManager;
 import sourcemanager.SourceManagerImpl;
 import token.Token;
 import utility.StringUtilities;
-import utility.TokenType;
+import token.TokenType;
 
 import java.io.FileNotFoundException;
 

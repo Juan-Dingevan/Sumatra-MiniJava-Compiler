@@ -3,13 +3,6 @@ package userinterface;
 import exceptionhandler.ExceptionHandler;
 import exceptions.CompilerCallException;
 import exceptions.CompilerException;
-import exceptions.LexicalException;
-import lexicalanalizer.LexicalAnalyzer;
-import lexicalanalizer.LexicalAnalyzerImpl;
-import sourcemanager.SourceManager;
-import sourcemanager.SourceManagerImpl;
-import token.Token;
-import utility.TokenType;
 
 public class ArgumentReadingUserInterface extends UserInterfaceImpl {
     protected void validateCall(String[] args) throws CompilerCallException {

@@ -1,7 +1,5 @@
 package token;
 
-import utility.TokenType;
-
 public class Token {
     private TokenType tokenType;
     private String lexeme;
