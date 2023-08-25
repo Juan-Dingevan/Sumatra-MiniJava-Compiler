@@ -24,9 +24,9 @@ public class ReservedWordsTable {
             Map.entry("var", reserved_word_var),
             Map.entry("this", reserved_word_this),
             Map.entry("new", reserved_word_new),
-            Map.entry("null", literal_null),
-            Map.entry("true", literal_boolean),
-            Map.entry("false", literal_boolean)
+            Map.entry("null", reserved_word_null),
+            Map.entry("true", reserved_word_true),
+            Map.entry("false", reserved_word_false)
     );
     public static TokenType lookUp(String identifier) {
         TokenType lookedUpValue = reservedWordTable.get(identifier);

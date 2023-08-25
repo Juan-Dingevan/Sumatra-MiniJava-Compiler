@@ -12,7 +12,6 @@ import java.io.IOException;
 
 public class LexicalAnalyzerImpl implements LexicalAnalyzer {
     private static final int MAX_INT_LITERAL_LENGTH = 9;
-    private static final int MAX_FLOAT_LITERAL_LENGTH = 17;
     private String lexeme;
     private char currentChar;
     private boolean characterUpdateOnCallIsNeeded;

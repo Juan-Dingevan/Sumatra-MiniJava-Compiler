@@ -7,8 +7,6 @@ public enum TokenType {
     literal_float,
     literal_char,
     literal_string,
-    literal_boolean,
-    literal_null,
     punctuation_open_parenthesis,
     punctuation_close_parenthesis,
     punctuation_open_curly,

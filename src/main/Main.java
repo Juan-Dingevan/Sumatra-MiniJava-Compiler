@@ -10,7 +10,6 @@ import token.Token;
 import utility.TokenType;
 
 import java.io.FileNotFoundException;
-import java.math.BigDecimal;
 
 public class Main {
     public static void main(String[] args) {
