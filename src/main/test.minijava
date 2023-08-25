@@ -3,6 +3,7 @@ try {
             SourceManager sm = new SourceManagerImpl(); //this is a source manager, it manages the sources!
             sm.open("src/test.minijava");
 
+            char an_underscore_char = '_'
             char a = 'thisIsntHowThisGoes'
             char b = 'c
             char c = '\'
