@@ -1,5 +1,5 @@
 public static void main(String args) {
-        try {
+try {
             SourceManager sm = new SourceManagerImpl(); //this is a source manager, it manages the sources!
             sm.open("src/test.minijava");
 

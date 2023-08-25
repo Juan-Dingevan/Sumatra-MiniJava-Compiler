@@ -21,11 +21,11 @@ public class ExceptionHandler {
         updateCounter();
 
         System.out.println();
-        setTextToRed();
+        StringUtilities.setTextToRed();
 
         System.out.println("ERROR: " + ex.getMessage());
 
-        setTextToWhite();
+        StringUtilities.setTextToWhite();
         System.out.println();
     }
 
@@ -33,7 +33,7 @@ public class ExceptionHandler {
         updateCounter();
 
         System.out.println();
-        setTextToRed();
+        StringUtilities.setTextToRed();
 
         int lineIndex = ex.getLineIndexNumber();
         String line = sourceManager.getCurrentLine();
@@ -51,16 +51,8 @@ public class ExceptionHandler {
         System.out.println(detail);
         System.out.println(pointer);
 
-        setTextToWhite();
+        StringUtilities.setTextToWhite();
         System.out.println();
-    }
-
-    private void setTextToWhite() {
-        System.out.print("\u001B[0m");
-    }
-
-    protected void setTextToRed() {
-        System.out.print("\u001B[31m");
     }
 
     public int getExceptionsHandled() {
