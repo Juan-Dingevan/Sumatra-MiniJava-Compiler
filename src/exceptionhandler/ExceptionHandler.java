@@ -9,10 +9,17 @@ import utility.StringUtilities;
 public class ExceptionHandler {
     private static final String DETAIL_PREFIX = "Detail: ";
     private SourceManager sourceManager;
+    private int exceptionsHandled;
     public ExceptionHandler(SourceManager sourceManager) {
         this.sourceManager = sourceManager;
+        exceptionsHandled = 0;
+    }
+    private void updateCounter() {
+        exceptionsHandled++;
     }
     public void handleGenericException(CompilerException ex) {
+        updateCounter();
+
         System.out.println();
         setTextToRed();
 
@@ -23,10 +30,11 @@ public class ExceptionHandler {
     }
 
     public void handleLexicalException(LexicalException ex) {
+        updateCounter();
+
         System.out.println();
         setTextToRed();
 
-        int lineNumber = ex.getLineNumber();
         int lineIndex = ex.getLineIndexNumber();
         String line = sourceManager.getCurrentLine();
 
@@ -53,5 +61,9 @@ public class ExceptionHandler {
 
     protected void setTextToRed() {
         System.out.print("\u001B[31m");
+    }
+
+    public int getExceptionsHandled() {
+        return exceptionsHandled;
     }
 }
