@@ -60,13 +60,19 @@ public class CharacterIdentifier {
         return WHITE_SPACES.contains(""+c);
     }
     public static boolean isCharLiteralNormalCase(char c) {
-        return LITERAL_CHAR_VALID_CHARS.contains("" + c);
+        boolean cIsSpecialCase = c == BACKWARDS_BAR ||
+                                 c == SINGLE_QUOTATION ||
+                                 c == EOL ||
+                                 c == END_OF_FILE;
+        return !cIsSpecialCase;
     }
     public static boolean isStringLiteralNormalCase(char c) {
-        return LITERAL_STRING_VALID_CHARS.contains("" + c);
-    }
-    public static boolean isEscapeCharacter(char c) {
-        return ESCAPE_CHARACTERS.contains("" + c);
+        boolean cIsSpecialCase = c == BACKWARDS_BAR ||
+                                 c == DOUBLE_QUOTATION ||
+                                 c == SINGLE_QUOTATION ||
+                                 c == EOL ||
+                                 c == END_OF_FILE;
+        return !cIsSpecialCase;
     }
     public static boolean isSingleQuotation(char c) {
         return SINGLE_QUOTATION == c;

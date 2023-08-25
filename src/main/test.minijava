@@ -16,6 +16,8 @@ public static void main(String args) {
             float aFloatForNoReason = 19.1220011200112001;
             int x = 3;
 
+            String s = /*oh god a multi-line single-line comment*/ "glad that works man!";
+
             String s = "oops I forgor to close
             var ejemplo = v1 + # + close
 

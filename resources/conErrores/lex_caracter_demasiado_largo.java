@@ -1,3 +1,3 @@
-///[Error:'c|5]
+///[Error:'c|3]
 
 char c = 'ca'

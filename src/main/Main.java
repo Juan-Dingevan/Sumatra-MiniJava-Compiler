@@ -10,6 +10,7 @@ import token.Token;
 import utility.TokenType;
 
 import java.io.FileNotFoundException;
+import java.math.BigDecimal;
 
 public class Main {
     public static void main(String[] args) {
@@ -21,7 +22,7 @@ public class Main {
         try {
             String path = "./src/main/test.minijava";
             //validateCall(args);
-            //String path = args[0];
+            //path = args[0];
             openFile(sourceManager, path);
         } catch(CompilerException ex) {
             exceptionHandler.handleGenericException(ex);

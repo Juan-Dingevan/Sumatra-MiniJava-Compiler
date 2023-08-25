@@ -5,6 +5,7 @@ import reservedwordstable.ReservedWordsTable;
 import sourcemanager.SourceManager;
 import token.Token;
 import utility.CharacterIdentifier;
+import utility.FloatingPointNumberValidator;
 import utility.TokenType;
 
 import java.io.IOException;
@@ -184,10 +185,10 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
             return literalFloat1();
         }
 
-        if(lexeme.length() <= MAX_FLOAT_LITERAL_LENGTH)
+        if(FloatingPointNumberValidator.isIEEE754(lexeme))
             return new Token(TokenType.literal_float, lexeme, sourceManager.getLineNumber());
 
-        throw new FloatLiteralTooLongException(sourceManager.getLineNumber(), sourceManager.getLineIndex(), lexeme, currentChar);
+        throw new FloatLiteralOutOfRange(sourceManager.getLineNumber(), sourceManager.getLineIndex(), lexeme, currentChar);
     }
 
     private Token identifierClass() throws CompilerException {
@@ -241,15 +242,9 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
         return new Token(TokenType.literal_char, lexeme, sourceManager.getLineNumber());
     }
     private Token literalChar3() throws CompilerException {
-        if(CharacterIdentifier.isCharLiteralNormalCase(currentChar)
-                || CharacterIdentifier.isBackwardsBar(currentChar)
-                || CharacterIdentifier.isSingleQuotation(currentChar)) {
-            updateLexeme();
-            updateCurrentChar();
-            return literalChar1();
-        }
-
-        throw new IncorrectlyFormedCharLiteralException(sourceManager.getLineNumber(), sourceManager.getLineIndex(), lexeme, currentChar);
+        updateLexeme();
+        updateCurrentChar();
+        return literalChar1();
     }
 
     private Token literalString0() throws CompilerException {
@@ -267,14 +262,17 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
             return literalString1();
         }
 
-
         throw new IncorrectlyFormedStringLiteralException(sourceManager.getLineNumber(), sourceManager.getLineIndex(), lexeme, currentChar);
     }
     private Token literalString1() {
         return new Token(TokenType.literal_string, lexeme, sourceManager.getLineNumber());
     }
     private Token literalString2() throws CompilerException {
-        if(CharacterIdentifier.isEscapeCharacter(currentChar)) {
+        if(CharacterIdentifier.isBackwardsBar(currentChar)) {
+            updateLexeme();
+            updateCurrentChar();
+            return literalString2();
+        } else if (!CharacterIdentifier.isEOL(currentChar)) {
             updateLexeme();
             updateCurrentChar();
             return literalString0();
