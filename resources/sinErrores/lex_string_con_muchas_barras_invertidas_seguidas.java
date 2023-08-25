@@ -1,0 +1,2 @@
+///[SinError]
+String s = "\\\\\\a";

@@ -53,7 +53,6 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
             updateLexeme();
             updateCurrentChar();
             return literalInt();
-            //Desp pasara a ser digit() y se diferenciara entre floats e ints
         } else if(CharacterIdentifier.isUpperCaseLetter(currentChar)) {
             updateLexeme();
             updateCurrentChar();
@@ -456,6 +455,6 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
     }
 
     private Token endOfFile() {
-        return new Token(TokenType.eof, lexeme, sourceManager.getLineNumber());
+        return new Token(TokenType.eof, ""+CharacterIdentifier.END_OF_FILE, sourceManager.getLineNumber());
     }
 }

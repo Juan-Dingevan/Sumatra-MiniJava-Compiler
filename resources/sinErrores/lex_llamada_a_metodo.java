@@ -1,0 +1,2 @@
+///[SinErrores]
+a.f(x);

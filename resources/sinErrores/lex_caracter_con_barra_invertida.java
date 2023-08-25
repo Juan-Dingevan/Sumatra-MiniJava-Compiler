@@ -1,0 +1,2 @@
+///[SinError]
+char c = '\'';
