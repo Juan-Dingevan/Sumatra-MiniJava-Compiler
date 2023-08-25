@@ -6,6 +6,6 @@ public class IncorrectlyFormedOrOperatorException extends LexicalException{
     }
 
     protected String getSpecificMessage() {
-        return "Error, expected | but found " + currentCharAtMomentOfException + " (in line " + lineNumber + "at index " + lineIndexNumber + ").";
+        return "Error, expected | but found " + currentCharAtMomentOfException + " (in line " + lineNumber + " at index " + lineIndexNumber + ").";
     }
 }
