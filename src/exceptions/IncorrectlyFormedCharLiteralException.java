@@ -6,6 +6,6 @@ public class IncorrectlyFormedCharLiteralException extends LexicalException{
     }
 
     protected String getSpecificMessage() {
-        return "Error while building a character literal, in line " + lineNumber + "at index " + lineIndexNumber + ".";
+        return "Error while building a character literal, in line " + lineNumber + " at index " + lineIndexNumber + ".";
     }
 }
