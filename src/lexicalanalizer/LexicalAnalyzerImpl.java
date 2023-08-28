@@ -159,6 +159,10 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
             updateLexeme();
             updateCurrentChar();
             return literalFloat0();
+        } else if (CharacterIdentifier.is(currentChar, 'e') || CharacterIdentifier.is(currentChar, 'E')) {
+            updateLexeme();
+            updateCurrentChar();
+            return literalFloat2();
         }
 
         if(lexeme.length() <= MAX_INT_LITERAL_LENGTH)
@@ -172,7 +176,14 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
             updateLexeme();
             updateCurrentChar();
             return literalFloat1();
+        } else if(CharacterIdentifier.is(currentChar, 'e') || CharacterIdentifier.is(currentChar, 'E')) {
+            updateLexeme();
+            updateCurrentChar();
+            return literalFloat2();
         }
+
+        if(FloatingPointNumberValidator.isIEEE754(lexeme))
+            return new Token(TokenType.literal_float, lexeme, sourceManager.getLineNumber());
 
         throw new IncorrectlyFormedFloatLiteralException(sourceManager.getLineNumber(), sourceManager.getLineIndex(), lexeme, currentChar);
     }
@@ -181,6 +192,44 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
             updateLexeme();
             updateCurrentChar();
             return literalFloat1();
+        } else if (CharacterIdentifier.is(currentChar, 'e') || CharacterIdentifier.is(currentChar, 'E')) {
+            updateLexeme();
+            updateCurrentChar();
+            return literalFloat2();
+        }
+
+        if(FloatingPointNumberValidator.isIEEE754(lexeme))
+            return new Token(TokenType.literal_float, lexeme, sourceManager.getLineNumber());
+
+        throw new FloatLiteralOutOfRange(sourceManager.getLineNumber(), sourceManager.getLineIndex(), lexeme, currentChar);
+    }
+    private Token literalFloat2() throws CompilerException {
+        if(CharacterIdentifier.isDigit(currentChar)) {
+            updateLexeme();
+            updateCurrentChar();
+            return literalFloat4();
+        } else if (CharacterIdentifier.is(currentChar, '+') || CharacterIdentifier.is(currentChar, '-')) {
+            updateLexeme();
+            updateCurrentChar();
+            return literalFloat3();
+        }
+
+        throw new IncorrectlyFormedFloatLiteralException(sourceManager.getLineNumber(), sourceManager.getLineIndex(), lexeme, currentChar);
+    }
+    private Token literalFloat3() throws CompilerException {
+        if(CharacterIdentifier.isDigit(currentChar)) {
+            updateLexeme();
+            updateCurrentChar();
+            return literalFloat4();
+        }
+
+        throw new IncorrectlyFormedFloatLiteralException(sourceManager.getLineNumber(), sourceManager.getLineIndex(), lexeme, currentChar);
+    }
+    private Token literalFloat4() throws CompilerException {
+        if(CharacterIdentifier.isDigit(currentChar)) {
+            updateLexeme();
+            updateCurrentChar();
+            return literalFloat4();
         }
 
         if(FloatingPointNumberValidator.isIEEE754(lexeme))
@@ -447,7 +496,13 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
     private Token punctuationComma() {
         return new Token(TokenType.punctuation_comma, lexeme, sourceManager.getLineNumber());
     }
-    private Token punctuationColon() {
+    private Token punctuationColon() throws CompilerException {
+        if(CharacterIdentifier.isDigit(currentChar)) {
+            updateLexeme();
+            updateCurrentChar();
+            return literalFloat1();
+        }
+
         return new Token(TokenType.punctuation_colon, lexeme, sourceManager.getLineNumber());
     }
     private Token punctuationSemicolon() {
