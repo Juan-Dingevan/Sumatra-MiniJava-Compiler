@@ -1,8 +1,8 @@
 package userinterface;
 
 import exceptionhandler.ExceptionHandler;
-import exceptions.CompilerCallException;
-import exceptions.CompilerException;
+import exceptions.general.CompilerCallException;
+import exceptions.general.CompilerException;
 
 public class ArgumentReadingUserInterface extends UserInterfaceImpl {
     protected void validateCall(String[] args) throws CompilerCallException {

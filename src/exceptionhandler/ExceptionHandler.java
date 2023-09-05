@@ -1,7 +1,8 @@
 package exceptionhandler;
 
-import exceptions.CompilerException;
-import exceptions.LexicalException;
+import exceptions.general.CompilerException;
+import exceptions.lexical.LexicalException;
+import exceptions.syntax.SyntaxException;
 import sourcemanager.SourceManager;
 import utility.Pair;
 import utility.StringUtilities;
@@ -50,6 +51,18 @@ public class ExceptionHandler {
         System.out.println("ERROR: " + ex.getMessage());
         System.out.println(detail);
         System.out.println(pointer);
+
+        StringUtilities.setTextToWhite();
+        System.out.println();
+    }
+
+    public void handleSyntaxException(SyntaxException ex) {
+        updateCounter();
+
+        System.out.println();
+        StringUtilities.setTextToRed();
+
+        System.out.println(ex.getMessage());
 
         StringUtilities.setTextToWhite();
         System.out.println();

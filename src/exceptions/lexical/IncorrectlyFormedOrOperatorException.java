@@ -1,4 +1,4 @@
-package exceptions;
+package exceptions.lexical;
 
 public class IncorrectlyFormedOrOperatorException extends LexicalException{
     public IncorrectlyFormedOrOperatorException(int lineNumber, int lineIndexNumber, String lexeme, char currentCharAtMomentOfException) {

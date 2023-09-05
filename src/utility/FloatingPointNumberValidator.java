@@ -13,11 +13,6 @@ public class FloatingPointNumberValidator {
                 }
             }
 
-            /*
-            * Probar pensando en como van a ser los programas; cosas pegadas: int+String+id
-            * Puntos y comas mezclando cosas
-            * */
-
             return false;
         } catch (NumberFormatException e) {
             return false;

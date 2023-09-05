@@ -1,6 +1,6 @@
 package lexicalanalizer;
 
-import exceptions.CompilerException;
+import exceptions.general.CompilerException;
 import token.Token;
 
 public interface LexicalAnalyzer {

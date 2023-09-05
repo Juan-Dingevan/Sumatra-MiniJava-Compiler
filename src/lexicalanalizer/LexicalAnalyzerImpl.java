@@ -1,6 +1,8 @@
 package lexicalanalizer;
 
-import exceptions.*;
+import exceptions.general.CompilerException;
+import exceptions.general.UnexpectedErrorException;
+import exceptions.lexical.*;
 import reservedwordstable.ReservedWordsTable;
 import sourcemanager.SourceManager;
 import token.Token;

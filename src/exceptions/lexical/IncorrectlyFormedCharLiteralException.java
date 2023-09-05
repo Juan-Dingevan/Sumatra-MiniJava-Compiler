@@ -1,4 +1,4 @@
-package exceptions;
+package exceptions.lexical;
 
 public class IncorrectlyFormedCharLiteralException extends LexicalException{
     public IncorrectlyFormedCharLiteralException(int lineNumber, int lineIndexNumber, String lexeme, char currentCharAtMomentOfException) {

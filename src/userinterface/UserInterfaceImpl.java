@@ -1,41 +1,41 @@
 package userinterface;
 
 import exceptionhandler.ExceptionHandler;
-import exceptions.CompilerException;
-import exceptions.LexicalException;
-import exceptions.UnexpectedErrorException;
+import exceptions.general.CompilerException;
+import exceptions.general.UnexpectedErrorException;
+import exceptions.lexical.LexicalException;
+import exceptions.syntax.SyntaxException;
 import lexicalanalizer.LexicalAnalyzer;
 import lexicalanalizer.LexicalAnalyzerImpl;
 import sourcemanager.SourceManager;
 import sourcemanager.SourceManagerImpl;
-import token.Token;
+import syntaxanalyzer.SyntaxAnalyzer;
+import syntaxanalyzer.SyntaxAnalyzerImpl;
 import utility.StringUtilities;
-import token.TokenType;
 
 import java.io.FileNotFoundException;
 
 public abstract class UserInterfaceImpl implements UserInterface{
     public void launch(String[] args) {
         SourceManager sourceManager = new SourceManagerImpl();
-        LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzerImpl(sourceManager);
         ExceptionHandler exceptionHandler = new ExceptionHandler(sourceManager);
+
+        LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzerImpl(sourceManager);
+        SyntaxAnalyzer syntaxAnalyzer = new SyntaxAnalyzerImpl(lexicalAnalyzer);
 
         long startingTimeInMillis = System.currentTimeMillis();
 
         String path = safelyGetPath(args, exceptionHandler);
         safelyOpenFile(path, sourceManager, exceptionHandler);
 
-        Token t = null;
-
-        while(t == null || !(t.getTokenType() == TokenType.eof)) {
-            try {
-                t = lexicalAnalyzer.getNextToken();
-                System.out.println(t);
-            } catch(LexicalException ex) {
-                exceptionHandler.handleLexicalException(ex);
-            } catch(CompilerException ex) {
-                exceptionHandler.handleGenericException(ex);
-            }
+        try {
+            syntaxAnalyzer.analyze();
+        } catch(LexicalException ex) {
+            exceptionHandler.handleLexicalException(ex);
+        } catch(SyntaxException ex) {
+            exceptionHandler.handleSyntaxException(ex);
+        } catch(CompilerException ex) {
+            exceptionHandler.handleGenericException(ex);
         }
 
         if(exceptionHandler.getExceptionsHandled() == 0) {
@@ -48,9 +48,9 @@ public abstract class UserInterfaceImpl implements UserInterface{
         long millisSpentCompiling = finishingTimeInMillis - startingTimeInMillis;
 
         System.out.println();
-        System.out.println("--- Successfully compiled " + t.getLineNumber() +
+        /*System.out.println("--- Successfully compiled " + t.getLineNumber() +
                 " lines in " + millisSpentCompiling +
-                "ms and found " + exceptionHandler.getExceptionsHandled() + " errors. ---");
+                "ms and found " + exceptionHandler.getExceptionsHandled() + " errors. ---");*/
     }
     protected abstract String safelyGetPath(String[] args, ExceptionHandler exceptionHandler);
     protected void safelyOpenFile(String path, SourceManager sourceManager, ExceptionHandler exceptionHandler) {

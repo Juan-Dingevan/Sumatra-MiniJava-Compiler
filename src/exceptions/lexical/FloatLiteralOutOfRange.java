@@ -1,4 +1,4 @@
-package exceptions;
+package exceptions.lexical;
 
 public class FloatLiteralOutOfRange extends LexicalException {
     public FloatLiteralOutOfRange(int lineNumber, int lineIndexNumber, String lexeme, char currentCharAtMomentOfException) {

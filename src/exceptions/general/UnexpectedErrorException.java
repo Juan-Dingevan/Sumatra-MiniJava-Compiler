@@ -1,4 +1,4 @@
-package exceptions;
+package exceptions.general;
 
 public class UnexpectedErrorException extends CompilerException {
     private final String whatWasHappening;

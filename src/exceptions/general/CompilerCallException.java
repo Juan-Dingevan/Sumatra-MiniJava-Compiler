@@ -1,4 +1,4 @@
-package exceptions;
+package exceptions.general;
 
 public class CompilerCallException extends CompilerException{
     private final int numberOfArguments;

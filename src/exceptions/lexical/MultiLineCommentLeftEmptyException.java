@@ -1,4 +1,4 @@
-package exceptions;
+package exceptions.lexical;
 
 public class MultiLineCommentLeftEmptyException extends LexicalException{
     public MultiLineCommentLeftEmptyException(int lineNumber, int lineIndexNumber, String lexeme, char currentCharAtMomentOfException) {

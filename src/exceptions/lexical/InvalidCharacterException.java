@@ -1,4 +1,4 @@
-package exceptions;
+package exceptions.lexical;
 
 public class InvalidCharacterException extends LexicalException{
     public InvalidCharacterException(int lineNumber, int lineIndexNumber, String lexeme, char currentCharAtMomentOfException) {

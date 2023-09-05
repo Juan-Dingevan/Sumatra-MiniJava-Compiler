@@ -1,4 +1,4 @@
-package exceptions;
+package exceptions.lexical;
 
 public class IntegerLiteralTooLongException extends LexicalException{
     public IntegerLiteralTooLongException(int lineNumber, int lineIndexNumber, String lexeme, char currentCharAtMomentOfException) {
