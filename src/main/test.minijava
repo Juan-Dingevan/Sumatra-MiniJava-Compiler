@@ -1,3 +1,6 @@
-class Pepe extends {
-//comment!
+///[SinErrores]
+class Clase {
+    void m1() {
+        Clase.staticMet();
+    }
 }
