@@ -48,9 +48,9 @@ public abstract class UserInterfaceImpl implements UserInterface{
         long millisSpentCompiling = finishingTimeInMillis - startingTimeInMillis;
 
         System.out.println();
-        /*System.out.println("--- Successfully compiled " + t.getLineNumber() +
+        System.out.println("--- Successfully compiled " + sourceManager.getLineNumber() +
                 " lines in " + millisSpentCompiling +
-                "ms and found " + exceptionHandler.getExceptionsHandled() + " errors. ---");*/
+                "ms and found " + exceptionHandler.getExceptionsHandled() + " errors. ---");
     }
     protected abstract String safelyGetPath(String[] args, ExceptionHandler exceptionHandler);
     protected void safelyOpenFile(String path, SourceManager sourceManager, ExceptionHandler exceptionHandler) {
