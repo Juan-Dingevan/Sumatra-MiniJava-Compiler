@@ -512,6 +512,8 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
     }
 
     private Token endOfFile() {
-        return new Token(TokenType.eof, ""+CharacterIdentifier.END_OF_FILE, sourceManager.getLineNumber());
+        //return new Token(TokenType.eof, ""+CharacterIdentifier.END_OF_FILE, sourceManager.getLineNumber());
+        //As per specified on Stage 2, EOF's lexeme is the empty String.
+        return new Token(TokenType.eof, "", sourceManager.getLineNumber());
     }
 }
