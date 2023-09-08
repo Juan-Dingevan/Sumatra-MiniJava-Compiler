@@ -83,6 +83,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         printIfDebug("->ConcreteClass");
         match(TokenType.reserved_word_class);
         match(TokenType.id_class);
+        optionalGenerics();
         optionalInheritance();
         match(TokenType.punctuation_open_curly);
         memberList();
@@ -102,16 +103,59 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         //RULE <optional_inheritance> ::= epsilon
         //We do nothing.
     }
+
+    private void optionalGenerics() throws CompilerException {
+        printIfDebug("->OptionalGenerics");
+
+        // RULE: <optional_generics> ::= < <generic_types_list> >
+        if(currentTokenIn(new TokenType[]{TokenType.operand_lesser})) {
+            generics();
+        }
+
+        // RULE: <optional_generics> ::= epsilon
+        // We do nothing
+    }
+
+    private void generics() throws CompilerException {
+        printIfDebug("->Generics");
+
+        match(TokenType.operand_lesser);
+        genericTypesList();
+        match(TokenType.operand_greater);
+    }
+
+    private void genericTypesList() throws CompilerException {
+        printIfDebug("->GenericTypesList");
+
+        match(TokenType.id_class);
+        genericTypesListSuccessor();
+    }
+
+    private void genericTypesListSuccessor() throws CompilerException {
+        printIfDebug("->GenericTypesListSuccessor");
+
+        // RULE <generic_types_list_successor> ::= , <generic_types_list>
+        if(currentTokenIn(new TokenType[]{TokenType.punctuation_comma})) {
+            match(TokenType.punctuation_comma);
+            genericTypesList();
+        }
+
+        // RULE <generic_types_list_successor> ::= epsilon
+        // We do nothing
+    }
+
     private void inheritsFrom() throws CompilerException {
         printIfDebug("->InheritsFrom");
         match(TokenType.reserved_word_extends);
         match(TokenType.id_class);
+        optionalGenerics();
     }
 
     private void implementsNT() throws CompilerException {
         printIfDebug("->ImplementsNT");
         match(TokenType.reserved_word_implements);
         match(TokenType.id_class);
+        optionalGenerics();
     }
 
     private void memberList() throws CompilerException {
@@ -153,6 +197,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         }
 
     }
+
     private void optionalStatic() throws CompilerException {
         printIfDebug("->OptionalStatic");
         //RULE: <optional_static> ::= static
@@ -189,6 +234,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         } //RULE: <type> ::= id_class
         else if(currentTokenIn(new TokenType[]{TokenType.id_class})) {
             match(TokenType.id_class);
+            optionalGenerics();
         } else {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
@@ -288,6 +334,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         printIfDebug("->InterfaceNT");
         match(TokenType.reserved_word_interface);
         match(TokenType.id_class);
+        optionalGenerics();
         optionalExtends();
         match(TokenType.punctuation_open_curly);
         headerList();
@@ -300,6 +347,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         if(currentTokenIn(new TokenType[]{TokenType.reserved_word_extends})) {
             match(TokenType.reserved_word_extends);
             match(TokenType.id_class);
+            optionalGenerics();
         }
         //RULE <optional_inheritance> ::= epsilon
         //We do nothing
@@ -336,26 +384,26 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
     private void sentenceList() throws CompilerException {
         printIfDebug("->SentenceList");
         TokenType[] sentenceFirsts = {
-                TokenType.punctuation_semicolon,
-                TokenType.operand_plus,
-                TokenType.operand_minus,
-                TokenType.operand_not,
-                TokenType.reserved_word_null,
-                TokenType.reserved_word_true,
-                TokenType.reserved_word_false,
-                TokenType.literal_int,
-                TokenType.literal_char,
-                TokenType.literal_string,
-                TokenType.reserved_word_this,
-                TokenType.id_method_variable,
-                TokenType.reserved_word_new,
-                TokenType.id_class,
-                TokenType.punctuation_open_parenthesis,
-                TokenType.punctuation_open_curly,
-                TokenType.reserved_word_var,
-                TokenType.reserved_word_return,
-                TokenType.reserved_word_if,
-                TokenType.reserved_word_while
+            TokenType.punctuation_semicolon,
+            TokenType.operand_plus,
+            TokenType.operand_minus,
+            TokenType.operand_not,
+            TokenType.reserved_word_null,
+            TokenType.reserved_word_true,
+            TokenType.reserved_word_false,
+            TokenType.literal_int,
+            TokenType.literal_char,
+            TokenType.literal_string,
+            TokenType.reserved_word_this,
+            TokenType.id_method_variable,
+            TokenType.reserved_word_new,
+            TokenType.id_class,
+            TokenType.punctuation_open_parenthesis,
+            TokenType.punctuation_open_curly,
+            TokenType.reserved_word_var,
+            TokenType.reserved_word_return,
+            TokenType.reserved_word_if,
+            TokenType.reserved_word_while
         };
 
         // RULE: <sentence_list> ::= <sentence><sentence_list>
@@ -812,7 +860,34 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         printIfDebug("->ConstructorAccess");
         match(TokenType.reserved_word_new);
         match(TokenType.id_class);
+        optionalGenericsInstantiation();
         actualArguments();
+    }
+
+    private void optionalGenericsInstantiation() throws CompilerException {
+        printIfDebug("->OptionalGenericsInstantiation");
+
+        // RULE <optional_generic_instantiation> ::= < <optional_generic_types_list> >
+        if(currentTokenIn(new TokenType[]{TokenType.operand_lesser})) {
+            match(TokenType.operand_lesser);
+            optionalGenericTypesList();
+            match(TokenType.operand_greater);
+        }
+
+        // RULE <optional_generic_instantiation> ::=  epsilon
+        // We do nothing
+    }
+
+    private void optionalGenericTypesList() throws CompilerException {
+        printIfDebug("->OptionalGenericTypesList");
+
+        // RULE <optional_generic_types_list> ::= <generic_types_list>
+        if(currentTokenIn(new TokenType[]{TokenType.id_class})) {
+            genericTypesList();
+        }
+
+        // RULE <optional_generic_types_list> ::= epsilon
+        // We do nothing
     }
 
     private void methodVariableAccess() throws CompilerException {
