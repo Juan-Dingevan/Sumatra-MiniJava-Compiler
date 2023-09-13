@@ -162,8 +162,8 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         printIfDebug("->MemberList");
         //RULE: <member_list> ::= <member><member_list>
         if(currentTokenIn(new TokenType[]{TokenType.reserved_word_static, TokenType.reserved_word_boolean,
-                TokenType.reserved_word_char, TokenType.reserved_word_int, TokenType.id_class,
-                TokenType.reserved_word_void, TokenType.reserved_word_public})) {
+                TokenType.reserved_word_char, TokenType.reserved_word_int, TokenType.reserved_word_float,
+                TokenType.id_class, TokenType.reserved_word_void, TokenType.reserved_word_public})) {
 
             member();
             memberList();
@@ -176,7 +176,8 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         printIfDebug("->Member");
         //RULE: <member_list> ::= <optional_static><member_type> idmetvar <metvar_successor>
         if(currentTokenIn(new TokenType[]{TokenType.reserved_word_static, TokenType.reserved_word_boolean,
-                TokenType.reserved_word_char, TokenType.reserved_word_int, TokenType.id_class, TokenType.reserved_word_void})) {
+                TokenType.reserved_word_char, TokenType.reserved_word_int, TokenType.reserved_word_float,
+                TokenType.id_class, TokenType.reserved_word_void})) {
 
             optionalStatic();
             memberType();
@@ -190,7 +191,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
             TokenType[] validTokens = {TokenType.reserved_word_static, TokenType.reserved_word_boolean,
-                                       TokenType.reserved_word_char, TokenType.reserved_word_int,
+                                       TokenType.reserved_word_char, TokenType.reserved_word_int, TokenType.reserved_word_float,
                                        TokenType.id_class, TokenType.reserved_word_void,
                                        TokenType.reserved_word_public};
             throw new InvalidTokenFoundException(line, lexeme, validTokens);
@@ -212,7 +213,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
     private void memberType() throws CompilerException {
         printIfDebug("->MemberType");
         //RULE: <member_type> ::= <type>
-        if(currentTokenIn(new TokenType[]{TokenType.reserved_word_boolean, TokenType.reserved_word_char, TokenType.reserved_word_int, TokenType.id_class})) {
+        if(currentTokenIn(new TokenType[]{TokenType.reserved_word_boolean, TokenType.reserved_word_char, TokenType.reserved_word_int, TokenType.reserved_word_float, TokenType.id_class})) {
             type();
         }
         //RULE: <member_type> ::= void
@@ -221,7 +222,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         } else {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
-            TokenType[] validTokens = {TokenType.reserved_word_boolean, TokenType.reserved_word_char, TokenType.reserved_word_int, TokenType.id_class, TokenType.reserved_word_void};
+            TokenType[] validTokens = {TokenType.reserved_word_boolean, TokenType.reserved_word_char, TokenType.reserved_word_int, TokenType.reserved_word_float, TokenType.id_class, TokenType.reserved_word_void};
             throw new InvalidTokenFoundException(line, lexeme, validTokens);
         }
     }
@@ -229,7 +230,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
     private void type() throws CompilerException {
         printIfDebug("->Type");
         //RULE: <type> ::= <primitive_type>
-        if(currentTokenIn(new TokenType[]{TokenType.reserved_word_boolean, TokenType.reserved_word_char, TokenType.reserved_word_int})) {
+        if(currentTokenIn(new TokenType[]{TokenType.reserved_word_boolean, TokenType.reserved_word_char, TokenType.reserved_word_int, TokenType.reserved_word_float})) {
             primitiveType();
         } //RULE: <type> ::= id_class
         else if(currentTokenIn(new TokenType[]{TokenType.id_class})) {
@@ -238,7 +239,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         } else {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
-            TokenType[] validTokens = {TokenType.reserved_word_boolean, TokenType.reserved_word_char, TokenType.reserved_word_int, TokenType.id_class};
+            TokenType[] validTokens = {TokenType.reserved_word_boolean, TokenType.reserved_word_char, TokenType.reserved_word_int, TokenType.reserved_word_float, TokenType.id_class};
             throw new InvalidTokenFoundException(line, lexeme, validTokens);
         }
     }
@@ -256,10 +257,15 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         //RULE: <primitive_type> ::= int
         else if(currentTokenIn(new TokenType[]{TokenType.reserved_word_int})) {
             match(TokenType.reserved_word_int);
-        } else {
+        }
+        // RULE <primitive_type> ::= float
+        else if(currentTokenIn(new TokenType[]{TokenType.reserved_word_float})) {
+            match(TokenType.reserved_word_float);
+        }
+        else {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
-            TokenType[] validTokens = {TokenType.reserved_word_boolean, TokenType.reserved_word_char, TokenType.reserved_word_int};
+            TokenType[] validTokens = {TokenType.reserved_word_boolean, TokenType.reserved_word_char, TokenType.reserved_word_int, TokenType.reserved_word_float};
             throw new InvalidTokenFoundException(line, lexeme, validTokens);
         }
     }
@@ -292,7 +298,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
     private void optionalFormalArgumentsList() throws CompilerException {
         printIfDebug("->OptionalFormalArgumentsList");
         // RULE: <optional_formal_arguments_list> ::= <formal_arguments_list>
-        if(currentTokenIn(new TokenType[]{TokenType.reserved_word_boolean, TokenType.reserved_word_char, TokenType.reserved_word_int, TokenType.id_class})) {
+        if(currentTokenIn(new TokenType[]{TokenType.reserved_word_boolean, TokenType.reserved_word_char, TokenType.reserved_word_int, TokenType.reserved_word_float, TokenType.id_class})) {
             formalArgumentsList();
         }
         // RULE: <optional_formal_arguments_list> ::= epsilon
@@ -357,7 +363,13 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         printIfDebug("->HeaderList");
         // RULE: <header_list> ::= <method_header> <header_list>
         // static, boolean, char, int, id_class, void
-        if(currentTokenIn(new TokenType[]{TokenType.reserved_word_static, TokenType.reserved_word_boolean, TokenType.reserved_word_char, TokenType.reserved_word_int, TokenType.id_class, TokenType.reserved_word_void})) {
+        if(currentTokenIn(new TokenType[]{TokenType.reserved_word_static,
+                TokenType.reserved_word_boolean,
+                TokenType.reserved_word_char,
+                TokenType.reserved_word_int,
+                TokenType.reserved_word_float,
+                TokenType.id_class,
+                TokenType.reserved_word_void})) {
             methodHeader();
             headerList();
         }
@@ -392,6 +404,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
             TokenType.reserved_word_true,
             TokenType.reserved_word_false,
             TokenType.literal_int,
+            TokenType.literal_float,
             TokenType.literal_char,
             TokenType.literal_string,
             TokenType.reserved_word_this,
@@ -425,6 +438,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
                 TokenType.reserved_word_true,
                 TokenType.reserved_word_false,
                 TokenType.literal_int,
+                TokenType.literal_float,
                 TokenType.literal_char,
                 TokenType.literal_string,
                 TokenType.reserved_word_this,
@@ -465,7 +479,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
                 TokenType.punctuation_semicolon, TokenType.operand_plus,
                 TokenType.operand_minus, TokenType.operand_not,
                 TokenType.reserved_word_null, TokenType.reserved_word_true,
-                TokenType.reserved_word_false, TokenType.literal_int,
+                TokenType.reserved_word_false, TokenType.literal_int, TokenType.literal_float,
                 TokenType.literal_char, TokenType.literal_string,
                 TokenType.reserved_word_this, TokenType.id_method_variable,
                 TokenType.reserved_word_new, TokenType.id_class,
@@ -540,6 +554,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
                 TokenType.reserved_word_true,
                 TokenType.reserved_word_false,
                 TokenType.literal_int,
+                TokenType.literal_float,
                 TokenType.literal_char,
                 TokenType.literal_string,
                 TokenType.reserved_word_this,
@@ -929,6 +944,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
                 TokenType.reserved_word_true,
                 TokenType.reserved_word_false,
                 TokenType.literal_int,
+                TokenType.literal_float,
                 TokenType.literal_char,
                 TokenType.literal_string,
                 TokenType.reserved_word_this,
