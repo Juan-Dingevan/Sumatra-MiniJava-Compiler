@@ -163,7 +163,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         //RULE: <member_list> ::= <member><member_list>
         if(currentTokenIn(new TokenType[]{TokenType.reserved_word_static, TokenType.reserved_word_boolean,
                 TokenType.reserved_word_char, TokenType.reserved_word_int, TokenType.reserved_word_float,
-                TokenType.id_class, TokenType.reserved_word_void, TokenType.reserved_word_public})) {
+                TokenType.id_class, TokenType.reserved_word_void, TokenType.reserved_word_public, TokenType.reserved_word_private})) {
 
             member();
             memberList();
@@ -197,6 +197,21 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
             throw new InvalidTokenFoundException(line, lexeme, validTokens);
         }
 
+    }
+
+    private void optionalPrivacy() throws CompilerException {
+        printIfDebug("->OptionalPrivacy");
+        //RULE: <optional_privacy> ::= private
+        if(currentTokenIn(new TokenType[]{TokenType.reserved_word_private})){
+            match(TokenType.reserved_word_private);
+        }
+        //RULE: <optional_privacy> ::= public
+        else if(currentTokenIn(new TokenType[]{TokenType.reserved_word_public})){
+            match(TokenType.reserved_word_public);
+        }
+
+        //RULE: <optional_privacy> ::= epsilon
+        //We do nothing!
     }
 
     private void optionalStatic() throws CompilerException {
@@ -273,26 +288,54 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
     private void attributeMethodSuccessor() throws CompilerException {
         printIfDebug("->AttributeMethodSuccessor");
 
-        //RULE <attribute_method_successor> ::= =<composite_expression>;
-        if(currentTokenIn(new TokenType[]{TokenType.assign_normal})) {
-            match(TokenType.assign_normal);
-            compositeExpression();
-            match(TokenType.punctuation_semicolon);
+        // RULE <attribute_method_successor> ::= <method_successor>;
+        if(currentTokenIn(new TokenType[]{TokenType.punctuation_open_parenthesis})) {
+            methodSuccessor();
         }
-        //RULE <attribute_method_successor> ::= ;
-        else if(currentTokenIn(new TokenType[]{TokenType.punctuation_semicolon})) {
-            match(TokenType.punctuation_semicolon);
-        }
-        //RULE <attribute_method_successor> ::= <ArgsFormales> <Bloque>
-        else if(currentTokenIn(new TokenType[]{TokenType.punctuation_open_parenthesis})) {
-            formalArguments();
-            block();
+        // RULE <attribute_method_successor> ::= <attribute_successor>;
+        else if(currentTokenIn(new TokenType[]{TokenType.punctuation_semicolon, TokenType.punctuation_comma, TokenType.assign_normal})) {
+            attributeSuccessor();
         } else {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
             TokenType[] validTokens = {TokenType.punctuation_semicolon, TokenType.punctuation_open_parenthesis};
             throw new InvalidTokenFoundException(line, lexeme, validTokens);
         }
+    }
+
+    private void attributeSuccessor() throws CompilerException {
+        printIfDebug("->AttributeSuccessor");
+
+        // RULE <attribute_successor> ::= , <id_method_variable><attribute_successor>
+        if(currentTokenIn(new TokenType[]{TokenType.punctuation_comma})) {
+            match(TokenType.punctuation_comma);
+            match(TokenType.id_method_variable);
+            attributeSuccessor();
+        }
+        // RULE <attribute_successor> ::= =<composite_expression>;
+        else if(currentTokenIn(new TokenType[]{TokenType.assign_normal})) {
+            match(TokenType.assign_normal);
+            compositeExpression();
+            match(TokenType.punctuation_semicolon);
+        }
+        //RULE <attribute_successor> ::= ;
+        else if(currentTokenIn(new TokenType[]{TokenType.punctuation_semicolon})) {
+            match(TokenType.punctuation_semicolon);
+        } else {
+            int line = currentToken.getLineNumber();
+            String lexeme = currentToken.getLexeme();
+            TokenType[] validTokens = {TokenType.punctuation_semicolon, TokenType.punctuation_comma, TokenType.assign_normal};
+            throw new InvalidTokenFoundException(line, lexeme, validTokens);
+        }
+
+    }
+
+    private void methodSuccessor() throws CompilerException {
+        printIfDebug("->MethodSuccessor");
+
+        // RULE <method_successor> ::= <formal_arguments><block>
+        formalArguments();
+        block();
     }
 
     private void formalArguments() throws CompilerException {
