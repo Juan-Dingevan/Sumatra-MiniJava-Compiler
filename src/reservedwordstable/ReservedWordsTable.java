@@ -11,6 +11,7 @@ public class ReservedWordsTable {
             Map.entry("extends", reserved_word_extends),
             Map.entry("implements", reserved_word_implements),
             Map.entry("public", reserved_word_public),
+            Map.entry("private", reserved_word_private),
             Map.entry("static", reserved_word_static),
             Map.entry("void", reserved_word_void),
             Map.entry("boolean", reserved_word_boolean),

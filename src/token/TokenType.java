@@ -36,6 +36,7 @@ public enum TokenType {
     reserved_word_extends,
     reserved_word_implements,
     reserved_word_public,
+    reserved_word_private,
     reserved_word_static,
     reserved_word_void,
     reserved_word_boolean,
