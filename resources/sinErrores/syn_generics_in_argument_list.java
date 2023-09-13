@@ -5,5 +5,6 @@ class Generics {
 
     static void usePrintTree() {
         printTree(new Tree<Integer>());
+        printTree(new Tree<>());
     }
 }

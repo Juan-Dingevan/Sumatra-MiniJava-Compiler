@@ -272,8 +272,15 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
     private void attributeMethodSuccessor() throws CompilerException {
         printIfDebug("->AttributeMethodSuccessor");
+
+        //RULE <attribute_method_successor> ::= =<composite_expression>;
+        if(currentTokenIn(new TokenType[]{TokenType.assign_normal})) {
+            match(TokenType.assign_normal);
+            compositeExpression();
+            match(TokenType.punctuation_semicolon);
+        }
         //RULE <attribute_method_successor> ::= ;
-        if(currentTokenIn(new TokenType[]{TokenType.punctuation_semicolon})) {
+        else if(currentTokenIn(new TokenType[]{TokenType.punctuation_semicolon})) {
             match(TokenType.punctuation_semicolon);
         }
         //RULE <attribute_method_successor> ::= <ArgsFormales> <Bloque>
