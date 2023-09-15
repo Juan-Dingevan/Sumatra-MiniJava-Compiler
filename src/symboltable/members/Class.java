@@ -52,4 +52,8 @@ public class Class {
 
         return s;
     }
+
+    public String getName() {
+        return name;
+    }
 }
