@@ -27,5 +27,14 @@ public class StringUtilities {
     public static void setTextToGreen() {
         System.out.print("\u001B[32m");
     }
+    public static String getDashesForDepth(int depth) {
+        String s = "";
+
+        for(int i = 0; i < depth; i++)
+            s += "----";
+
+        return s;
+    }
 
 }
+
