@@ -174,29 +174,60 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
     private void member() throws CompilerException {
         printIfDebug("->Member");
-        //RULE: <member_list> ::= <optional_static><member_type> idmetvar <metvar_successor>
-        if(currentTokenIn(new TokenType[]{TokenType.reserved_word_static, TokenType.reserved_word_boolean,
-                TokenType.reserved_word_char, TokenType.reserved_word_int, TokenType.reserved_word_float,
-                TokenType.id_class, TokenType.reserved_word_void})) {
+        optionalPrivacy();
+        noPrivacyMember();
+    }
 
+    private void noPrivacyMember() throws CompilerException {
+        printIfDebug("->NoPrivacyMember");
+        // RULE: <no_privacy_member> ::= id_class <member_id_class_successor>
+        if(currentTokenIn(new TokenType[]{TokenType.id_class})) {
+            match(TokenType.id_class);
+            memberIdClassSuccessor();
+        }
+        else if (currentTokenIn(new TokenType[]{
+                TokenType.reserved_word_static,
+                TokenType.reserved_word_int,
+                TokenType.reserved_word_char,
+                TokenType.reserved_word_float,
+                TokenType.reserved_word_boolean,
+                TokenType.reserved_word_void
+        })) {
             optionalStatic();
-            memberType();
+            memberType(); //will never go to id_class.
             match(TokenType.id_method_variable);
             attributeMethodSuccessor();
-        }
-        //RULE: <member_list> ::= <constructor>
-        else if(currentTokenIn(new TokenType[]{TokenType.reserved_word_public}))  {
-            constructorNT();
         } else {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
-            TokenType[] validTokens = {TokenType.reserved_word_static, TokenType.reserved_word_boolean,
-                                       TokenType.reserved_word_char, TokenType.reserved_word_int, TokenType.reserved_word_float,
-                                       TokenType.id_class, TokenType.reserved_word_void,
-                                       TokenType.reserved_word_public};
+            TokenType[] validTokens = {TokenType.reserved_word_boolean, TokenType.reserved_word_char, TokenType.reserved_word_int, TokenType.reserved_word_float, TokenType.id_class, TokenType.reserved_word_void, TokenType.reserved_word_static};
             throw new InvalidTokenFoundException(line, lexeme, validTokens);
         }
+    }
 
+    private void memberIdClassSuccessor() throws CompilerException {
+        printIfDebug("->MemberIdClassSuccessor");
+        // RULE: <member_id_class_successor> ::= <formal_arguments><block>
+        // This rules captures the constructor.
+        if(currentTokenIn(new TokenType[]{TokenType.punctuation_open_parenthesis})) {
+            formalArguments();
+            block();
+        }
+        // RULE: <member_id_class_successor> ::= <optional_generics> id_method_variable <attribute_method_successor>
+        // This rule captures methods that have a reference-type return type and attributes that are of a reference type.
+        else if (currentTokenIn(new TokenType[]{
+                TokenType.operand_lesser,
+                TokenType.id_method_variable
+        })) {
+            optionalGenerics();
+            match(TokenType.id_method_variable);
+            attributeMethodSuccessor();
+        } else {
+            int line = currentToken.getLineNumber();
+            String lexeme = currentToken.getLexeme();
+            TokenType[] validTokens = {TokenType.punctuation_open_parenthesis, TokenType.operand_lesser, TokenType.id_method_variable};
+            throw new InvalidTokenFoundException(line, lexeme, validTokens);
+        }
     }
 
     private void optionalPrivacy() throws CompilerException {
@@ -446,27 +477,27 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
     private void sentenceList() throws CompilerException {
         printIfDebug("->SentenceList");
         TokenType[] sentenceFirsts = {
-            TokenType.punctuation_semicolon,
-            TokenType.operand_plus,
-            TokenType.operand_minus,
-            TokenType.operand_not,
-            TokenType.reserved_word_null,
-            TokenType.reserved_word_true,
-            TokenType.reserved_word_false,
-            TokenType.literal_int,
-            TokenType.literal_float,
-            TokenType.literal_char,
-            TokenType.literal_string,
-            TokenType.reserved_word_this,
-            TokenType.id_method_variable,
-            TokenType.reserved_word_new,
-            TokenType.id_class,
-            TokenType.punctuation_open_parenthesis,
-            TokenType.punctuation_open_curly,
-            TokenType.reserved_word_var,
-            TokenType.reserved_word_return,
-            TokenType.reserved_word_if,
-            TokenType.reserved_word_while
+                TokenType.punctuation_semicolon,
+                TokenType.operand_plus,
+                TokenType.operand_minus,
+                TokenType.operand_not,
+                TokenType.reserved_word_null,
+                TokenType.reserved_word_true,
+                TokenType.reserved_word_false,
+                TokenType.literal_int,
+                TokenType.literal_float,
+                TokenType.literal_char,
+                TokenType.literal_string,
+                TokenType.reserved_word_this,
+                TokenType.id_method_variable,
+                TokenType.reserved_word_new,
+                TokenType.id_class,
+                TokenType.punctuation_open_parenthesis,
+                TokenType.punctuation_open_curly,
+                TokenType.reserved_word_var,
+                TokenType.reserved_word_return,
+                TokenType.reserved_word_if,
+                TokenType.reserved_word_while
         };
 
         // RULE: <sentence_list> ::= <sentence><sentence_list>
@@ -526,16 +557,16 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
             TokenType[] validTokens = {
-                TokenType.punctuation_semicolon, TokenType.operand_plus,
-                TokenType.operand_minus, TokenType.operand_not,
-                TokenType.reserved_word_null, TokenType.reserved_word_true,
-                TokenType.reserved_word_false, TokenType.literal_int, TokenType.literal_float,
-                TokenType.literal_char, TokenType.literal_string,
-                TokenType.reserved_word_this, TokenType.id_method_variable,
-                TokenType.reserved_word_new, TokenType.id_class,
-                TokenType.punctuation_open_parenthesis, TokenType.punctuation_open_curly,
-                TokenType.reserved_word_var, TokenType.reserved_word_return,
-                TokenType.reserved_word_if, TokenType.reserved_word_while
+                    TokenType.punctuation_semicolon, TokenType.operand_plus,
+                    TokenType.operand_minus, TokenType.operand_not,
+                    TokenType.reserved_word_null, TokenType.reserved_word_true,
+                    TokenType.reserved_word_false, TokenType.literal_int, TokenType.literal_float,
+                    TokenType.literal_char, TokenType.literal_string,
+                    TokenType.reserved_word_this, TokenType.id_method_variable,
+                    TokenType.reserved_word_new, TokenType.id_class,
+                    TokenType.punctuation_open_parenthesis, TokenType.punctuation_open_curly,
+                    TokenType.reserved_word_var, TokenType.reserved_word_return,
+                    TokenType.reserved_word_if, TokenType.reserved_word_while
             };
             throw new InvalidTokenFoundException(line, lexeme, validTokens);
         }
@@ -638,24 +669,24 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
     private void basicExpression() throws CompilerException {
         printIfDebug("->BasicExpression");
         TokenType[] unaryOperatorFirsts = {
-            TokenType.operand_plus,
-            TokenType.operand_not,
-            TokenType.operand_minus
+                TokenType.operand_plus,
+                TokenType.operand_not,
+                TokenType.operand_minus
         };
 
         TokenType[] operandFirsts = {
-            TokenType.reserved_word_null,
-            TokenType.reserved_word_true,
-            TokenType.reserved_word_false,
-            TokenType.literal_int,
-            TokenType.literal_char,
-            TokenType.literal_string,
-            TokenType.literal_float,
-            TokenType.reserved_word_this,
-            TokenType.id_method_variable,
-            TokenType.reserved_word_new,
-            TokenType.id_class,
-            TokenType.punctuation_open_parenthesis
+                TokenType.reserved_word_null,
+                TokenType.reserved_word_true,
+                TokenType.reserved_word_false,
+                TokenType.literal_int,
+                TokenType.literal_char,
+                TokenType.literal_string,
+                TokenType.literal_float,
+                TokenType.reserved_word_this,
+                TokenType.id_method_variable,
+                TokenType.reserved_word_new,
+                TokenType.id_class,
+                TokenType.punctuation_open_parenthesis
         };
 
         if(currentTokenIn(unaryOperatorFirsts)) {
@@ -667,13 +698,13 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
             TokenType[] validTokens = {
-                TokenType.operand_plus, TokenType.operand_not, TokenType.operand_minus,
-                TokenType.reserved_word_null, TokenType.reserved_word_true,
-                TokenType.reserved_word_false, TokenType.literal_int,
-                TokenType.literal_char, TokenType.literal_string,
-                TokenType.literal_float, TokenType.reserved_word_this,
-                TokenType.id_method_variable, TokenType.reserved_word_new,
-                TokenType.id_class, TokenType.punctuation_open_parenthesis
+                    TokenType.operand_plus, TokenType.operand_not, TokenType.operand_minus,
+                    TokenType.reserved_word_null, TokenType.reserved_word_true,
+                    TokenType.reserved_word_false, TokenType.literal_int,
+                    TokenType.literal_char, TokenType.literal_string,
+                    TokenType.literal_float, TokenType.reserved_word_this,
+                    TokenType.id_method_variable, TokenType.reserved_word_new,
+                    TokenType.id_class, TokenType.punctuation_open_parenthesis
             };
 
             throw new InvalidTokenFoundException(line, lexeme, validTokens);
@@ -683,19 +714,19 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
     private void compositeExpressionRecursion() throws CompilerException {
         printIfDebug("->CompositeExpressionRecursion");
         TokenType[] binaryOperatorFirsts = {
-            TokenType.operand_or,
-            TokenType.operand_and,
-            TokenType.operand_equals,
-            TokenType.operand_not_equals,
-            TokenType.operand_lesser,
-            TokenType.operand_greater,
-            TokenType.operand_lesser_equal,
-            TokenType.operand_greater_equal,
-            TokenType.operand_plus,
-            TokenType.operand_minus,
-            TokenType.operand_times,
-            TokenType.operand_division,
-            TokenType.operand_modulo
+                TokenType.operand_or,
+                TokenType.operand_and,
+                TokenType.operand_equals,
+                TokenType.operand_not_equals,
+                TokenType.operand_lesser,
+                TokenType.operand_greater,
+                TokenType.operand_lesser_equal,
+                TokenType.operand_greater_equal,
+                TokenType.operand_plus,
+                TokenType.operand_minus,
+                TokenType.operand_times,
+                TokenType.operand_division,
+                TokenType.operand_modulo
         };
 
         // RULE: <composite_expression_recursion> ::= <binary_operand><basic_expression><composite_expression_recursion>
@@ -733,9 +764,9 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
             TokenType[] validTokens = {
-                TokenType.operand_plus,
-                TokenType.operand_not,
-                TokenType.operand_minus
+                    TokenType.operand_plus,
+                    TokenType.operand_not,
+                    TokenType.operand_minus
             };
 
             throw new InvalidTokenFoundException(line, lexeme, validTokens);
@@ -774,19 +805,19 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
             TokenType[] validTokens = {
-                TokenType.operand_or,
-                TokenType.operand_and,
-                TokenType.operand_equals,
-                TokenType.operand_not_equals,
-                TokenType.operand_lesser,
-                TokenType.operand_greater,
-                TokenType.operand_lesser_equal,
-                TokenType.operand_greater_equal,
-                TokenType.operand_plus,
-                TokenType.operand_minus,
-                TokenType.operand_times,
-                TokenType.operand_division,
-                TokenType.operand_modulo
+                    TokenType.operand_or,
+                    TokenType.operand_and,
+                    TokenType.operand_equals,
+                    TokenType.operand_not_equals,
+                    TokenType.operand_lesser,
+                    TokenType.operand_greater,
+                    TokenType.operand_lesser_equal,
+                    TokenType.operand_greater_equal,
+                    TokenType.operand_plus,
+                    TokenType.operand_minus,
+                    TokenType.operand_times,
+                    TokenType.operand_division,
+                    TokenType.operand_modulo
             };
 
             throw new InvalidTokenFoundException(line, lexeme, validTokens);
@@ -796,21 +827,21 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
     private void operand() throws CompilerException {
         printIfDebug("->Operand");
         TokenType[] literalFirsts = {
-            TokenType.reserved_word_null,
-            TokenType.reserved_word_true,
-            TokenType.reserved_word_false,
-            TokenType.literal_int,
-            TokenType.literal_char,
-            TokenType.literal_string,
-            TokenType.literal_float
+                TokenType.reserved_word_null,
+                TokenType.reserved_word_true,
+                TokenType.reserved_word_false,
+                TokenType.literal_int,
+                TokenType.literal_char,
+                TokenType.literal_string,
+                TokenType.literal_float
         };
 
         TokenType[] accessFirsts = {
-            TokenType.reserved_word_this,
-            TokenType.id_method_variable,
-            TokenType.id_class,
-            TokenType.reserved_word_new,
-            TokenType.punctuation_open_parenthesis
+                TokenType.reserved_word_this,
+                TokenType.id_method_variable,
+                TokenType.id_class,
+                TokenType.reserved_word_new,
+                TokenType.punctuation_open_parenthesis
         };
 
         if(currentTokenIn(literalFirsts)) {
@@ -821,18 +852,18 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
             TokenType[] validTokens = {
-                TokenType.reserved_word_null,
-                TokenType.reserved_word_true,
-                TokenType.reserved_word_false,
-                TokenType.literal_int,
-                TokenType.literal_char,
-                TokenType.literal_string,
-                TokenType.literal_float,
-                TokenType.reserved_word_this,
-                TokenType.id_method_variable,
-                TokenType.id_class,
-                TokenType.reserved_word_new,
-                TokenType.punctuation_open_parenthesis
+                    TokenType.reserved_word_null,
+                    TokenType.reserved_word_true,
+                    TokenType.reserved_word_false,
+                    TokenType.literal_int,
+                    TokenType.literal_char,
+                    TokenType.literal_string,
+                    TokenType.literal_float,
+                    TokenType.reserved_word_this,
+                    TokenType.id_method_variable,
+                    TokenType.id_class,
+                    TokenType.reserved_word_new,
+                    TokenType.punctuation_open_parenthesis
             };
 
             throw new InvalidTokenFoundException(line, lexeme, validTokens);
@@ -860,13 +891,13 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
             TokenType[] validTokens = {
-                TokenType.reserved_word_null,
-                TokenType.reserved_word_true,
-                TokenType.reserved_word_false,
-                TokenType.literal_int,
-                TokenType.literal_char,
-                TokenType.literal_string,
-                TokenType.literal_float
+                    TokenType.reserved_word_null,
+                    TokenType.reserved_word_true,
+                    TokenType.reserved_word_false,
+                    TokenType.literal_int,
+                    TokenType.literal_char,
+                    TokenType.literal_string,
+                    TokenType.literal_float
             };
 
             throw new InvalidTokenFoundException(line, lexeme, validTokens);
@@ -895,11 +926,11 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
             TokenType[] validTokens = {
-                TokenType.reserved_word_this,
-                TokenType.id_method_variable,
-                TokenType.id_class,
-                TokenType.reserved_word_new,
-                TokenType.punctuation_open_parenthesis
+                    TokenType.reserved_word_this,
+                    TokenType.id_method_variable,
+                    TokenType.id_class,
+                    TokenType.reserved_word_new,
+                    TokenType.punctuation_open_parenthesis
             };
 
             throw new InvalidTokenFoundException(line, lexeme, validTokens);
@@ -1058,9 +1089,9 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
             optionalChaining();
         } else {
             /*
-            * Lo ponemos en el else, sin chequear primeros porque, si
-            * llega a venir epsilon, se lidia con eso en optionalChaining.
-            * */
+             * Lo ponemos en el else, sin chequear primeros porque, si
+             * llega a venir epsilon, se lidia con eso en optionalChaining.
+             * */
             optionalChaining();
         }
     }
