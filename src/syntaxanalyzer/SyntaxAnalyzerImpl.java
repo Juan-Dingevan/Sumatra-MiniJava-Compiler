@@ -5,6 +5,9 @@ import exceptions.syntax.InvalidTokenFoundException;
 import exceptions.syntax.TokenMismatchException;
 import lexicalanalizer.LexicalAnalyzer;
 import symboltable.privacy.Privacy;
+import symboltable.symbols.members.Attribute;
+import symboltable.symbols.members.Constructor;
+import symboltable.symbols.members.Method;
 import symboltable.types.*;
 import symboltable.symbols.classes.ConcreteClass;
 import symboltable.symbols.classes.Interface;
@@ -207,16 +210,19 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
     private void member() throws CompilerException {
         printIfDebug("->Member");
-        optionalPrivacy();
-        noPrivacyMember();
+
+        Privacy p = optionalPrivacy();
+        noPrivacyMember(p);
     }
 
-    private void noPrivacyMember() throws CompilerException {
+    private void noPrivacyMember(Privacy currentMemberPrivacy) throws CompilerException {
         printIfDebug("->NoPrivacyMember");
+
         // RULE: <no_privacy_member> ::= id_class <member_id_class_successor>
         if(currentTokenIn(new TokenType[]{TokenType.id_class})) {
+            Token idClassToken = currentToken;
             match(TokenType.id_class);
-            memberIdClassSuccessor();
+            memberIdClassSuccessor(currentMemberPrivacy, idClassToken);
         }
         else if (currentTokenIn(new TokenType[]{
                 TokenType.reserved_word_static,
@@ -226,10 +232,14 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
                 TokenType.reserved_word_boolean,
                 TokenType.reserved_word_void
         })) {
-            optionalStatic();
-            memberType(); //will never go to id_class.
+            boolean staticity = optionalStatic();
+            Type type = memberType(); //will never go to id_class.
+
+            Token declarationToken = currentToken;
+
             match(TokenType.id_method_variable);
-            attributeMethodSuccessor();
+
+            attributeMethodSuccessor(currentMemberPrivacy, staticity, type, declarationToken);
         } else {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
@@ -238,23 +248,33 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         }
     }
 
-    private void memberIdClassSuccessor() throws CompilerException {
+    private void memberIdClassSuccessor(Privacy currentMemberPrivacy, Token idClassToken) throws CompilerException {
         printIfDebug("->MemberIdClassSuccessor");
         // RULE: <member_id_class_successor> ::= <formal_arguments><block>
         // This rules captures the constructor.
         if(currentTokenIn(new TokenType[]{TokenType.punctuation_open_parenthesis})) {
+            Constructor c = new Constructor(idClassToken);
+            c.setPrivacy(currentMemberPrivacy);
+
+            SymbolTable.getInstance().getCurrentClass().setConstructor(c);
+
             formalArguments();
             block();
         }
         // RULE: <member_id_class_successor> ::= <optional_generics> id_method_variable <attribute_method_successor>
-        // This rule captures methods that have a reference-type return type and attributes that are of a reference type.
+        // This rule captures methods that have a reference-type return type and attributes that are of a reference type and NOT static.
         else if (currentTokenIn(new TokenType[]{
                 TokenType.operand_lesser,
                 TokenType.id_method_variable
         })) {
             optionalGenerics();
+
+            Token declarationToken = currentToken;
+            Type type = new ReferenceType(idClassToken.getLexeme());
+
             match(TokenType.id_method_variable);
-            attributeMethodSuccessor();
+
+            attributeMethodSuccessor(currentMemberPrivacy, false, type, declarationToken);
         } else {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
@@ -363,16 +383,16 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         }
     }
 
-    private void attributeMethodSuccessor() throws CompilerException {
+    private void attributeMethodSuccessor(Privacy currentMemberPrivacy, boolean staticity, Type type, Token declarationToken) throws CompilerException {
         printIfDebug("->AttributeMethodSuccessor");
 
         // RULE <attribute_method_successor> ::= <method_successor>;
         if(currentTokenIn(new TokenType[]{TokenType.punctuation_open_parenthesis})) {
-            methodSuccessor();
+            methodSuccessor(currentMemberPrivacy, staticity, type, declarationToken);
         }
         // RULE <attribute_method_successor> ::= <attribute_successor>;
         else if(currentTokenIn(new TokenType[]{TokenType.punctuation_semicolon, TokenType.punctuation_comma, TokenType.assign_normal})) {
-            attributeSuccessor();
+            attributeSuccessor(currentMemberPrivacy, staticity, type, declarationToken);
         } else {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
@@ -381,14 +401,25 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         }
     }
 
-    private void attributeSuccessor() throws CompilerException {
+    private void attributeSuccessor(Privacy currentMemberPrivacy, boolean staticity, Type type, Token declarationToken) throws CompilerException {
         printIfDebug("->AttributeSuccessor");
+
+        Attribute a = new Attribute(declarationToken);
+        a.setPrivacy(currentMemberPrivacy);
+        a.setStatic(staticity);
+        a.setType(type);
+
+        SymbolTable.getInstance().getCurrentClass().addAttribute(a);
 
         // RULE <attribute_successor> ::= , <id_method_variable><attribute_successor>
         if(currentTokenIn(new TokenType[]{TokenType.punctuation_comma})) {
             match(TokenType.punctuation_comma);
+
+            Token newDeclarationToken = currentToken;
+
             match(TokenType.id_method_variable);
-            attributeSuccessor();
+
+            attributeSuccessor(currentMemberPrivacy, staticity, type, newDeclarationToken);
         }
         // RULE <attribute_successor> ::= =<composite_expression>;
         else if(currentTokenIn(new TokenType[]{TokenType.assign_normal})) {
@@ -408,8 +439,15 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
     }
 
-    private void methodSuccessor() throws CompilerException {
+    private void methodSuccessor(Privacy currentMemberPrivacy, boolean staticity, Type type, Token declarationToken) throws CompilerException {
         printIfDebug("->MethodSuccessor");
+
+        Method m = new Method(declarationToken);
+        m.setPrivacy(currentMemberPrivacy);
+        m.setStatic(staticity);
+        m.setReturnType(type);
+
+        SymbolTable.getInstance().getCurrentClass().addMethod(m);
 
         // RULE <method_successor> ::= <formal_arguments><block>
         formalArguments();
