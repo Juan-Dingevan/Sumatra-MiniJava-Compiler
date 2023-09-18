@@ -40,7 +40,7 @@ public class Method extends Unit{
     public String toString() {
         String prefix = StringUtilities.getDashesForDepth(LEVEL);
         String s = prefix + "METHOD{" + instanceID + "}: " + getName() + " RETURN TYPE: " + returnType;
-
+        s += " STATIC: " + isStatic + " PRIVACY: " + privacy + "\n";
         s += prefix + "PARAMETERS:\n";
 
         for(Parameter p : parameters.values())

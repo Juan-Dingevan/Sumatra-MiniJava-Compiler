@@ -6,4 +6,8 @@ public class ReferenceType extends Type{
     public ReferenceType(String referenceName) {
         this.referenceName = referenceName;
     }
+
+    public String toString() {
+        return "referenceType(" + referenceName + ")";
+    }
 }
