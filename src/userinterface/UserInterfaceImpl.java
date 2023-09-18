@@ -4,6 +4,7 @@ import exceptionhandler.ExceptionHandler;
 import exceptions.general.CompilerException;
 import exceptions.general.UnexpectedErrorException;
 import exceptions.lexical.LexicalException;
+import exceptions.semantical.SemanticException;
 import exceptions.syntax.SyntaxException;
 import lexicalanalizer.LexicalAnalyzer;
 import lexicalanalizer.LexicalAnalyzerImpl;
@@ -34,6 +35,8 @@ public abstract class UserInterfaceImpl implements UserInterface{
             exceptionHandler.handleLexicalException(ex);
         } catch(SyntaxException ex) {
             exceptionHandler.handleSyntaxException(ex);
+        } catch(SemanticException ex) {
+            exceptionHandler.handleSemanticException(ex);
         } catch(CompilerException ex) {
             exceptionHandler.handleGenericException(ex);
         }

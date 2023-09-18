@@ -2,6 +2,7 @@ package exceptionhandler;
 
 import exceptions.general.CompilerException;
 import exceptions.lexical.LexicalException;
+import exceptions.semantical.SemanticException;
 import exceptions.syntax.SyntaxException;
 import sourcemanager.SourceManager;
 import utility.Pair;
@@ -9,7 +10,7 @@ import utility.StringUtilities;
 
 public class ExceptionHandler {
     private static final String DETAIL_PREFIX = "Detail: ";
-    private SourceManager sourceManager;
+    private final SourceManager sourceManager;
     private int exceptionsHandled;
     public ExceptionHandler(SourceManager sourceManager) {
         this.sourceManager = sourceManager;
@@ -57,6 +58,18 @@ public class ExceptionHandler {
     }
 
     public void handleSyntaxException(SyntaxException ex) {
+        updateCounter();
+
+        System.out.println();
+        StringUtilities.setTextToRed();
+
+        System.out.println(ex.getMessage());
+
+        StringUtilities.setTextToWhite();
+        System.out.println();
+    }
+
+    public void handleSemanticException(SemanticException ex) {
         updateCounter();
 
         System.out.println();
