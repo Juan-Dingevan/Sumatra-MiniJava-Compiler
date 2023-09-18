@@ -24,14 +24,12 @@ public class ConcreteClass extends Class {
     public ConcreteClass(Token t) {
         super(t);
 
-        instanceID = classID;
-
         attributes = new HashMap<>();
 
         constructor = null;
-
         implementsInterface = "";
 
+        instanceID = classID;
         classID++;
     }
 
@@ -76,7 +74,8 @@ public class ConcreteClass extends Class {
         for(Method m : methods.values())
             s += m.toString() + "\n";
 
-        s += prefix + "CONSTRUCTOR: " + (constructor == null ? "" : constructor.toString()) + "\n";
+        s += prefix + "CONSTRUCTOR:\n";
+        s += (constructor == null ? "" : constructor.toString());
 
         return s;
     }
