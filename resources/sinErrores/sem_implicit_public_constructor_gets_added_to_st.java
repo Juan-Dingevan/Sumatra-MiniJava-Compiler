@@ -1,0 +1,6 @@
+///[SinErrores]
+class C {
+    C() {
+
+    }
+}
