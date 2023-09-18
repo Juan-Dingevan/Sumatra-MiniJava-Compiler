@@ -4,10 +4,12 @@ import exceptions.general.CompilerException;
 import exceptions.syntax.InvalidTokenFoundException;
 import exceptions.syntax.TokenMismatchException;
 import lexicalanalizer.LexicalAnalyzer;
-import symboltable.symbols.Symbol;
+import symboltable.privacy.Privacy;
+import symboltable.types.*;
 import symboltable.symbols.classes.ConcreteClass;
 import symboltable.symbols.classes.Interface;
 import symboltable.table.SymbolTable;
+import symboltable.types.Void;
 import token.Token;
 import token.TokenType;
 
@@ -261,41 +263,47 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         }
     }
 
-    private void optionalPrivacy() throws CompilerException {
+    private Privacy optionalPrivacy() throws CompilerException {
         printIfDebug("->OptionalPrivacy");
         //RULE: <optional_privacy> ::= private
         if(currentTokenIn(new TokenType[]{TokenType.reserved_word_private})){
             match(TokenType.reserved_word_private);
+            return Privacy.priv;
         }
         //RULE: <optional_privacy> ::= public
         else if(currentTokenIn(new TokenType[]{TokenType.reserved_word_public})){
             match(TokenType.reserved_word_public);
+            return Privacy.pub;
         }
 
         //RULE: <optional_privacy> ::= epsilon
-        //We do nothing!
+        //Since by default a member is public, we return public
+        return Privacy.pub;
     }
 
-    private void optionalStatic() throws CompilerException {
+    private boolean optionalStatic() throws CompilerException {
         printIfDebug("->OptionalStatic");
         //RULE: <optional_static> ::= static
         if(currentTokenIn(new TokenType[]{TokenType.reserved_word_static})){
             match(TokenType.reserved_word_static);
+            return true;
         }
 
         //RULE: <optional_static> ::= epsilon
-        //We do nothing!
+        //Since by default a method/attribute is dynamic, we return false
+        return false;
     }
 
-    private void memberType() throws CompilerException {
+    private Type memberType() throws CompilerException {
         printIfDebug("->MemberType");
         //RULE: <member_type> ::= <type>
         if(currentTokenIn(new TokenType[]{TokenType.reserved_word_boolean, TokenType.reserved_word_char, TokenType.reserved_word_int, TokenType.reserved_word_float, TokenType.id_class})) {
-            type();
+            return type();
         }
         //RULE: <member_type> ::= void
         else if(currentTokenIn(new TokenType[]{TokenType.reserved_word_void})) {
             match(TokenType.reserved_word_void);
+            return new Void();
         } else {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
@@ -304,15 +312,19 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         }
     }
 
-    private void type() throws CompilerException {
+    private Type type() throws CompilerException {
         printIfDebug("->Type");
         //RULE: <type> ::= <primitive_type>
         if(currentTokenIn(new TokenType[]{TokenType.reserved_word_boolean, TokenType.reserved_word_char, TokenType.reserved_word_int, TokenType.reserved_word_float})) {
-            primitiveType();
+            return primitiveType();
         } //RULE: <type> ::= id_class
         else if(currentTokenIn(new TokenType[]{TokenType.id_class})) {
+            Token classIdToken = currentToken;
+
             match(TokenType.id_class);
             optionalGenerics();
+
+            return new ReferenceType(classIdToken.getLexeme());
         } else {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
@@ -321,23 +333,27 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         }
     }
 
-    private void primitiveType() throws CompilerException {
+    private Type primitiveType() throws CompilerException {
         printIfDebug("->PrimitiveType");
         //RULE: <primitive_type> ::= boolean
         if(currentTokenIn(new TokenType[]{TokenType.reserved_word_boolean})) {
             match(TokenType.reserved_word_boolean);
+            return new SBoolean();
         }
         //RULE: <primitive_type> ::= char
         else if(currentTokenIn(new TokenType[]{TokenType.reserved_word_char})) {
             match(TokenType.reserved_word_char);
+            return new Char();
         }
         //RULE: <primitive_type> ::= int
         else if(currentTokenIn(new TokenType[]{TokenType.reserved_word_int})) {
             match(TokenType.reserved_word_int);
+            return new Int();
         }
         // RULE <primitive_type> ::= float
         else if(currentTokenIn(new TokenType[]{TokenType.reserved_word_float})) {
             match(TokenType.reserved_word_float);
+            return new SFloat();
         }
         else {
             int line = currentToken.getLineNumber();
