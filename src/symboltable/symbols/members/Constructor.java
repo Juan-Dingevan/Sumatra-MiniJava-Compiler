@@ -1,4 +1,9 @@
 package symboltable.symbols.members;
 
-public class Constructor {
+import token.Token;
+
+public class Constructor extends Unit{
+    public Constructor(Token t) {
+        super(t);
+    }
 }

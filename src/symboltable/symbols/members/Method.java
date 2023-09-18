@@ -1,34 +1,36 @@
 package symboltable.symbols.members;
 
 import symboltable.types.Type;
+import token.Token;
 import utility.StringUtilities;
 
 import java.util.HashMap;
 
-public class Method {
+public class Method extends Unit{
     private static int classID = 0;
     private static final int LEVEL = 2;
 
     protected int instanceID;
     protected Type returnType;
-    protected String name;
-    protected HashMap<String, Parameter> parameters;
 
+    public Method(Token t) {
+        super(t);
 
-    public Method(Type returnType, String name) {
         instanceID = classID;
-
-        parameters = new HashMap<>();
-
-        this.returnType = returnType;
-        this.name = name;
-
         classID++;
+    }
+
+    public void setReturnType(Type type) {
+        this.returnType = type;
+    }
+
+    public Type getReturnType() {
+        return returnType;
     }
 
     public String toString() {
         String prefix = StringUtilities.getDashesForDepth(LEVEL);
-        String s = prefix + "METHOD{" + instanceID + "}: " + name + " RETURN TYPE: " + returnType;
+        String s = prefix + "METHOD{" + instanceID + "}: " + getName() + " RETURN TYPE: " + returnType;
 
         s += prefix + "PARAMETERS:\n";
 

@@ -1,5 +1,9 @@
 package symboltable.symbols.classes;
 
+import exceptions.general.CompilerException;
+import exceptions.semantical.AttributeAlreadyExistsException;
+import exceptions.semantical.ClassAlreadyHasConstructorException;
+import exceptions.semantical.MethodAlreadyExistsException;
 import symboltable.symbols.members.Attribute;
 import symboltable.symbols.members.Constructor;
 import symboltable.symbols.members.Method;
@@ -14,10 +18,7 @@ public class ConcreteClass extends Class {
 
     protected int instanceID;
     protected HashMap<String, Attribute> attributes;
-    protected HashMap<String, Method> methods;
     protected Constructor constructor;
-    protected Method currentMethod;
-    protected Token token;
     protected String implementsInterface;
 
     public ConcreteClass(Token t) {
@@ -26,9 +27,7 @@ public class ConcreteClass extends Class {
         instanceID = classID;
 
         attributes = new HashMap<>();
-        methods = new HashMap<>();
 
-        currentMethod = null;
         constructor = null;
 
         implementsInterface = "";
@@ -36,13 +35,30 @@ public class ConcreteClass extends Class {
         classID++;
     }
 
-    public Method getCurrentMethod() {
-        return currentMethod;
-    }
-
-
     public void setImplements(Token t) {
         implementsInterface = t.getLexeme();
+    }
+
+    protected boolean attributeExists(Attribute a) {
+        return attributes.get(a.getName()) != null;
+    }
+
+    protected boolean constructorExists() {
+        return constructor != null;
+    }
+
+    public void addAttribute(Attribute a) throws CompilerException{
+        if(!attributeExists(a))
+            attributes.put(a.getName(), a);
+        else
+            throw new AttributeAlreadyExistsException(a.getToken());
+    }
+
+    public void setConstructor(Constructor c) throws CompilerException {
+        if(!constructorExists())
+            constructor = c;
+        else
+            throw new ClassAlreadyHasConstructorException(c.getToken());
     }
 
     public String toString() {
