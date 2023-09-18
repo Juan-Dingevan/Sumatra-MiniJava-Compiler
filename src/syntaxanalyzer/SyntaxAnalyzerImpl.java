@@ -4,7 +4,9 @@ import exceptions.general.CompilerException;
 import exceptions.syntax.InvalidTokenFoundException;
 import exceptions.syntax.TokenMismatchException;
 import lexicalanalizer.LexicalAnalyzer;
+import symboltable.symbols.Symbol;
 import symboltable.symbols.classes.ConcreteClass;
+import symboltable.symbols.classes.Interface;
 import symboltable.table.SymbolTable;
 import token.Token;
 import token.TokenType;
@@ -449,7 +451,14 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
     private void interfaceNT() throws CompilerException {
         printIfDebug("->InterfaceNT");
         match(TokenType.reserved_word_interface);
+
+        Token classDeclarationToken = currentToken;
+
         match(TokenType.id_class);
+
+        Interface i = new Interface(classDeclarationToken);
+        SymbolTable.getInstance().addInterface(i);
+
         optionalGenerics();
         optionalExtends();
         match(TokenType.punctuation_open_curly);
@@ -462,7 +471,14 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         //RULE: <optional_inheritance> ::= rw_extends id_class
         if(currentTokenIn(new TokenType[]{TokenType.reserved_word_extends})) {
             match(TokenType.reserved_word_extends);
+
+            Token extensionToken = currentToken;
+
             match(TokenType.id_class);
+
+            Interface i = SymbolTable.getInstance().getCurrentInterface();
+            i.setInheritance(extensionToken);
+
             optionalGenerics();
         }
         //RULE <optional_inheritance> ::= epsilon

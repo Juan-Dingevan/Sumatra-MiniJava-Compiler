@@ -13,6 +13,7 @@ public class SymbolTable {
     protected HashMap<String, ConcreteClass> classes;
     protected HashMap<String, Interface> interfaces;
     protected ConcreteClass currentConcreteClass;
+    protected Interface currentInterface;
 
 
     public static SymbolTable getInstance() {
@@ -22,10 +23,15 @@ public class SymbolTable {
         return instance;
     }
 
+    public static void resetInstance() {
+        instance = null;
+    }
+
     private SymbolTable() {
         classes = new HashMap<>();
         interfaces = new HashMap<>();
         currentConcreteClass = null;
+        currentInterface = null;
     }
     public ConcreteClass getClass(String name) {
         return classes.get(name);
@@ -37,6 +43,10 @@ public class SymbolTable {
 
     public Interface getInterface(String name) {
         return interfaces.get(name);
+    }
+
+    public Interface getCurrentInterface() {
+        return currentInterface;
     }
 
     public boolean exists(String name) {
@@ -53,7 +63,12 @@ public class SymbolTable {
     }
 
     public void addInterface(Interface i) throws CompilerException {
-
+        if(!exists(i.getName())) {
+            interfaces.put(i.getName(), i);
+            currentInterface = i;
+        } else {
+            throw new ClassAlreadyExistsException(i.getToken());
+        }
     }
 
     public String toString() {

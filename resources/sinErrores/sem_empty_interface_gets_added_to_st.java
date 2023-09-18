@@ -1,0 +1,4 @@
+///[SinErrores]
+interface I {
+
+}

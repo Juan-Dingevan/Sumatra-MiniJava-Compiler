@@ -53,6 +53,7 @@ public abstract class UserInterfaceImpl implements UserInterface{
 
         System.out.println();
         System.out.println(SymbolTable.getInstance());
+        SymbolTable.resetInstance();
 
         System.out.println();
         System.out.println("--- Successfully compiled " + sourceManager.getLineNumber() +

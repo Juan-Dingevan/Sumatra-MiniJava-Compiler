@@ -25,7 +25,7 @@ public class Interface extends Class {
 
     public String toString() {
         String prefix = StringUtilities.getDashesForDepth(LEVEL);
-        String s = prefix + "INTERFACE{"+instanceID+"}:" + getName() + " EXTENDS: " + instanceID;
+        String s = prefix + "INTERFACE{"+instanceID+"}: " + getName() + " EXTENDS: " + inheritsFrom + "\n";
 
         s+="METHOD HEADERS:\n";
 
