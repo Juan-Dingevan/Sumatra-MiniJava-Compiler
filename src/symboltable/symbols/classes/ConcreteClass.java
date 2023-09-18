@@ -1,37 +1,52 @@
-package symboltable.members;
+package symboltable.symbols.classes;
 
+import symboltable.symbols.members.Attribute;
+import symboltable.symbols.members.Constructor;
+import symboltable.symbols.members.Method;
+import token.Token;
 import utility.StringUtilities;
 
 import java.util.HashMap;
 
-public class Class {
+public class ConcreteClass extends Class {
     private static int classID = 0;
     private static final int LEVEL = 1;
 
     protected int instanceID;
     protected HashMap<String, Attribute> attributes;
     protected HashMap<String, Method> methods;
-    protected HashMap<String, Constructor> constructors;
-    protected String inheritsFrom;
+    protected Constructor constructor;
+    protected Method currentMethod;
+    protected Token token;
     protected String implementsInterface;
-    protected String name;
 
-    public Class(String name) {
+    public ConcreteClass(Token t) {
+        super(t);
+
         instanceID = classID;
 
         attributes = new HashMap<>();
         methods = new HashMap<>();
-        constructors = new HashMap<>();
 
-        inheritsFrom = "";
+        currentMethod = null;
+        constructor = null;
+
         implementsInterface = "";
-
-        this.name = name;
 
         classID++;
     }
 
+    public Method getCurrentMethod() {
+        return currentMethod;
+    }
+
+
+    public void setImplements(Token t) {
+        implementsInterface = t.getLexeme();
+    }
+
     public String toString() {
+        String name = this.getName();
         String prefix = StringUtilities.getDashesForDepth(LEVEL);
         String s = prefix + "CLASS{" + instanceID + "}: " + name + " EXTENDS: " + inheritsFrom + " IMPLEMENTS: " + implementsInterface + "\n";
 
@@ -45,15 +60,8 @@ public class Class {
         for(Method m : methods.values())
             s += m.toString() + "\n";
 
-        s += prefix + "CONSTRUCTORS:\n";
-
-        for(Constructor c : constructors.values())
-            s += c.toString() + "\n";
+        s += prefix + "CONSTRUCTOR: " + (constructor == null ? "" : constructor.toString()) + "\n";
 
         return s;
-    }
-
-    public String getName() {
-        return name;
     }
 }

@@ -10,6 +10,7 @@ import lexicalanalizer.LexicalAnalyzer;
 import lexicalanalizer.LexicalAnalyzerImpl;
 import sourcemanager.SourceManager;
 import sourcemanager.SourceManagerImpl;
+import symboltable.table.SymbolTable;
 import syntaxanalyzer.SyntaxAnalyzer;
 import syntaxanalyzer.SyntaxAnalyzerImpl;
 import utility.StringUtilities;
@@ -49,6 +50,9 @@ public abstract class UserInterfaceImpl implements UserInterface{
 
         long finishingTimeInMillis = System.currentTimeMillis();
         long millisSpentCompiling = finishingTimeInMillis - startingTimeInMillis;
+
+        System.out.println();
+        System.out.println(SymbolTable.getInstance());
 
         System.out.println();
         System.out.println("--- Successfully compiled " + sourceManager.getLineNumber() +

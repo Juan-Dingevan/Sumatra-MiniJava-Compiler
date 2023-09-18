@@ -1,9 +1,10 @@
 package token;
 
 public class Token {
-    private TokenType tokenType;
-    private String lexeme;
-    private int lineNumber;
+    public static final Token OBJECT_TOKEN = new Token(TokenType.id_class, "Object", -1);
+    private final TokenType tokenType;
+    private final String lexeme;
+    private final int lineNumber;
 
     public Token(TokenType tokenType, String lexeme, int lineNumber) {
         this.tokenType = tokenType;

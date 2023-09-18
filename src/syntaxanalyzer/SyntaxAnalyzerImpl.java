@@ -4,6 +4,8 @@ import exceptions.general.CompilerException;
 import exceptions.syntax.InvalidTokenFoundException;
 import exceptions.syntax.TokenMismatchException;
 import lexicalanalizer.LexicalAnalyzer;
+import symboltable.symbols.classes.ConcreteClass;
+import symboltable.table.SymbolTable;
 import token.Token;
 import token.TokenType;
 
@@ -82,7 +84,14 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
     private void concreteClass() throws CompilerException {
         printIfDebug("->ConcreteClass");
         match(TokenType.reserved_word_class);
+
+        Token classDeclarationToken = currentToken;
+
         match(TokenType.id_class);
+
+        ConcreteClass c = new ConcreteClass(classDeclarationToken);
+        SymbolTable.getInstance().addClass(c);
+
         optionalGenerics();
         optionalInheritance();
         match(TokenType.punctuation_open_curly);
@@ -99,9 +108,15 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         //RULE <optional_inheritance> ::= <implements>
         else if(currentTokenIn(new TokenType[]{TokenType.reserved_word_implements})) {
             implementsNT();
+
+            ConcreteClass c = SymbolTable.getInstance().getCurrentClass();
+            c.setInheritance(Token.OBJECT_TOKEN);
         }
         //RULE <optional_inheritance> ::= epsilon
-        //We do nothing.
+        else {
+            ConcreteClass c = SymbolTable.getInstance().getCurrentClass();
+            c.setInheritance(Token.OBJECT_TOKEN);
+        }
     }
 
     private void optionalGenerics() throws CompilerException {
@@ -147,14 +162,28 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
     private void inheritsFrom() throws CompilerException {
         printIfDebug("->InheritsFrom");
         match(TokenType.reserved_word_extends);
+
+        Token inheritanceToken = currentToken;
+
         match(TokenType.id_class);
+
+        ConcreteClass c = SymbolTable.getInstance().getCurrentClass();
+        c.setInheritance(inheritanceToken);
+
         optionalGenerics();
     }
 
     private void implementsNT() throws CompilerException {
         printIfDebug("->ImplementsNT");
         match(TokenType.reserved_word_implements);
+
+        Token implementationToken = currentToken;
+
         match(TokenType.id_class);
+
+        ConcreteClass c = SymbolTable.getInstance().getCurrentClass();
+        c.setImplements(implementationToken);
+
         optionalGenerics();
     }
 

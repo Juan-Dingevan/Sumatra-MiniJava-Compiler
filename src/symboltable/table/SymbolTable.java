@@ -1,17 +1,18 @@
 package symboltable.table;
 
 import java.util.HashMap;
-import symboltable.members.Class;
-import symboltable.members.Interface;
-import symboltable.members.Method;
+
+import exceptions.general.CompilerException;
+import exceptions.semantical.ClassAlreadyExistsException;
+import symboltable.symbols.classes.ConcreteClass;
+import symboltable.symbols.classes.Interface;
 
 public class SymbolTable {
     private static SymbolTable instance;
 
-    protected HashMap<String, Class> classes;
+    protected HashMap<String, ConcreteClass> classes;
     protected HashMap<String, Interface> interfaces;
-    protected Class currentClass;
-    protected Method currentMethod;
+    protected ConcreteClass currentConcreteClass;
 
 
     public static SymbolTable getInstance() {
@@ -24,19 +25,50 @@ public class SymbolTable {
     private SymbolTable() {
         classes = new HashMap<>();
         interfaces = new HashMap<>();
-        currentClass = null;
-        currentMethod = null;
+        currentConcreteClass = null;
     }
-    public Class getClass(String name) {
+    public ConcreteClass getClass(String name) {
         return classes.get(name);
+    }
+
+    public ConcreteClass getCurrentClass() {
+        return currentConcreteClass;
     }
 
     public Interface getInterface(String name) {
         return interfaces.get(name);
     }
 
-    public void addClass(Class c) {
-        classes.put(c.getName(), c);
-        currentClass = c;
+    public boolean exists(String name) {
+        return getClass(name) != null || getInterface(name) != null;
+    }
+
+    public void addClass(ConcreteClass c) throws CompilerException {
+        if(!exists(c.getName())) {
+            classes.put(c.getName(), c);
+            currentConcreteClass = c;
+        } else {
+            throw new ClassAlreadyExistsException(c.getToken());
+        }
+    }
+
+    public void addInterface(Interface i) throws CompilerException {
+
+    }
+
+    public String toString() {
+        String s = "SYMBOL TABLE:\n";
+
+        s += "CLASSES:\n";
+
+        for(ConcreteClass c : classes.values())
+            s += c.toString() + "\n";
+
+        s += "INTERFACES:\n";
+
+        for(Interface i : interfaces.values())
+            s += i.toString() + "\n";
+
+        return s;
     }
 }

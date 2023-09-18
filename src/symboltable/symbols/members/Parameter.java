@@ -1,4 +1,4 @@
-package symboltable.members;
+package symboltable.symbols.members;
 
 import symboltable.types.Type;
 import utility.StringUtilities;

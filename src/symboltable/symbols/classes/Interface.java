@@ -1,33 +1,31 @@
-package symboltable.members;
+package symboltable.symbols.classes;
 
+import symboltable.symbols.members.Method;
+import token.Token;
 import utility.StringUtilities;
 
 import java.util.HashMap;
 
-public class Interface {
+public class Interface extends Class {
     private static int classID = 0;
     private static final int LEVEL = 1;
 
     protected int instanceID;
     protected HashMap<String, Method> methods;
-    protected String name;
-    protected String inheritsFrom;
 
-    public Interface(String name) {
+    public Interface(Token t) {
+        super(t);
+
         instanceID = classID;
 
         methods = new HashMap<>();
-
-        inheritsFrom = "";
-
-        this.name = name;
 
         classID++;
     }
 
     public String toString() {
         String prefix = StringUtilities.getDashesForDepth(LEVEL);
-        String s = prefix + "INTERFACE{"+instanceID+"}:" + name + " EXTENDS: " + instanceID;
+        String s = prefix + "INTERFACE{"+instanceID+"}:" + getName() + " EXTENDS: " + instanceID;
 
         s+="METHOD HEADERS:\n";
 
