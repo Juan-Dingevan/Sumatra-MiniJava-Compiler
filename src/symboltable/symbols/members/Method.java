@@ -12,12 +12,21 @@ public class Method extends Unit{
 
     protected int instanceID;
     protected Type returnType;
+    protected boolean isStatic;
 
     public Method(Token t) {
         super(t);
 
         instanceID = classID;
         classID++;
+    }
+
+    public boolean isStatic() {
+        return isStatic;
+    }
+
+    public void setStatic(boolean isStatic) {
+        this.isStatic = isStatic;
     }
 
     public void setReturnType(Type type) {
