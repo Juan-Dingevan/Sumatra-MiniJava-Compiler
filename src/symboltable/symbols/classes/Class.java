@@ -35,9 +35,10 @@ public abstract class Class extends Symbol {
     }
 
     public void addMethod(Method m) throws CompilerException {
-        if(!methodExists(m))
+        if(!methodExists(m)) {
             methods.put(m.getName(), m);
-        else
+            currentMethod = m;
+        } else
             throw new MethodAlreadyExistsException(m.getToken());
     }
 }

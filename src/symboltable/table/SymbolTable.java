@@ -6,6 +6,7 @@ import exceptions.general.CompilerException;
 import exceptions.semantical.ClassAlreadyExistsException;
 import symboltable.symbols.classes.ConcreteClass;
 import symboltable.symbols.classes.Interface;
+import symboltable.symbols.classes.Class;
 
 public class SymbolTable {
     private static SymbolTable instance;
@@ -14,6 +15,7 @@ public class SymbolTable {
     protected HashMap<String, Interface> interfaces;
     protected ConcreteClass currentConcreteClass;
     protected Interface currentInterface;
+    protected Class currentClass;
 
 
     public static SymbolTable getInstance() {
@@ -37,8 +39,12 @@ public class SymbolTable {
         return classes.get(name);
     }
 
-    public ConcreteClass getCurrentClass() {
+    public ConcreteClass getCurrentConcreteClass() {
         return currentConcreteClass;
+    }
+
+    public Class getCurrentClassOrInterface() {
+        return currentClass;
     }
 
     public Interface getInterface(String name) {
@@ -57,6 +63,7 @@ public class SymbolTable {
         if(!exists(c.getName())) {
             classes.put(c.getName(), c);
             currentConcreteClass = c;
+            currentClass = c;
         } else {
             throw new ClassAlreadyExistsException(c.getToken());
         }
@@ -66,6 +73,7 @@ public class SymbolTable {
         if(!exists(i.getName())) {
             interfaces.put(i.getName(), i);
             currentInterface = i;
+            currentClass = i;
         } else {
             throw new ClassAlreadyExistsException(i.getToken());
         }

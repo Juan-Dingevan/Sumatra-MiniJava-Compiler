@@ -8,6 +8,7 @@ import symboltable.privacy.Privacy;
 import symboltable.symbols.members.Attribute;
 import symboltable.symbols.members.Constructor;
 import symboltable.symbols.members.Method;
+import symboltable.symbols.members.Parameter;
 import symboltable.types.*;
 import symboltable.symbols.classes.ConcreteClass;
 import symboltable.symbols.classes.Interface;
@@ -116,12 +117,12 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         else if(currentTokenIn(new TokenType[]{TokenType.reserved_word_implements})) {
             implementsNT();
 
-            ConcreteClass c = SymbolTable.getInstance().getCurrentClass();
+            ConcreteClass c = SymbolTable.getInstance().getCurrentConcreteClass();
             c.setInheritance(Token.OBJECT_TOKEN);
         }
         //RULE <optional_inheritance> ::= epsilon
         else {
-            ConcreteClass c = SymbolTable.getInstance().getCurrentClass();
+            ConcreteClass c = SymbolTable.getInstance().getCurrentConcreteClass();
             c.setInheritance(Token.OBJECT_TOKEN);
         }
     }
@@ -174,7 +175,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         match(TokenType.id_class);
 
-        ConcreteClass c = SymbolTable.getInstance().getCurrentClass();
+        ConcreteClass c = SymbolTable.getInstance().getCurrentConcreteClass();
         c.setInheritance(inheritanceToken);
 
         optionalGenerics();
@@ -188,7 +189,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         match(TokenType.id_class);
 
-        ConcreteClass c = SymbolTable.getInstance().getCurrentClass();
+        ConcreteClass c = SymbolTable.getInstance().getCurrentConcreteClass();
         c.setImplements(implementationToken);
 
         optionalGenerics();
@@ -256,7 +257,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
             Constructor c = new Constructor(idClassToken);
             c.setPrivacy(currentMemberPrivacy);
 
-            SymbolTable.getInstance().getCurrentClass().setConstructor(c);
+            SymbolTable.getInstance().getCurrentConcreteClass().setConstructor(c);
 
             formalArguments();
             block();
@@ -409,7 +410,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         a.setStatic(staticity);
         a.setType(type);
 
-        SymbolTable.getInstance().getCurrentClass().addAttribute(a);
+        SymbolTable.getInstance().getCurrentConcreteClass().addAttribute(a);
 
         // RULE <attribute_successor> ::= , <id_method_variable><attribute_successor>
         if(currentTokenIn(new TokenType[]{TokenType.punctuation_comma})) {
@@ -447,7 +448,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         m.setStatic(staticity);
         m.setReturnType(type);
 
-        SymbolTable.getInstance().getCurrentClass().addMethod(m);
+        SymbolTable.getInstance().getCurrentConcreteClass().addMethod(m);
 
         // RULE <method_successor> ::= <formal_arguments><block>
         formalArguments();
@@ -479,8 +480,15 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
     private void formalArgument() throws CompilerException {
         printIfDebug("->FormalArgument");
-        type();
+        Type type = type();
+
+        Token declarationToken = currentToken;
+
         match(TokenType.id_method_variable);
+
+        Parameter p = new Parameter(declarationToken);
+        p.setType(type);
+        SymbolTable.getInstance().getCurrentClassOrInterface().getCurrentMethod().addParameter(p);
     }
 
     private void formalArgumentListSuccessor() throws CompilerException {
