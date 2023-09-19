@@ -502,14 +502,6 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         // We do nothing
     }
 
-    private void constructorNT() throws CompilerException {
-        printIfDebug("->ConstructorNT");
-        match(TokenType.reserved_word_public);
-        match(TokenType.id_class);
-        formalArguments();
-        block();
-    }
-
     private void interfaceNT() throws CompilerException {
         printIfDebug("->InterfaceNT");
         match(TokenType.reserved_word_interface);
