@@ -3,7 +3,6 @@ package symboltable.symbols.classes;
 import exceptions.general.CompilerException;
 import exceptions.semantical.AttributeAlreadyExistsException;
 import exceptions.semantical.ClassAlreadyHasConstructorException;
-import exceptions.semantical.MethodAlreadyExistsException;
 import symboltable.symbols.members.Attribute;
 import symboltable.symbols.members.Constructor;
 import symboltable.symbols.members.Method;
@@ -57,6 +56,16 @@ public class ConcreteClass extends Class {
             constructor = c;
         else
             throw new ClassAlreadyHasConstructorException(c.getToken());
+    }
+
+    public void checkDeclaration() throws CompilerException{
+        for(Attribute a : attributes.values())
+            a.checkDeclaration();
+
+        for(Method m : methods.values())
+            m.checkDeclaration();
+
+        constructor.checkDeclaration();
     }
 
     public String toString() {

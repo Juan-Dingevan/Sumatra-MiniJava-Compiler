@@ -1,5 +1,6 @@
 package symboltable.symbols;
 
+import exceptions.general.CompilerException;
 import token.Token;
 
 public abstract class Symbol {
@@ -15,4 +16,5 @@ public abstract class Symbol {
     public Token getToken() {
         return token;
     }
+    public abstract void checkDeclaration() throws CompilerException;
 }

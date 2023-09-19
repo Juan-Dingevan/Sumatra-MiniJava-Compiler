@@ -15,6 +15,7 @@ import symboltable.symbols.classes.Interface;
 import symboltable.table.SymbolTable;
 import symboltable.types.Void;
 import token.Token;
+import token.TokenConstants;
 import token.TokenType;
 
 import java.util.Arrays;
@@ -118,12 +119,12 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
             implementsNT();
 
             ConcreteClass c = SymbolTable.getInstance().getCurrentConcreteClass();
-            c.setInheritance(Token.OBJECT_TOKEN);
+            c.setInheritance(TokenConstants.OBJECT_TOKEN);
         }
         //RULE <optional_inheritance> ::= epsilon
         else {
             ConcreteClass c = SymbolTable.getInstance().getCurrentConcreteClass();
-            c.setInheritance(Token.OBJECT_TOKEN);
+            c.setInheritance(TokenConstants.OBJECT_TOKEN);
         }
     }
 

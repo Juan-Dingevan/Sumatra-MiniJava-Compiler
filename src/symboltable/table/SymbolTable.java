@@ -32,8 +32,14 @@ public class SymbolTable {
     private SymbolTable() {
         classes = new HashMap<>();
         interfaces = new HashMap<>();
-        currentConcreteClass = null;
-        currentInterface = null;
+
+        try {
+            addClass(DefaultClassesSetUpHandler.getString());
+            addClass(DefaultClassesSetUpHandler.getSystem());
+            addClass(DefaultClassesSetUpHandler.getObject());
+        } catch(CompilerException ex) {
+            //this will never happen.
+        }
     }
     public ConcreteClass getClass(String name) {
         return classes.get(name);
@@ -76,6 +82,17 @@ public class SymbolTable {
             currentClass = i;
         } else {
             throw new ClassAlreadyExistsException(i.getToken());
+        }
+    }
+
+    public void checkDeclaration() throws CompilerException {
+
+        for(Class c : classes.values()) {
+            c.checkDeclaration();
+        }
+
+        for(Interface i : interfaces.values()) {
+            i.checkDeclaration();
         }
     }
 

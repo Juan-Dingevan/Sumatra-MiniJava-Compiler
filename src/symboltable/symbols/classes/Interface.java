@@ -1,5 +1,6 @@
 package symboltable.symbols.classes;
 
+import exceptions.general.CompilerException;
 import symboltable.symbols.members.Method;
 import token.Token;
 import utility.StringUtilities;
@@ -11,7 +12,6 @@ public class Interface extends Class {
     private static final int LEVEL = 1;
 
     protected int instanceID;
-    protected HashMap<String, Method> methods;
 
     public Interface(Token t) {
         super(t);
@@ -21,6 +21,12 @@ public class Interface extends Class {
         methods = new HashMap<>();
 
         classID++;
+    }
+
+    @Override
+    public void checkDeclaration() throws CompilerException {
+        for(Method m : methods.values())
+            m.checkDeclaration();
     }
 
     public String toString() {

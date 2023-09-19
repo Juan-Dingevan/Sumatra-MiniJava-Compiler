@@ -14,6 +14,11 @@ public abstract class Unit extends Member{
         parameters = new HashMap<>();
     }
 
+    public void checkDeclaration() throws CompilerException {
+        for(Parameter p : parameters.values())
+            p.checkDeclaration();
+    }
+
     protected boolean exists(Parameter p) {
         return parameters.get(p.getName()) != null;
     }

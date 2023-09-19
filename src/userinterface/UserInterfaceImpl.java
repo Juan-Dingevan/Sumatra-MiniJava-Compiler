@@ -32,6 +32,7 @@ public abstract class UserInterfaceImpl implements UserInterface{
 
         try {
             syntaxAnalyzer.analyze();
+            SymbolTable.getInstance().checkDeclaration();
         } catch(LexicalException ex) {
             exceptionHandler.handleLexicalException(ex);
         } catch(SyntaxException ex) {

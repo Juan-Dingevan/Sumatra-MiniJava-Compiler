@@ -1,12 +1,17 @@
 package symboltable.symbols.members;
 
+import exceptions.general.CompilerException;
+import exceptions.semantical.InvalidTypeException;
+import exceptions.semantical.UndeclaredTypeException;
+import symboltable.table.SymbolTable;
+import symboltable.types.ReferenceType;
 import symboltable.types.Type;
 import token.Token;
 import utility.StringUtilities;
 
 import java.util.HashMap;
 
-public class Method extends Unit{
+public class Method extends Unit {
     private static int classID = 0;
     private static final int LEVEL = 2;
 
@@ -19,6 +24,17 @@ public class Method extends Unit{
 
         instanceID = classID;
         classID++;
+    }
+
+    @Override
+    public void checkDeclaration() throws CompilerException {
+        if(Type.isReferenceType(returnType)) {
+            ReferenceType rt = (ReferenceType) returnType;
+            if(!SymbolTable.getInstance().exists(rt.getReferenceName()))
+                throw new UndeclaredTypeException(token, returnType);
+        }
+
+        super.checkDeclaration();
     }
 
     public boolean isStatic() {

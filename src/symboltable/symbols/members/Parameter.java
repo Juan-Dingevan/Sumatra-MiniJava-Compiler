@@ -1,10 +1,15 @@
 package symboltable.symbols.members;
 
+import exceptions.general.CompilerException;
+import exceptions.semantical.InvalidTypeException;
+import exceptions.semantical.UndeclaredTypeException;
+import symboltable.table.SymbolTable;
+import symboltable.types.ReferenceType;
 import symboltable.types.Type;
 import token.Token;
 import utility.StringUtilities;
 
-public class Parameter extends TypedEntity{
+public class Parameter extends TypedEntity {
     private static int classID = 0;
     private static final int LEVEL = 3;
     protected int instanceID;
@@ -13,6 +18,18 @@ public class Parameter extends TypedEntity{
         super(t);
         instanceID = classID;
         classID++;
+    }
+
+    @Override
+    public void checkDeclaration() throws CompilerException {
+        if(Type.isVoid(type))
+            throw new InvalidTypeException(token, type);
+
+        if(Type.isReferenceType(type)) {
+            ReferenceType rt = (ReferenceType) type;
+            if(!SymbolTable.getInstance().exists(rt.getReferenceName()))
+                throw new UndeclaredTypeException(token, type);
+        }
     }
 
     public String toString() {
