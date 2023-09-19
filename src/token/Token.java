@@ -1,7 +1,6 @@
 package token;
 
 public class Token {
-    public static final Token OBJECT_TOKEN = new Token(TokenType.id_class, "Object", -1);
     private final TokenType tokenType;
     private final String lexeme;
     private final int lineNumber;
