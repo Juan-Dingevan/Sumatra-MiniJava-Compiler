@@ -13,3 +13,15 @@ class Hija extends Padre {
 
     private int metodoHija(String s) {}
 }
+
+interface AbueloI {
+    void metodoAbueloI(int x);
+}
+
+interface PadreI extends AbueloI{
+    void metodoPadreI();
+}
+
+interface HijaI extends PadreI {
+    void metodoHijaI(Object o);
+}

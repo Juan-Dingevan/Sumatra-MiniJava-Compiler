@@ -62,10 +62,10 @@ public class Interface extends Class {
         String prefix = StringUtilities.getDashesForDepth(LEVEL);
         String s = prefix + "INTERFACE{"+instanceID+"}: " + getName() + " EXTENDS: " + inheritsFrom + "\n";
 
-        s+="METHOD HEADERS:\n";
+        s+= prefix + "METHOD HEADERS:\n";
 
         for(Method m : methods.values())
-            s += m.toString() + "\n";
+            s += m.toString();
 
         return s;
     }
