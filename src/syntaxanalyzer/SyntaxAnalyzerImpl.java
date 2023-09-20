@@ -20,6 +20,8 @@ import token.TokenType;
 
 import java.util.Arrays;
 
+import static symboltable.privacy.Privacy.pub;
+
 public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
     private static final boolean DEBUG = true;
     private final LexicalAnalyzer lexicalAnalyzer;
@@ -295,12 +297,12 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         //RULE: <optional_privacy> ::= public
         else if(currentTokenIn(new TokenType[]{TokenType.reserved_word_public})){
             match(TokenType.reserved_word_public);
-            return Privacy.pub;
+            return pub;
         }
 
         //RULE: <optional_privacy> ::= epsilon
         //Since by default a member is public, we return public
-        return Privacy.pub;
+        return pub;
     }
 
     private boolean optionalStatic() throws CompilerException {
@@ -560,9 +562,21 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
     private void methodHeader() throws CompilerException {
         printIfDebug("->MethodHeader");
-        optionalStatic();
-        memberType();
+
+        boolean staticity = optionalStatic();
+        Type type = memberType();
+
+        Token declarationToken = currentToken;
+
         match(TokenType.id_method_variable);
+
+        Method m = new Method(declarationToken);
+        m.setPrivacy(pub);
+        m.setReturnType(type);
+        m.setStatic(staticity);
+
+        SymbolTable.getInstance().getCurrentInterface().addMethod(m);
+
         formalArguments();
         match(TokenType.punctuation_semicolon);
     }

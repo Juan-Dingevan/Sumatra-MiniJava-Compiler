@@ -12,6 +12,7 @@ public class IncorrectlyOverwrittenMethodException extends SemanticException{
     @Override
     protected String getSpecificMessage() {
         return "The method " + lexeme + " in class " + classToken.getLexeme()
-                + " (declared in line " + lineNumber + ") is incorrectly overwritten.";
+                + " (declared in line " + lineNumber + ") is incorrectly overwritten from ancestor."
+                + " Overwritten methods should have the exact same signature (save for order of parameters).";
     }
 }
