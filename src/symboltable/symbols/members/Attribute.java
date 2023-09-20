@@ -16,6 +16,10 @@ public class Attribute extends TypedEntity {
     protected int instanceID;
     protected boolean isStatic;
 
+    public static void resetID() {
+        classID = 0;
+    }
+
     public Attribute(Token t) {
         super(t);
 

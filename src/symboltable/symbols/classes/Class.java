@@ -37,6 +37,9 @@ public abstract class Class extends Symbol {
     protected Method getMethod(String name) {
         return methods.get(name);
     }
+    public Iterable<Method> getMethods() {
+        return methods.values();
+    }
 
     public void addMethod(Method m) throws CompilerException {
         if(!methodExists(m)) {

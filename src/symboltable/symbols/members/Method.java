@@ -20,6 +20,10 @@ public class Method extends Unit {
     protected Type returnType;
     protected boolean isStatic;
 
+    public static void resetID() {
+        classID = 0;
+    }
+
     public Method(Token t) {
         super(t);
 

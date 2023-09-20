@@ -1,10 +1,7 @@
 package symboltable.symbols.classes;
 
 import exceptions.general.CompilerException;
-import exceptions.semantical.AttributeAlreadyExistsException;
-import exceptions.semantical.ClassAlreadyHasConstructorException;
-import exceptions.semantical.IncorrectlyOverwrittenMethodException;
-import exceptions.semantical.OverwrittenAttributeException;
+import exceptions.semantical.*;
 import symboltable.symbols.members.Attribute;
 import symboltable.symbols.members.Constructor;
 import symboltable.symbols.members.Method;
@@ -24,6 +21,10 @@ public class ConcreteClass extends Class {
     protected HashMap<String, Attribute> attributes;
     protected Constructor constructor;
     protected String implementsInterface;
+
+    public static void resetID() {
+        classID = 0;
+    }
 
     public ConcreteClass(Token t) {
         super(t);
@@ -100,14 +101,24 @@ public class ConcreteClass extends Class {
                     throw new IncorrectlyOverwrittenMethodException(childMethod.getToken(), getToken());
             }
         }
+
+        if(!implementsInterface.equals("")) {
+            Interface implementedInterface = SymbolTable.getInstance().getInterface(implementsInterface);
+            implementedInterface.consolidate();
+
+            for(Method interfaceMethod : implementedInterface.getMethods())
+                if(methodExists(interfaceMethod)) {
+                    Method implementedMethod = getMethod(interfaceMethod.getName());
+                    if(!implementedMethod.hasSameSignature(interfaceMethod))
+                        throw new IncorrectlyOverwrittenMethodException(implementedMethod.getToken(), getToken());
+                } else {
+                    throw new UnimplementedMethodException(interfaceMethod.getToken(), implementedInterface.getToken());
+                }
+        }
     }
 
     public Iterable<Attribute> getAttributes() {
         return attributes.values();
-    }
-
-    public Iterable<Method> getMethods() {
-        return methods.values();
     }
 
     public String toString() {

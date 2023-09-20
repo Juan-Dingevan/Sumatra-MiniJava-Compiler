@@ -15,6 +15,10 @@ public class Parameter extends TypedEntity {
     private static final int LEVEL = 3;
     protected int instanceID;
 
+    public static void resetID() {
+        classID = 0;
+    }
+
     public Parameter(Token t) {
         super(t);
         instanceID = classID;

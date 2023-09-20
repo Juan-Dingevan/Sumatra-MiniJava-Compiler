@@ -7,6 +7,9 @@ import exceptions.semantical.ClassAlreadyExistsException;
 import symboltable.symbols.classes.ConcreteClass;
 import symboltable.symbols.classes.Interface;
 import symboltable.symbols.classes.Class;
+import symboltable.symbols.members.Attribute;
+import symboltable.symbols.members.Method;
+import symboltable.symbols.members.Parameter;
 
 public class SymbolTable {
     private static SymbolTable instance;
@@ -27,6 +30,10 @@ public class SymbolTable {
 
     public static void resetInstance() {
         instance = null;
+        ConcreteClass.resetID();
+        Attribute.resetID();
+        Method.resetID();
+        Parameter.resetID();
     }
 
     private SymbolTable() {
