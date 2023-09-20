@@ -24,7 +24,7 @@ public class Constructor extends Unit {
 
         s += prefix + "PARAMETERS:\n";
 
-        for(Parameter p : parameters.values())
+        for(Parameter p : parameterMap.values())
             s += p.toString() + "\n";
 
         return s;

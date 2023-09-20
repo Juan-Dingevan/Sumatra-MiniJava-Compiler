@@ -4,34 +4,39 @@ import exceptions.general.CompilerException;
 import exceptions.semantical.ParameterAlreadyExistsException;
 import token.Token;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 public abstract class Unit extends Member{
 
-    protected HashMap<String, Parameter> parameters;
+    protected HashMap<String, Parameter> parameterMap;
+    protected List<Parameter> parameterList;
     public Unit(Token t) {
         super(t);
-        parameters = new HashMap<>();
+        parameterMap = new HashMap<>();
+        parameterList = new ArrayList<>();
     }
 
     public void checkDeclaration() throws CompilerException {
-        for(Parameter p : parameters.values())
+        for(Parameter p : parameterMap.values())
             p.checkDeclaration();
     }
 
     protected boolean exists(Parameter p) {
-        return parameters.get(p.getName()) != null;
+        return parameterMap.get(p.getName()) != null;
     }
 
     public void addParameter(Parameter p) throws CompilerException {
-        if(!exists(p))
-            parameters.put(p.getName(), p);
-        else
+        if(!exists(p)) {
+            parameterMap.put(p.getName(), p);
+            parameterList.add(p);
+        } else
             throw new ParameterAlreadyExistsException(p.getToken());
     }
 
-    public Collection<Parameter> getParameters() {
-        return parameters.values();
+    public List<Parameter> getParameters() {
+        return parameterList;
     }
 }
