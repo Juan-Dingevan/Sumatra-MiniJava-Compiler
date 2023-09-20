@@ -115,6 +115,9 @@ public class ConcreteClass extends Class {
                     throw new UnimplementedMethodException(interfaceMethod.getToken(), implementedInterface.getToken());
                 }
         }
+
+        if(!constructorExists())
+            setConstructor(Constructor.getDefaultConstructorForClass(this));
     }
 
     public Iterable<Attribute> getAttributes() {
