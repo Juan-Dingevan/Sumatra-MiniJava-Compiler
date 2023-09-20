@@ -64,7 +64,9 @@ public class ConcreteClass extends Class {
             throw new ClassAlreadyHasConstructorException(c.getToken());
     }
 
-    public void checkDeclaration() throws CompilerException{
+    public void checkDeclaration() throws CompilerException {
+        checkCircularInheritance();
+
         for(Attribute a : attributes.values())
             a.checkDeclaration();
 
@@ -75,6 +77,22 @@ public class ConcreteClass extends Class {
             constructor.checkDeclaration();
     }
 
+    @SuppressWarnings("ReassignedVariable")
+    protected void checkCircularInheritance() throws CircularInheritanceException{
+        ConcreteClass currentClass = this;
+
+        while(currentClass.getToken() != OBJECT_TOKEN) {
+            String parentName = currentClass.inheritsFrom;
+
+            if(getName().equals(parentName)) {
+                throw new CircularInheritanceException(getToken());
+            }
+
+            currentClass = SymbolTable.getInstance().getClass(parentName);
+        }
+
+    }
+
     @Override
     public void consolidate() throws CompilerException {
         if(token == OBJECT_TOKEN)
@@ -83,25 +101,16 @@ public class ConcreteClass extends Class {
         ConcreteClass parent = SymbolTable.getInstance().getClass(inheritsFrom);
         parent.consolidate();
 
-        for(Attribute parentAttribute : parent.getAttributes())
-            if(!attributeExists(parentAttribute)) {
-                addAttribute(parentAttribute);
-            } else {
-                Token rewrittenToken = attributes.get(parentAttribute.getName()).getToken();
-                Token originalToken = parentAttribute.getToken();
-                throw new OverwrittenAttributeException(rewrittenToken, originalToken);
-            }
+        addInheritedAttributes(parent);
+        addInheritedMethods(parent);
 
-        for(Method parentMethod : parent.getMethods()) {
-            if(!methodExists(parentMethod)) {
-                addMethod(parentMethod);
-            } else {
-                Method childMethod = getMethod(parentMethod.getName());
-                if(!childMethod.hasSameSignature(parentMethod))
-                    throw new IncorrectlyOverwrittenMethodException(childMethod.getToken(), getToken());
-            }
-        }
+        checkCorrectImplementationOfInterface();
 
+        if(!constructorExists())
+            setConstructor(Constructor.getDefaultConstructorForClass(this));
+    }
+
+    protected void checkCorrectImplementationOfInterface() throws CompilerException {
         if(!implementsInterface.equals("")) {
             Interface implementedInterface = SymbolTable.getInstance().getInterface(implementsInterface);
             implementedInterface.consolidate();
@@ -115,9 +124,30 @@ public class ConcreteClass extends Class {
                     throw new UnimplementedMethodException(interfaceMethod.getToken(), implementedInterface.getToken());
                 }
         }
+    }
 
-        if(!constructorExists())
-            setConstructor(Constructor.getDefaultConstructorForClass(this));
+    private void addInheritedMethods(ConcreteClass parent) throws CompilerException {
+        for(Method parentMethod : parent.getMethods()) {
+            if(!methodExists(parentMethod)) {
+                addMethod(parentMethod);
+            } else {
+                Method childMethod = getMethod(parentMethod.getName());
+                if(!childMethod.hasSameSignature(parentMethod))
+                    throw new IncorrectlyOverwrittenMethodException(childMethod.getToken(), getToken());
+            }
+        }
+    }
+
+    protected void addInheritedAttributes(ConcreteClass parent) throws CompilerException {
+        for(Attribute parentAttribute : parent.getAttributes()) {
+            if (!attributeExists(parentAttribute)) {
+                addAttribute(parentAttribute);
+            } else {
+                Token rewrittenToken = attributes.get(parentAttribute.getName()).getToken();
+                Token originalToken = parentAttribute.getToken();
+                throw new OverwrittenAttributeException(rewrittenToken, originalToken);
+            }
+        }
     }
 
     public Iterable<Attribute> getAttributes() {
