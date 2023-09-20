@@ -1,6 +1,13 @@
-///[SinErrores]
-class Clase {
-    void m1() {
-        Clase.staticMet();
+class MyClass {
+    int x;
+    static char c;
+    private String s = "pepe!";
+
+    MyClass() {
+
     }
+
+    int m1() {}
+    void m2() {}
+    static void doSomethingStatic(X x, int i) {}
 }

@@ -11,3 +11,7 @@ class MyClass {
     void m2() {}
     static void doSomethingStatic(X x, int i) {}
 }
+
+class X {
+
+}

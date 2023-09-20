@@ -65,7 +65,8 @@ public class ConcreteClass extends Class {
         for(Method m : methods.values())
             m.checkDeclaration();
 
-        constructor.checkDeclaration();
+        if(constructor != null)
+            constructor.checkDeclaration();
     }
 
     public String toString() {

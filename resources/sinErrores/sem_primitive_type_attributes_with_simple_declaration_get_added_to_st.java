@@ -26,11 +26,4 @@ class C {
     private static float a4float;
     private float a5float;
     float a6float;
-
-    public static void a1void;
-    public void a2void;
-    static void a3void;
-    private static void a4void;
-    private void a5void;
-    void a6void;
 }
