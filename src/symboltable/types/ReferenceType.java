@@ -14,4 +14,14 @@ public class ReferenceType extends Type{
     public String toString() {
         return "referenceType(" + referenceName + ")";
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof ReferenceType) {
+            ReferenceType rt = (ReferenceType) obj;
+            return referenceName.equals(rt.getReferenceName());
+        }
+
+        return false;
+    }
 }

@@ -6,4 +6,9 @@ public class SFloat extends PrimitiveType {
     public String toString() {
         return "float";
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof SFloat;
+    }
 }

@@ -29,6 +29,9 @@ public class Interface extends Class {
             m.checkDeclaration();
     }
 
+    @Override
+    public void consolidate() throws CompilerException {}
+
     public String toString() {
         String prefix = StringUtilities.getDashesForDepth(LEVEL);
         String s = prefix + "INTERFACE{"+instanceID+"}: " + getName() + " EXTENDS: " + inheritsFrom + "\n";

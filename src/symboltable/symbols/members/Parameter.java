@@ -4,6 +4,7 @@ import exceptions.general.CompilerException;
 import exceptions.semantical.InvalidTypeException;
 import exceptions.semantical.UndeclaredTypeException;
 import symboltable.table.SymbolTable;
+import symboltable.types.Char;
 import symboltable.types.ReferenceType;
 import symboltable.types.Type;
 import token.Token;
@@ -29,6 +30,16 @@ public class Parameter extends TypedEntity {
             ReferenceType rt = (ReferenceType) type;
             if(!SymbolTable.getInstance().exists(rt.getReferenceName()))
                 throw new UndeclaredTypeException(token, type);
+        }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Parameter) {
+            Parameter p = (Parameter) obj;
+            return getName().equals(p.getName()) && getType().equals(p.getType());
+        } else {
+            return false;
         }
     }
 

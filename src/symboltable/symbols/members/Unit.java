@@ -4,6 +4,7 @@ import exceptions.general.CompilerException;
 import exceptions.semantical.ParameterAlreadyExistsException;
 import token.Token;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 public abstract class Unit extends Member{
@@ -28,5 +29,9 @@ public abstract class Unit extends Member{
             parameters.put(p.getName(), p);
         else
             throw new ParameterAlreadyExistsException(p.getToken());
+    }
+
+    public Collection<Parameter> getParameters() {
+        return parameters.values();
     }
 }

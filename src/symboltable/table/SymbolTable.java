@@ -96,6 +96,17 @@ public class SymbolTable {
         }
     }
 
+    public void consolidate() throws CompilerException {
+
+        for(Class c : classes.values()) {
+            c.consolidate();
+        }
+
+        for(Interface i : interfaces.values()) {
+            i.consolidate();
+        }
+    }
+
     public String toString() {
         String s = "SYMBOL TABLE:\n";
 

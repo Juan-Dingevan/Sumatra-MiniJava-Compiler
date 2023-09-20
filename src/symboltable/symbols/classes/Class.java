@@ -34,6 +34,10 @@ public abstract class Class extends Symbol {
         return methods.get(m.getName()) != null;
     }
 
+    protected Method getMethod(String name) {
+        return methods.get(name);
+    }
+
     public void addMethod(Method m) throws CompilerException {
         if(!methodExists(m)) {
             methods.put(m.getName(), m);
@@ -41,4 +45,6 @@ public abstract class Class extends Symbol {
         } else
             throw new MethodAlreadyExistsException(m.getToken());
     }
+
+    public abstract void consolidate() throws CompilerException;
 }

@@ -7,6 +7,7 @@ import symboltable.table.SymbolTable;
 import symboltable.types.ReferenceType;
 import symboltable.types.Type;
 import token.Token;
+import utility.CollectionUtils;
 import utility.StringUtilities;
 
 import java.util.HashMap;
@@ -48,9 +49,18 @@ public class Method extends Unit {
     public void setReturnType(Type type) {
         this.returnType = type;
     }
-
     public Type getReturnType() {
         return returnType;
+    }
+
+    public boolean hasSameSignature(Method m) {
+        boolean sameName = getName().equals(m.getName());
+        boolean sameType = getReturnType().equals(m.getReturnType());
+        boolean sameStaticity = isStatic() == m.isStatic();
+        boolean samePrivacy = getPrivacy() == m.getPrivacy();
+        boolean sameParameters = CollectionUtils.haveSameElements(getParameters(), m.getParameters());
+
+        return sameParameters && sameType && samePrivacy && sameStaticity && sameName;
     }
 
     public String toString() {

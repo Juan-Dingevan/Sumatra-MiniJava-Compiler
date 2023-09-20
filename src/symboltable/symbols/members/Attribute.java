@@ -46,7 +46,7 @@ public class Attribute extends TypedEntity {
     public String toString() {
         String prefix = StringUtilities.getDashesForDepth(LEVEL);
         String s = prefix + "ATTRIBUTE{"+instanceID+"}: " + getName() + " TYPE: " + type
-                 + " STATIC: " + isStatic + " PRIVACY: " + privacy + "\n";
+                 + " STATIC: " + isStatic + " PRIVACY: " + privacy;
 
         return s;
     }

@@ -3,13 +3,18 @@ package symboltable.symbols.classes;
 import exceptions.general.CompilerException;
 import exceptions.semantical.AttributeAlreadyExistsException;
 import exceptions.semantical.ClassAlreadyHasConstructorException;
+import exceptions.semantical.IncorrectlyOverwrittenMethodException;
+import exceptions.semantical.OverwrittenAttributeException;
 import symboltable.symbols.members.Attribute;
 import symboltable.symbols.members.Constructor;
 import symboltable.symbols.members.Method;
+import symboltable.table.SymbolTable;
 import token.Token;
 import utility.StringUtilities;
 
 import java.util.HashMap;
+
+import static token.TokenConstants.OBJECT_TOKEN;
 
 public class ConcreteClass extends Class {
     private static int classID = 0;
@@ -69,6 +74,42 @@ public class ConcreteClass extends Class {
             constructor.checkDeclaration();
     }
 
+    @Override
+    public void consolidate() throws CompilerException {
+        if(token == OBJECT_TOKEN)
+            return;
+
+        ConcreteClass parent = SymbolTable.getInstance().getClass(inheritsFrom);
+        parent.consolidate();
+
+        for(Attribute parentAttribute : parent.getAttributes())
+            if(!attributeExists(parentAttribute)) {
+                addAttribute(parentAttribute);
+            } else {
+                Token rewrittenToken = attributes.get(parentAttribute.getName()).getToken();
+                Token originalToken = parentAttribute.getToken();
+                throw new OverwrittenAttributeException(rewrittenToken, originalToken);
+            }
+
+        for(Method parentMethod : parent.getMethods()) {
+            if(!methodExists(parentMethod)) {
+                addMethod(parentMethod);
+            } else {
+                Method childMethod = getMethod(parentMethod.getName());
+                if(!childMethod.hasSameSignature(parentMethod))
+                    throw new IncorrectlyOverwrittenMethodException(childMethod.getToken(), getToken());
+            }
+        }
+    }
+
+    public Iterable<Attribute> getAttributes() {
+        return attributes.values();
+    }
+
+    public Iterable<Method> getMethods() {
+        return methods.values();
+    }
+
     public String toString() {
         String name = this.getName();
         String prefix = StringUtilities.getDashesForDepth(LEVEL);
@@ -82,7 +123,7 @@ public class ConcreteClass extends Class {
         s += prefix + "METHODS:\n";
 
         for(Method m : methods.values())
-            s += m.toString() + "\n";
+            s += m.toString();
 
         s += prefix + "CONSTRUCTOR:\n";
         s += (constructor == null ? "" : constructor.toString());
