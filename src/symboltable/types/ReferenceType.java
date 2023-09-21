@@ -1,10 +1,15 @@
 package symboltable.types;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ReferenceType extends Type{
     String referenceName;
+    protected List<String> genericTypes;
 
     public ReferenceType(String referenceName) {
         this.referenceName = referenceName;
+        genericTypes = new ArrayList<>();
     }
 
     public String getReferenceName() {
@@ -12,7 +17,27 @@ public class ReferenceType extends Type{
     }
 
     public String toString() {
-        return "referenceType(" + referenceName + ")";
+        String s = "referenceType(" + referenceName + ")";
+
+        if(genericTypes.size() > 0)
+            s += "<";
+
+        for(String g : genericTypes)
+            s += g + ", ";
+
+        if(genericTypes.size() > 0) {
+            s = s.substring(0, s.length()-2);
+            s += ">";
+        }
+
+        return s;
+    }
+
+    public List<String> getGenericTypes() {
+        return genericTypes;
+    }
+    public void addGenericType(String genericType) {
+        genericTypes.add(genericType);
     }
 
     @Override

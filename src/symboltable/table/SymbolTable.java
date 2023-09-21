@@ -72,6 +72,14 @@ public class SymbolTable {
         return getClass(name) != null || getInterface(name) != null;
     }
 
+    public boolean concreteClassExists(String name) {
+        return getClass(name) != null;
+    }
+
+    public boolean interfaceExists(String name) {
+        return getInterface(name) != null;
+    }
+
     public void addClass(ConcreteClass c) throws CompilerException {
         if(!exists(c.getName())) {
             classes.put(c.getName(), c);

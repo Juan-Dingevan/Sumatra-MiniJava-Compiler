@@ -18,7 +18,9 @@ import token.Token;
 import token.TokenConstants;
 import token.TokenType;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static symboltable.privacy.Privacy.pub;
 
@@ -103,7 +105,9 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         ConcreteClass c = new ConcreteClass(classDeclarationToken);
         SymbolTable.getInstance().addClass(c);
 
-        optionalGenerics();
+        List<String> genericTypes = optionalGenerics();
+        SymbolTable.getInstance().getCurrentConcreteClass().setGenericTypes(genericTypes);
+
         optionalInheritance();
         match(TokenType.punctuation_open_curly);
         memberList();
@@ -130,40 +134,49 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         }
     }
 
-    private void optionalGenerics() throws CompilerException {
+    private List<String> optionalGenerics() throws CompilerException {
         printIfDebug("->OptionalGenerics");
+
+        List<String> genericTypes = new ArrayList<>();
 
         // RULE: <optional_generics> ::= < <generic_types_list> >
         if(currentTokenIn(new TokenType[]{TokenType.operand_lesser})) {
-            generics();
+            generics(genericTypes);
         }
 
         // RULE: <optional_generics> ::= epsilon
         // We do nothing
+
+        return genericTypes;
     }
 
-    private void generics() throws CompilerException {
+    private void generics(List<String> genericTypes) throws CompilerException {
         printIfDebug("->Generics");
 
         match(TokenType.operand_lesser);
-        genericTypesList();
+        genericTypesList(genericTypes);
         match(TokenType.operand_greater);
     }
 
-    private void genericTypesList() throws CompilerException {
+    private void genericTypesList(List<String> genericTypes) throws CompilerException {
         printIfDebug("->GenericTypesList");
 
+        Token declarationToken = currentToken;
+
         match(TokenType.id_class);
-        genericTypesListSuccessor();
+
+        genericTypes.add(declarationToken.getLexeme());
+
+        genericTypesListSuccessor(genericTypes);
     }
 
-    private void genericTypesListSuccessor() throws CompilerException {
+    private void genericTypesListSuccessor(List<String> genericTypes) throws CompilerException {
         printIfDebug("->GenericTypesListSuccessor");
 
         // RULE <generic_types_list_successor> ::= , <generic_types_list>
         if(currentTokenIn(new TokenType[]{TokenType.punctuation_comma})) {
             match(TokenType.punctuation_comma);
-            genericTypesList();
+            genericTypesList(genericTypes);
         }
 
         // RULE <generic_types_list_successor> ::= epsilon
@@ -178,10 +191,11 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         match(TokenType.id_class);
 
+        List<String> parentDeclaredGenericTypes = optionalGenerics();
+
         ConcreteClass c = SymbolTable.getInstance().getCurrentConcreteClass();
         c.setInheritance(inheritanceToken);
-
-        optionalGenerics();
+        c.setParentDeclaredGenericTypes(parentDeclaredGenericTypes);
     }
 
     private void implementsNT() throws CompilerException {
@@ -192,10 +206,11 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         match(TokenType.id_class);
 
+        List<String> interfaceDeclaredGenericTypes = optionalGenerics();
+
         ConcreteClass c = SymbolTable.getInstance().getCurrentConcreteClass();
         c.setImplements(implementationToken);
-
-        optionalGenerics();
+        c.setInterfaceDeclaredGenericTypes(interfaceDeclaredGenericTypes);
     }
 
     private void memberList() throws CompilerException {
@@ -1088,16 +1103,20 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         // We do nothing
     }
 
-    private void optionalGenericTypesList() throws CompilerException {
+    private List<String> optionalGenericTypesList() throws CompilerException {
         printIfDebug("->OptionalGenericTypesList");
+
+        List<String> genericTypes = new ArrayList<>();
 
         // RULE <optional_generic_types_list> ::= <generic_types_list>
         if(currentTokenIn(new TokenType[]{TokenType.id_class})) {
-            genericTypesList();
+            genericTypesList(genericTypes);
         }
 
         // RULE <optional_generic_types_list> ::= epsilon
         // We do nothing
+
+        return genericTypes;
     }
 
     private void methodVariableAccess() throws CompilerException {

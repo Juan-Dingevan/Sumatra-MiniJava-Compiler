@@ -11,8 +11,10 @@ import symboltable.types.ReferenceType;
 import token.Token;
 import token.TokenType;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 public class TesterOtros {
     @Test
@@ -187,5 +189,18 @@ public class TesterOtros {
 
         boolean sameSignature = m1.hasSameSignature(m2);
         assertTrue(sameSignature);
+    }
+
+    @Test
+    public void listTests() {
+        List<Integer> l = new ArrayList<>();
+        f(l);
+        assertEquals(l.size(), 3);
+    }
+
+    public void f(List<Integer> l) {
+        l.add(1);
+        l.add(2);
+        l.add(3);
     }
 }
