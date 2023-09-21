@@ -4,7 +4,7 @@ import exceptions.general.CompilerException;
 import exceptions.semantical.InvalidTypeException;
 import exceptions.semantical.UndeclaredTypeException;
 import symboltable.table.SymbolTable;
-import symboltable.types.Char;
+import symboltable.symbols.classes.Class;
 import symboltable.types.ReferenceType;
 import symboltable.types.Type;
 import token.Token;
@@ -19,8 +19,8 @@ public class Parameter extends TypedEntity {
         classID = 0;
     }
 
-    public Parameter(Token t) {
-        super(t);
+    public Parameter(Token t, Class memberOf) {
+        super(t, memberOf);
         instanceID = classID;
         classID++;
     }
@@ -30,11 +30,8 @@ public class Parameter extends TypedEntity {
         if(Type.isVoid(type))
             throw new InvalidTypeException(token, type);
 
-        if(Type.isReferenceType(type)) {
-            ReferenceType rt = (ReferenceType) type;
-            if(!SymbolTable.getInstance().exists(rt.getReferenceName()))
-                throw new UndeclaredTypeException(token, type);
-        }
+        if(ReferenceType.isReferenceType(type))
+            checkReferenceType(type);
     }
 
     @Override

@@ -36,8 +36,8 @@ public class ReferenceType extends Type{
     public List<String> getGenericTypes() {
         return genericTypes;
     }
-    public void addGenericType(String genericType) {
-        genericTypes.add(genericType);
+    public void setGenericTypes(List<String> genericTypes) {
+        this.genericTypes = genericTypes;
     }
 
     @Override

@@ -5,6 +5,7 @@ import exceptions.syntax.InvalidTokenFoundException;
 import exceptions.syntax.TokenMismatchException;
 import lexicalanalizer.LexicalAnalyzer;
 import symboltable.privacy.Privacy;
+import symboltable.symbols.classes.Class;
 import symboltable.symbols.members.Attribute;
 import symboltable.symbols.members.Constructor;
 import symboltable.symbols.members.Method;
@@ -272,10 +273,12 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         // RULE: <member_id_class_successor> ::= <formal_arguments><block>
         // This rules captures the constructor.
         if(currentTokenIn(new TokenType[]{TokenType.punctuation_open_parenthesis})) {
-            Constructor c = new Constructor(idClassToken);
+            ConcreteClass currentClass = SymbolTable.getInstance().getCurrentConcreteClass();
+
+            Constructor c = new Constructor(idClassToken, currentClass);
             c.setPrivacy(currentMemberPrivacy);
 
-            SymbolTable.getInstance().getCurrentConcreteClass().setConstructor(c);
+            currentClass.setConstructor(c);
 
             formalArguments();
             block();
@@ -286,10 +289,11 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
                 TokenType.operand_lesser,
                 TokenType.id_method_variable
         })) {
-            optionalGenerics();
+            List<String> genericTypes = optionalGenerics();
 
             Token declarationToken = currentToken;
-            Type type = new ReferenceType(idClassToken.getLexeme());
+            ReferenceType type = new ReferenceType(idClassToken.getLexeme());
+            type.setGenericTypes(genericTypes);
 
             match(TokenType.id_method_variable);
 
@@ -361,9 +365,12 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
             Token classIdToken = currentToken;
 
             match(TokenType.id_class);
-            optionalGenerics();
+            List<String> genericTypes = optionalGenerics();
 
-            return new ReferenceType(classIdToken.getLexeme());
+            ReferenceType t = new ReferenceType(classIdToken.getLexeme());
+            t.setGenericTypes(genericTypes);
+
+            return t;
         } else {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
@@ -423,12 +430,14 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
     private void attributeSuccessor(Privacy currentMemberPrivacy, boolean staticity, Type type, Token declarationToken) throws CompilerException {
         printIfDebug("->AttributeSuccessor");
 
-        Attribute a = new Attribute(declarationToken);
+        ConcreteClass c = SymbolTable.getInstance().getCurrentConcreteClass();
+
+        Attribute a = new Attribute(declarationToken, c);
         a.setPrivacy(currentMemberPrivacy);
         a.setStatic(staticity);
         a.setType(type);
 
-        SymbolTable.getInstance().getCurrentConcreteClass().addAttribute(a);
+        c.addAttribute(a);
 
         // RULE <attribute_successor> ::= , <id_method_variable><attribute_successor>
         if(currentTokenIn(new TokenType[]{TokenType.punctuation_comma})) {
@@ -461,12 +470,14 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
     private void methodSuccessor(Privacy currentMemberPrivacy, boolean staticity, Type type, Token declarationToken) throws CompilerException {
         printIfDebug("->MethodSuccessor");
 
-        Method m = new Method(declarationToken);
+        ConcreteClass c = SymbolTable.getInstance().getCurrentConcreteClass();
+
+        Method m = new Method(declarationToken, c);
         m.setPrivacy(currentMemberPrivacy);
         m.setStatic(staticity);
         m.setReturnType(type);
 
-        SymbolTable.getInstance().getCurrentConcreteClass().addMethod(m);
+        c.addMethod(m);
 
         // RULE <method_successor> ::= <formal_arguments><block>
         formalArguments();
@@ -504,9 +515,11 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         match(TokenType.id_method_variable);
 
-        Parameter p = new Parameter(declarationToken);
+        Class currentClassOrInterface = SymbolTable.getInstance().getCurrentClassOrInterface();
+
+        Parameter p = new Parameter(declarationToken, currentClassOrInterface);
         p.setType(type);
-        SymbolTable.getInstance().getCurrentClassOrInterface().getCurrentMethod().addParameter(p);
+        currentClassOrInterface.getCurrentMethod().addParameter(p);
     }
 
     private void formalArgumentListSuccessor() throws CompilerException {
@@ -585,12 +598,14 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         match(TokenType.id_method_variable);
 
-        Method m = new Method(declarationToken);
+        Interface i = SymbolTable.getInstance().getCurrentInterface();
+
+        Method m = new Method(declarationToken, i);
         m.setPrivacy(pub);
         m.setReturnType(type);
         m.setStatic(staticity);
 
-        SymbolTable.getInstance().getCurrentInterface().addMethod(m);
+        i.addMethod(m);
 
         formalArguments();
         match(TokenType.punctuation_semicolon);

@@ -2,13 +2,16 @@ package symboltable.symbols.members;
 
 import symboltable.privacy.Privacy;
 import symboltable.symbols.Symbol;
+import symboltable.symbols.classes.Class;
 import token.Token;
 
 public abstract class Member extends Symbol {
     protected Privacy privacy;
+    protected Class memberOf;
 
-    public Member(Token t) {
+    public Member(Token t, Class memberOf) {
         super(t);
+        this.memberOf = memberOf;
     }
 
     public Privacy getPrivacy() {

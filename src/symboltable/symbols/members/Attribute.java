@@ -1,8 +1,11 @@
 package symboltable.symbols.members;
 
 import exceptions.general.CompilerException;
+import exceptions.semantical.GenericsException;
 import exceptions.semantical.InvalidTypeException;
 import exceptions.semantical.UndeclaredTypeException;
+import symboltable.symbols.classes.Class;
+import symboltable.symbols.classes.ConcreteClass;
 import symboltable.table.SymbolTable;
 import symboltable.types.ReferenceType;
 import symboltable.types.Type;
@@ -20,8 +23,8 @@ public class Attribute extends TypedEntity {
         classID = 0;
     }
 
-    public Attribute(Token t) {
-        super(t);
+    public Attribute(Token t, Class memberOf) {
+        super(t, memberOf);
 
         instanceID = classID;
         classID++;
@@ -33,9 +36,7 @@ public class Attribute extends TypedEntity {
             throw new InvalidTypeException(token, type);
 
         if(Type.isReferenceType(type)) {
-            ReferenceType rt = (ReferenceType) type;
-            if(!SymbolTable.getInstance().exists(rt.getReferenceName()))
-                throw new UndeclaredTypeException(token, type);
+            checkReferenceType(type);
         }
     }
 

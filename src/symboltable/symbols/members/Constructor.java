@@ -1,6 +1,7 @@
 package symboltable.symbols.members;
 
 import symboltable.privacy.Privacy;
+import symboltable.symbols.classes.Class;
 import symboltable.symbols.classes.ConcreteClass;
 import token.Token;
 import utility.StringUtilities;
@@ -9,13 +10,13 @@ public class Constructor extends Unit {
     private static final int LEVEL = 2;
 
     public static Constructor getDefaultConstructorForClass(ConcreteClass c) {
-        Constructor constructor = new Constructor(c.getToken());
+        Constructor constructor = new Constructor(c.getToken(), c);
         constructor.setPrivacy(Privacy.pub);
         return constructor;
     }
 
-    public Constructor(Token t) {
-        super(t);
+    public Constructor(Token t, Class memberOf) {
+        super(t, memberOf);
     }
 
     public String toString() {

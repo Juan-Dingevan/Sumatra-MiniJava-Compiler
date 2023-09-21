@@ -2,6 +2,7 @@ package symboltable.symbols.members;
 
 import exceptions.general.CompilerException;
 import exceptions.semantical.ParameterAlreadyExistsException;
+import symboltable.symbols.classes.Class;
 import token.Token;
 
 import java.util.ArrayList;
@@ -13,8 +14,8 @@ public abstract class Unit extends Member{
 
     protected HashMap<String, Parameter> parameterMap;
     protected List<Parameter> parameterList;
-    public Unit(Token t) {
-        super(t);
+    public Unit(Token t, Class memberOf) {
+        super(t, memberOf);
         parameterMap = new HashMap<>();
         parameterList = new ArrayList<>();
     }

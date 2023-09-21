@@ -17,16 +17,17 @@ import static token.TokenConstants.*;
 public abstract class DefaultClassesSetUpHandler {
     public static ConcreteClass getObject() {
         try {
-            Parameter iDebugPrint = new Parameter(token.TokenConstants.PARAMETER_I_TOKEN);
+            ConcreteClass object = new ConcreteClass(OBJECT_TOKEN);
+
+            Parameter iDebugPrint = new Parameter(token.TokenConstants.PARAMETER_I_TOKEN, object);
             iDebugPrint.setType(new Int());
 
-            Method debugPrint = new Method(DEBUG_PRINT_TOKEN);
+            Method debugPrint = new Method(DEBUG_PRINT_TOKEN, object);
             debugPrint.setStatic(true);
             debugPrint.setPrivacy(pub);
             debugPrint.setReturnType(new Void());
             debugPrint.addParameter(iDebugPrint);
 
-            ConcreteClass object = new ConcreteClass(OBJECT_TOKEN);
             object.addMethod(debugPrint);
 
             return object;
@@ -37,89 +38,90 @@ public abstract class DefaultClassesSetUpHandler {
 
     public static ConcreteClass getSystem() {
         try {
-            Parameter b = new Parameter(token.TokenConstants.PARAMETER_B_TOKEN);
+            ConcreteClass system = new ConcreteClass(SYSTEM_TOKEN);
+
+            Parameter b = new Parameter(token.TokenConstants.PARAMETER_B_TOKEN, system);
             b.setType(new SBoolean());
 
-            Parameter c = new Parameter(token.TokenConstants.PARAMETER_C_TOKEN);
+            Parameter c = new Parameter(token.TokenConstants.PARAMETER_C_TOKEN, system);
             c.setType(new Char());
 
-            Parameter i = new Parameter(token.TokenConstants.PARAMETER_I_TOKEN);
+            Parameter i = new Parameter(token.TokenConstants.PARAMETER_I_TOKEN, system);
             i.setType(new Int());
 
-            Parameter s = new Parameter(token.TokenConstants.PARAMETER_S_TOKEN);
+            Parameter s = new Parameter(token.TokenConstants.PARAMETER_S_TOKEN, system);
             s.setType(new ReferenceType("String"));
 
-            Parameter bln = new Parameter(token.TokenConstants.PARAMETER_B_TOKEN);
+            Parameter bln = new Parameter(token.TokenConstants.PARAMETER_B_TOKEN, system);
             bln.setType(new SBoolean());
 
-            Parameter cln = new Parameter(token.TokenConstants.PARAMETER_C_TOKEN);
+            Parameter cln = new Parameter(token.TokenConstants.PARAMETER_C_TOKEN, system);
             cln.setType(new Char());
 
-            Parameter iln = new Parameter(token.TokenConstants.PARAMETER_I_TOKEN);
+            Parameter iln = new Parameter(token.TokenConstants.PARAMETER_I_TOKEN, system);
             iln.setType(new Int());
 
-            Parameter sln = new Parameter(token.TokenConstants.PARAMETER_S_TOKEN);
+            Parameter sln = new Parameter(token.TokenConstants.PARAMETER_S_TOKEN, system);
             sln.setType(new ReferenceType("String"));
 
-            Method read = new Method(TokenConstants.READ_TOKEN);
+            Method read = new Method(TokenConstants.READ_TOKEN, system);
             read.setStatic(true);
             read.setPrivacy(pub);
             read.setReturnType(new Int());
 
-            Method printB = new Method(TokenConstants.PRINTB_TOKEN);
+            Method printB = new Method(TokenConstants.PRINTB_TOKEN, system);
             printB.setStatic(true);
             printB.setPrivacy(pub);
             printB.setReturnType(new Void());
             printB.addParameter(b);
 
-            Method printC = new Method(TokenConstants.PRINTC_TOKEN);
+            Method printC = new Method(TokenConstants.PRINTC_TOKEN, system);
             printC.setStatic(true);
             printC.setPrivacy(pub);
             printC.setReturnType(new Void());
             printC.addParameter(c);
 
-            Method printI = new Method(TokenConstants.PRINTI_TOKEN);
+            Method printI = new Method(TokenConstants.PRINTI_TOKEN, system);
             printI.setStatic(true);
             printI.setPrivacy(pub);
             printI.setReturnType(new Void());
             printI.addParameter(i);
 
-            Method printS = new Method(TokenConstants.PRINTS_TOKEN);
+            Method printS = new Method(TokenConstants.PRINTS_TOKEN, system);
             printS.setStatic(true);
             printS.setPrivacy(pub);
             printS.setReturnType(new Void());
             printS.addParameter(s);
 
-            Method println = new Method(TokenConstants.PRINTLN_TOKEN);
+            Method println = new Method(TokenConstants.PRINTLN_TOKEN, system);
             println.setStatic(true);
             println.setPrivacy(pub);
             println.setReturnType(new Void());
 
-            Method printBln = new Method(TokenConstants.PRINTBLN_TOKEN);
+            Method printBln = new Method(TokenConstants.PRINTBLN_TOKEN, system);
             printBln.setStatic(true);
             printBln.setPrivacy(pub);
             printBln.setReturnType(new Void());
             printBln.addParameter(bln);
 
-            Method printCln = new Method(TokenConstants.PRINTCLN_TOKEN);
+            Method printCln = new Method(TokenConstants.PRINTCLN_TOKEN, system);
             printCln.setStatic(true);
             printCln.setPrivacy(pub);
             printCln.setReturnType(new Void());
             printCln.addParameter(cln);
 
-            Method printIln = new Method(TokenConstants.PRINTILN_TOKEN);
+            Method printIln = new Method(TokenConstants.PRINTILN_TOKEN, system);
             printIln.setStatic(true);
             printIln.setPrivacy(pub);
             printIln.setReturnType(new Void());
             printIln.addParameter(iln);
 
-            Method printSln = new Method(TokenConstants.PRINTSLN_TOKEN);
+            Method printSln = new Method(TokenConstants.PRINTSLN_TOKEN, system);
             printSln.setStatic(true);
             printSln.setPrivacy(pub);
             printSln.setReturnType(new Void());
             printSln.addParameter(sln);
 
-            ConcreteClass system = new ConcreteClass(SYSTEM_TOKEN);
             system.setInheritance(OBJECT_TOKEN);
             system.addMethod(read);
             system.addMethod(printB);

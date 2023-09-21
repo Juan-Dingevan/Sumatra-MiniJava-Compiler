@@ -19,10 +19,10 @@ import static org.junit.Assert.*;
 public class TesterOtros {
     @Test
     public void parameterEqualsReturnsTrueForPrimitiveTypes() {
-        Parameter x1 = new Parameter(new Token(TokenType.id_method_variable, "x", 0));
+        Parameter x1 = new Parameter(new Token(TokenType.id_method_variable, "x", 0), null);
         x1.setType(new Int());
 
-        Parameter x2 = new Parameter(new Token(TokenType.id_method_variable, "x", 0));
+        Parameter x2 = new Parameter(new Token(TokenType.id_method_variable, "x", 0), null);
         x2.setType(new Int());
 
         assertTrue(x1.equals(x2));
@@ -30,10 +30,10 @@ public class TesterOtros {
 
     @Test
     public void parameterEqualsReturnsTrueForReferenceTypes() {
-        Parameter x1 = new Parameter(new Token(TokenType.id_method_variable, "x", 0));
+        Parameter x1 = new Parameter(new Token(TokenType.id_method_variable, "x", 0), null);
         x1.setType(new ReferenceType("String"));
 
-        Parameter x2 = new Parameter(new Token(TokenType.id_method_variable, "x", 0));
+        Parameter x2 = new Parameter(new Token(TokenType.id_method_variable, "x", 0), null);
         x2.setType(new ReferenceType("String"));
 
         assertTrue(x1.equals(x2));
@@ -41,10 +41,10 @@ public class TesterOtros {
 
     @Test
     public void parameterEqualsReturnsFalseWhenTypesDiffer() {
-        Parameter x1 = new Parameter(new Token(TokenType.id_method_variable, "x", 0));
+        Parameter x1 = new Parameter(new Token(TokenType.id_method_variable, "x", 0), null);
         x1.setType(new Int());
 
-        Parameter x2 = new Parameter(new Token(TokenType.id_method_variable, "x", 0));
+        Parameter x2 = new Parameter(new Token(TokenType.id_method_variable, "x", 0), null);
         x2.setType(new Char());
 
         assertFalse(x1.equals(x2));
@@ -55,27 +55,27 @@ public class TesterOtros {
         //two methods with the following signature
         //public (dynamic) int m(int x, String y)
 
-        Parameter x1 = new Parameter(new Token(TokenType.id_method_variable, "x", 0));
-        x1.setType(new Int());
-
-        Parameter x2 = new Parameter(new Token(TokenType.id_method_variable, "x", 0));
-        x2.setType(new Int());
-
-        Parameter y1 = new Parameter(new Token(TokenType.id_method_variable, "y", 0));
-        y1.setType(new ReferenceType("String"));
-
-        Parameter y2 = new Parameter(new Token(TokenType.id_method_variable, "y", 0));
-        y2.setType(new ReferenceType("String"));
-
-        Method m1 = new Method(new Token(TokenType.id_method_variable, "m", 0));
+        Method m1 = new Method(new Token(TokenType.id_method_variable, "m", 0), null);
         m1.setPrivacy(Privacy.pub);
         m1.setStatic(false);
         m1.setReturnType(new Int());
 
-        Method m2 = new Method(new Token(TokenType.id_method_variable, "m", 0));
+        Method m2 = new Method(new Token(TokenType.id_method_variable, "m", 0), null);
         m2.setPrivacy(Privacy.pub);
         m2.setStatic(false);
         m2.setReturnType(new Int());
+
+        Parameter x1 = new Parameter(new Token(TokenType.id_method_variable, "x", 0), null);
+        x1.setType(new Int());
+
+        Parameter x2 = new Parameter(new Token(TokenType.id_method_variable, "x", 0), null);
+        x2.setType(new Int());
+
+        Parameter y1 = new Parameter(new Token(TokenType.id_method_variable, "y", 0), null);
+        y1.setType(new ReferenceType("String"));
+
+        Parameter y2 = new Parameter(new Token(TokenType.id_method_variable, "y", 0), null);
+        y2.setType(new ReferenceType("String"));
 
         try {
             m1.addParameter(x1);
@@ -97,24 +97,24 @@ public class TesterOtros {
         //public (dynamic) int m(int x, String y)
         //public (dynamic) int m(String y, int i)
 
-        Parameter x1 = new Parameter(new Token(TokenType.id_method_variable, "x", 0));
+        Parameter x1 = new Parameter(new Token(TokenType.id_method_variable, "x", 0), null);
         x1.setType(new Int());
 
-        Parameter x2 = new Parameter(new Token(TokenType.id_method_variable, "x", 0));
+        Parameter x2 = new Parameter(new Token(TokenType.id_method_variable, "x", 0), null);
         x2.setType(new Int());
 
-        Parameter y1 = new Parameter(new Token(TokenType.id_method_variable, "y", 0));
+        Parameter y1 = new Parameter(new Token(TokenType.id_method_variable, "y", 0), null);
         y1.setType(new ReferenceType("String"));
 
-        Parameter y2 = new Parameter(new Token(TokenType.id_method_variable, "y", 0));
+        Parameter y2 = new Parameter(new Token(TokenType.id_method_variable, "y", 0), null);
         y2.setType(new ReferenceType("String"));
 
-        Method m1 = new Method(new Token(TokenType.id_method_variable, "m", 0));
+        Method m1 = new Method(new Token(TokenType.id_method_variable, "m", 0), null);
         m1.setPrivacy(Privacy.pub);
         m1.setStatic(false);
         m1.setReturnType(new Int());
 
-        Method m2 = new Method(new Token(TokenType.id_method_variable, "m", 0));
+        Method m2 = new Method(new Token(TokenType.id_method_variable, "m", 0), null);
         m2.setPrivacy(Privacy.pub);
         m2.setStatic(false);
         m2.setReturnType(new Int());
@@ -139,24 +139,24 @@ public class TesterOtros {
         //public (dynamic) int m(int x, String y)
         //public (dynamic) int m(int i, String s)
 
-        Parameter x1 = new Parameter(new Token(TokenType.id_method_variable, "x", 0));
+        Parameter x1 = new Parameter(new Token(TokenType.id_method_variable, "x", 0), null);
         x1.setType(new Int());
 
-        Parameter x2 = new Parameter(new Token(TokenType.id_method_variable, "i", 0));
+        Parameter x2 = new Parameter(new Token(TokenType.id_method_variable, "i", 0), null);
         x2.setType(new Int());
 
-        Parameter y1 = new Parameter(new Token(TokenType.id_method_variable, "y", 0));
+        Parameter y1 = new Parameter(new Token(TokenType.id_method_variable, "y", 0), null);
         y1.setType(new ReferenceType("String"));
 
-        Parameter y2 = new Parameter(new Token(TokenType.id_method_variable, "s", 0));
+        Parameter y2 = new Parameter(new Token(TokenType.id_method_variable, "s", 0), null);
         y2.setType(new ReferenceType("String"));
 
-        Method m1 = new Method(new Token(TokenType.id_method_variable, "m", 0));
+        Method m1 = new Method(new Token(TokenType.id_method_variable, "m", 0), null);
         m1.setPrivacy(Privacy.pub);
         m1.setStatic(false);
         m1.setReturnType(new Int());
 
-        Method m2 = new Method(new Token(TokenType.id_method_variable, "m", 0));
+        Method m2 = new Method(new Token(TokenType.id_method_variable, "m", 0), null);
         m2.setPrivacy(Privacy.pub);
         m2.setStatic(false);
         m2.setReturnType(new Int());
@@ -177,12 +177,12 @@ public class TesterOtros {
 
     @Test
     public void sameSignatureWorksAsExpectedInMethodsWithoutParameters() {
-        Method m1 = new Method(new Token(TokenType.id_method_variable, "m", 0));
+        Method m1 = new Method(new Token(TokenType.id_method_variable, "m", 0), null);
         m1.setPrivacy(Privacy.pub);
         m1.setStatic(false);
         m1.setReturnType(new Int());
 
-        Method m2 = new Method(new Token(TokenType.id_method_variable, "m", 0));
+        Method m2 = new Method(new Token(TokenType.id_method_variable, "m", 0), null);
         m2.setPrivacy(Privacy.pub);
         m2.setStatic(false);
         m2.setReturnType(new Int());
