@@ -541,11 +541,14 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         match(TokenType.id_class);
 
+        List<String> generics = optionalGenerics();
+
         Interface i = new Interface(classDeclarationToken);
+        i.setGenericTypes(generics);
         SymbolTable.getInstance().addInterface(i);
 
-        optionalGenerics();
         optionalExtends();
+
         match(TokenType.punctuation_open_curly);
         headerList();
         match(TokenType.punctuation_close_curly);
