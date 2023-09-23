@@ -81,9 +81,15 @@ public class Method extends Unit {
     @SuppressWarnings("ReassignedVariable")
     public boolean hasSameSignature(Method m) {
         boolean sameName = getName().equals(m.getName());
-        boolean sameType = getReturnType().equals(m.getReturnType());
         boolean sameStaticity = isStatic() == m.isStatic();
         boolean samePrivacy = getPrivacy() == m.getPrivacy();
+
+        String s0 = memberOf.getName();
+        String s1 = getName();
+        String s2 = m.getName();
+        String s3 = "";
+
+        boolean sameType = typesAreEquivalent(getReturnType(), m.getReturnType());
 
         List<Parameter> parameters1 = getParameters();
         List<Parameter> parameters2 = m.getParameters();
@@ -98,11 +104,36 @@ public class Method extends Unit {
         while(sameParameters && i < n) {
             p1 = parameters1.get(i);
             p2 = parameters2.get(i);
-            sameParameters = p1.getType().equals(p2.getType());
+            sameParameters = typedEntitiesAreEquivalent(p1, p2);
             i++;
         }
 
         return sameParameters && sameType && samePrivacy && sameStaticity && sameName;
+    }
+
+    public boolean typedEntitiesAreEquivalent(TypedEntity te1, TypedEntity te2) {
+        Type t1 = te1.getType();
+        Type t2 = te2.getType();
+
+        return typesAreEquivalent(t1, t2);
+    }
+
+    private boolean typesAreEquivalent(Type t1, Type t2) {
+        if(!Type.isReferenceType(t1))
+            return t1.equals(t2);
+
+        if(!Type.isReferenceType(t2))
+            return false;
+
+        ReferenceType rt1 = (ReferenceType) t1;
+        ReferenceType rt2 = (ReferenceType) t2;
+
+        if(!memberOf.isGenericType(rt1.getReferenceName()))
+            return rt1.equals(rt2);
+
+        String s = memberOf.getName();
+        s = "";
+        return memberOf.referenceTypesAreEquivalent(rt1, rt2);
     }
 
     public String toString() {

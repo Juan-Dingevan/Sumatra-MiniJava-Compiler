@@ -64,6 +64,8 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         classList();
         match(TokenType.eof);
+
+        printIfDebug("\n");
     }
 
     private void classList() throws CompilerException {
@@ -564,10 +566,11 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
             match(TokenType.id_class);
 
+            List<String> generics =  optionalGenerics();
+
             Interface i = SymbolTable.getInstance().getCurrentInterface();
             i.setInheritance(extensionToken);
-
-            optionalGenerics();
+            i.setParentDeclaredGenericTypes(generics);
         }
         //RULE <optional_inheritance> ::= epsilon
         //We do nothing

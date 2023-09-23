@@ -7,7 +7,7 @@ class Padre<Y> extends Abuelo<Y> {
     Y metodoPadre() {}
 }
 
-class Hija<Z> extends Abuelo<Y> {
+class Hija<Z> extends Padre<Z> {
     Z metodoAbuelo() {}
     Z metodoPadre() {}
     Z metodoHija() {}

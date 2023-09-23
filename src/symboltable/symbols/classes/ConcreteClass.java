@@ -35,6 +35,7 @@ public class ConcreteClass extends Class {
 
         attributes = new HashMap<>();
         interfaceDeclaredGenericTypes = new ArrayList<>();
+        implementedGenericTypesMap = new HashMap<>();
 
         constructor = null;
         implementsInterface = "";
@@ -83,7 +84,7 @@ public class ConcreteClass extends Class {
     }
 
     @SuppressWarnings("ReassignedVariable")
-    protected void checkCircularInheritance() throws CircularInheritanceException{
+    protected void checkCircularInheritance() throws SemanticException {
         ConcreteClass currentClass = this;
 
         while(currentClass.getToken() != OBJECT_TOKEN) {
@@ -94,70 +95,32 @@ public class ConcreteClass extends Class {
             }
 
             currentClass = SymbolTable.getInstance().getClass(parentName);
+
+            if(currentClass == null)
+                throw new UndeclaredExtendsException(getToken(), parentName);
         }
 
     }
 
     @Override
     public void consolidate() throws CompilerException {
-        if(token == OBJECT_TOKEN)
+        if(hasBeenConsolidated || token == OBJECT_TOKEN)
             return;
 
         ConcreteClass parent = SymbolTable.getInstance().getClass(inheritsFrom);
         parent.consolidate();
 
-        addInheritedAttributes(parent);
-        addInheritedMethods(parent);
-
         checkCorrectImplementationOfInterface();
 
         checkGenerics();
 
+        addInheritedAttributes(parent);
+        addInheritedMethods(parent);
+
         if(!constructorExists())
             setConstructor(Constructor.getDefaultConstructorForClass(this));
-    }
 
-    protected void checkGenerics() throws GenericsException {
-        ConcreteClass parent = SymbolTable.getInstance().getClass(inheritsFrom);
-
-        //declared parameter types do not share name with other classes or interfaces
-        for(String genericType : genericTypes) {
-            if(SymbolTable.getInstance().exists(genericType)) {
-                Token genericsToken = new Token(TokenType.id_class, genericType, getToken().getLineNumber());
-                String errorMessage = "Error: the generic type " + genericType + " of class " + getName() + " shares a name with a class or interface.";
-                throw new GenericsException(genericsToken, errorMessage);
-            }
-        }
-
-        /*declared parameter types of the parent class have the correct arity
-        * prevents following case:
-        * class A<K, V> {...}
-        * class B<K> extends A<K> {...}
-        * */
-        if(parentDeclaredGenericTypes.size() != parent.getGenericTypes().size()) {
-            String errorMessage = "When the class " + getName() + " declares extension of " + parent.getName()
-            + ", there is a mismatch of number of generic type parameters (" + parentDeclaredGenericTypes.size()
-            + " but " + parent.getName() + " has " + parent.getGenericTypes().size() + ")";
-            throw new GenericsException(getToken(), errorMessage);
-        }
-
-        /*declared parent parameters are either declared classes or interfaces, or parametric types of child
-         * prevents following case:
-         * class A<K, V> {...}
-         * class B<K, V> extends A<Q, K> {...} (Q doesn't exist)
-         * and
-         * class A<K, V> {...}
-         * class B<K> extends A<K, V> {...} (B doesn't have enough type parameters)
-         * */
-        for(String parentGenericType : parentDeclaredGenericTypes) {
-            if(!(SymbolTable.getInstance().exists(parentGenericType) || genericTypes.contains(parentGenericType))) {
-                Token genericsToken = new Token(TokenType.id_class, parentGenericType, getToken().getLineNumber());
-                String errorMessage = "The parametric type " + parentGenericType + " is not valid in that context.";
-                throw new GenericsException(genericsToken, errorMessage);
-            }
-        }
-
-
+        hasBeenConsolidated = true;
     }
 
     protected void checkCorrectImplementationOfInterface() throws CompilerException {
@@ -215,6 +178,35 @@ public class ConcreteClass extends Class {
         this.interfaceDeclaredGenericTypes = interfaceDeclaredGenericTypes;
     }
 
+    protected void checkGenerics() throws GenericsException {
+        super.checkGenerics();
+
+        if(!implementsInterface.equals("")) {
+            Interface implemented = SymbolTable.getInstance().getInterface(implementsInterface);
+            List<String> interfaceGenericTypes = implemented.getGenericTypes();
+
+            if(interfaceDeclaredGenericTypes.size() != implemented.getGenericTypes().size()) {
+                String errorMessage = "When the class " + getName() + " declares extension of " + implemented.getName()
+                        + ", there is a mismatch of number of generic type parameters (" + interfaceDeclaredGenericTypes.size()
+                        + " but " + implemented.getName() + " has " + implemented.getGenericTypes().size() + ")";
+                throw new GenericsException(getToken(), errorMessage);
+            }
+
+            for(String implementedGenericType : interfaceDeclaredGenericTypes) {
+                if(!(SymbolTable.getInstance().exists(implementedGenericType) || genericTypes.contains(implementedGenericType))) {
+                    Token genericsToken = new Token(TokenType.id_class, implementedGenericType, getToken().getLineNumber());
+                    String errorMessage = "The parametric type " + implementedGenericType + " is not valid in that context.";
+                    throw new GenericsException(genericsToken, errorMessage);
+                }
+            }
+            
+            for(int i = 0; i < interfaceDeclaredGenericTypes.size(); i++) {
+                implementedGenericTypesMap.put(interfaceDeclaredGenericTypes.get(i), interfaceGenericTypes.get(i));
+                System.out.println("in " + getName() + " mapping " + interfaceDeclaredGenericTypes.get(i) + " to " + interfaceGenericTypes.get(i));
+            }
+        }
+    }
+
     public String toString() {
         String name = this.getName();
         String prefix = StringUtilities.getDashesForDepth(LEVEL);
@@ -229,13 +221,13 @@ public class ConcreteClass extends Class {
         if(parentDeclaredGenericTypes.size() > 0) {
             s += prefix + "PARENT DECLARED GENERICS\n";
             for(String g : parentDeclaredGenericTypes)
-                s += prefix + prefix + g + "\n";
+                s += prefix + prefix + g + " maps to " + childToParentGenericTypeMap.get(g) + "\n";
         }
 
         if(interfaceDeclaredGenericTypes.size() > 0) {
             s += prefix + "INTERFACE DECLARED GENERICS\n";
             for(String g : interfaceDeclaredGenericTypes)
-                s += prefix + prefix + g + "\n";
+                s += prefix + prefix + g + " maps to " + implementedGenericTypesMap.get(g) + "\n";
         }
 
         s += prefix + "ATTRIBUTES:\n";

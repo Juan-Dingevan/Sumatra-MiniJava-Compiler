@@ -52,6 +52,15 @@ public class SymbolTable {
         return classes.get(name);
     }
 
+    @SuppressWarnings("ReassignedVariable")
+    public Class getClassOrInterface(String name) {
+        Class ret = classes.get(name);
+        if(ret == null)
+            ret = interfaces.get(name);
+
+        return ret;
+    }
+
     public ConcreteClass getCurrentConcreteClass() {
         return currentConcreteClass;
     }
