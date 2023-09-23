@@ -5,7 +5,6 @@ import exceptions.semantical.GenericsException;
 import exceptions.semantical.MethodAlreadyExistsException;
 import symboltable.symbols.Symbol;
 import symboltable.symbols.members.Method;
-import symboltable.symbols.members.Parameter;
 import symboltable.table.SymbolTable;
 import symboltable.types.ReferenceType;
 import token.Token;
@@ -21,8 +20,8 @@ public abstract class Class extends Symbol {
     protected HashMap<String, Method> methods;
     protected List<String> genericTypes;
     protected List<String> parentDeclaredGenericTypes;
-    protected HashMap<String, String> childToParentGenericTypeMap;
-    protected HashMap<String, String> implementedGenericTypesMap;
+    protected HashMap<String, List<String>> childToParentGenericTypeMap;
+    protected HashMap<String, List<String>> implementedGenericTypesMap;
     protected String inheritsFrom;
     protected Method currentMethod;
     protected boolean hasBeenConsolidated;
@@ -78,25 +77,44 @@ public abstract class Class extends Symbol {
         return genericTypes.contains(genericType);
     }
 
+    protected boolean isParentOrInterfaceDeclaredGenericType(String t) {
+        return childToParentGenericTypeMap.get(t) != null || implementedGenericTypesMap.get(t) != null;
+    }
+
     @SuppressWarnings("ReassignedVariable")
-    public boolean referenceTypesAreEquivalent(ReferenceType rt1, ReferenceType rt2) {
+    public boolean referenceTypesAreEquivalentInClass(ReferenceType rt1, ReferenceType rt2) {
         int genericArity1 = rt1.getGenericTypes().size();
         int genericArity2 = rt2.getGenericTypes().size();
 
         if(genericArity1 != genericArity2)
-            return false;
+            return false; //Caso trivial 2: uno tiene aridad generica y el otro no. No seran iguales nunca.
 
-        if(genericArity1 == 0)
-            return genericTypesAreEquivalent(rt1.getReferenceName(), rt2.getReferenceName());
+        var b = parentDeclaredGenericTypes.contains(rt1.getReferenceName());
+
+        if(genericArity1 == 0) {
+            if(!isParentOrInterfaceDeclaredGenericType(rt1.getReferenceName()))
+                return rt1.equals(rt2); //caso en el cual no hay genericidad.
+
+            //Caso en el que se comparan tipos parametricos "estandar". Por ejemplo,
+            //comparar E con T, o String con A.
+            return genericTypesAreEquivalentInClass(rt1.getReferenceName(), rt2.getReferenceName());
+        }
+
+        //Caso final, en el que comparamos tipos que tienen parametros de genericidad, por ejemplo
+        //Tree<E> con Tree<T>, o Box<String> con Box<A>
+        //Notar que casos como E<T> (tipo generico con aridad generica) nunca se dan.
+
+        //Como base para la igualdad, tienen que tener el mismo nombre.
+        boolean equivalent = rt1.getReferenceName().equals(rt2.getReferenceName());
 
         List<String> generics1 = rt1.getGenericTypes();
         List<String> generics2 = rt2.getGenericTypes();
 
-        boolean equivalent = true;
         int i = 0;
 
+        //Y luego, todos los parametros de tipo deben ser equivalentes entre si
         while(equivalent && i < genericArity1) {
-            equivalent = genericTypesAreEquivalent(generics1.get(i), generics2.get(i));
+            equivalent = genericTypesAreEquivalentInClass(generics1.get(i), generics2.get(i));
             i++;
         }
 
@@ -104,20 +122,27 @@ public abstract class Class extends Symbol {
     }
 
     @SuppressWarnings("ReassignedVariable")
-    public boolean genericTypesAreEquivalent(String childType, String queriedType) {
-        String mappedType = childToParentGenericTypeMap.get(childType);
+    public boolean genericTypesAreEquivalentInClass(String childType, String queriedType) {
+        List<String> mappedTypes = childToParentGenericTypeMap.get(childType);
 
-        if(mappedType == null)
-            mappedType = implementedGenericTypesMap.get(childType);
+        if(mappedTypes == null)
+            mappedTypes = implementedGenericTypesMap.get(childType);
 
-        if(mappedType.equals(queriedType))
-            return true;
+        for(String mappedType : mappedTypes)
+            if(mappedType.equals(queriedType))
+                return true;
 
         if(token == OBJECT_TOKEN)
             return false;
 
         Class parent = SymbolTable.getInstance().getClassOrInterface(inheritsFrom);
-        return parent.genericTypesAreEquivalent(mappedType, queriedType);
+        boolean match = false;
+
+        for(int i = 0; !match && i < mappedTypes.size(); i++) {
+            match = parent.genericTypesAreEquivalentInClass(mappedTypes.get(i), queriedType);
+        }
+
+        return match;
     }
 
     protected void checkGenerics() throws GenericsException {
@@ -163,14 +188,15 @@ public abstract class Class extends Symbol {
         //At this point, we can assume that (at least arity-wise), the parameters are well-defined.
         List<String> parentGenericTypes = parent.getGenericTypes();
         for(int i = 0; i < parentDeclaredGenericTypes.size(); i++) {
-            childToParentGenericTypeMap.put(parentDeclaredGenericTypes.get(i), parentGenericTypes.get(i));
+            if(childToParentGenericTypeMap.get(parentDeclaredGenericTypes.get(i)) == null)
+                childToParentGenericTypeMap.put(parentDeclaredGenericTypes.get(i), new ArrayList<String>());
+
+            childToParentGenericTypeMap.get(parentDeclaredGenericTypes.get(i)).add(parentGenericTypes.get(i));
+
+            //childToParentGenericTypeMap.put(parentDeclaredGenericTypes.get(i), parentGenericTypes.get(i));
             System.out.println("in " + getName() + " mapping " + parentDeclaredGenericTypes.get(i) + " to " + parentGenericTypes.get(i));
         }
 
-    }
-
-    public List<String> getParentDeclaredGenericTypes() {
-        return parentDeclaredGenericTypes;
     }
 
     public void setParentDeclaredGenericTypes(List<String> parentDeclaredGenericTypes) {

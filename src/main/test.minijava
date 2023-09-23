@@ -8,6 +8,14 @@ interface GenericInterface<E> {
     void parametizedClassParameter(GenericClass<E> gc);
 }
 
+class GenericClass<T> {
+
+}
+
+interface GenericDaughterInterface<E> extends GenericInterface<E> {
+
+}
+
 class GenericImplementation<T> implements GenericInterface<T> {
     T parametricTypeReturnMethod() {}
     void parametricTypeParameter(T e) {}
@@ -15,14 +23,6 @@ class GenericImplementation<T> implements GenericInterface<T> {
     GenericClass<T> parametizedClassReturnType() {}
     void parametizedInterfaceParameter(GenericInterface<T> gi) {}
     void parametizedClassParameter(GenericClass<T> gc) {}
-}
-
-class GenericClass<T> {
-
-}
-
-interface GenericDaughterInterface<E> extends GenericInterface<E> {
-
 }
 
 class GenericDaughterClass<T> extends GenericClass<T> {

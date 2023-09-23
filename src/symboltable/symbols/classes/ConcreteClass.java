@@ -110,9 +110,13 @@ public class ConcreteClass extends Class {
         ConcreteClass parent = SymbolTable.getInstance().getClass(inheritsFrom);
         parent.consolidate();
 
-        checkCorrectImplementationOfInterface();
+        if(!implementsInterface.equals(""))
+            if (!SymbolTable.getInstance().interfaceExists(implementsInterface))
+                throw new UndeclaredInterfaceImplementedException(getToken(), implementsInterface);
 
         checkGenerics();
+
+        checkCorrectImplementationOfInterface();
 
         addInheritedAttributes(parent);
         addInheritedMethods(parent);
@@ -125,9 +129,6 @@ public class ConcreteClass extends Class {
 
     protected void checkCorrectImplementationOfInterface() throws CompilerException {
         if(!implementsInterface.equals("")) {
-            if(!SymbolTable.getInstance().interfaceExists(implementsInterface))
-                throw new UndeclaredInterfaceImplementedException(getToken(), implementsInterface);
-
             Interface implementedInterface = SymbolTable.getInstance().getInterface(implementsInterface);
             implementedInterface.consolidate();
 
@@ -186,7 +187,7 @@ public class ConcreteClass extends Class {
             List<String> interfaceGenericTypes = implemented.getGenericTypes();
 
             if(interfaceDeclaredGenericTypes.size() != implemented.getGenericTypes().size()) {
-                String errorMessage = "When the class " + getName() + " declares extension of " + implemented.getName()
+                String errorMessage = "When the class " + getName() + " declares implementation of " + implemented.getName()
                         + ", there is a mismatch of number of generic type parameters (" + interfaceDeclaredGenericTypes.size()
                         + " but " + implemented.getName() + " has " + implemented.getGenericTypes().size() + ")";
                 throw new GenericsException(getToken(), errorMessage);
@@ -199,9 +200,13 @@ public class ConcreteClass extends Class {
                     throw new GenericsException(genericsToken, errorMessage);
                 }
             }
-            
+
             for(int i = 0; i < interfaceDeclaredGenericTypes.size(); i++) {
-                implementedGenericTypesMap.put(interfaceDeclaredGenericTypes.get(i), interfaceGenericTypes.get(i));
+                if(implementedGenericTypesMap.get(interfaceDeclaredGenericTypes.get(i)) == null)
+                    implementedGenericTypesMap.put(interfaceDeclaredGenericTypes.get(i), new ArrayList<String>());
+
+                implementedGenericTypesMap.get(interfaceDeclaredGenericTypes.get(i)).add(interfaceGenericTypes.get(i));
+
                 System.out.println("in " + getName() + " mapping " + interfaceDeclaredGenericTypes.get(i) + " to " + interfaceGenericTypes.get(i));
             }
         }
@@ -220,14 +225,33 @@ public class ConcreteClass extends Class {
 
         if(parentDeclaredGenericTypes.size() > 0) {
             s += prefix + "PARENT DECLARED GENERICS\n";
-            for(String g : parentDeclaredGenericTypes)
-                s += prefix + prefix + g + " maps to " + childToParentGenericTypeMap.get(g) + "\n";
+            for(String g : parentDeclaredGenericTypes) {
+                s += prefix + prefix + g + " maps to ";
+
+                if(childToParentGenericTypeMap.get(g) == null)
+                    s += "null ";
+                else
+                    for(String mapped: childToParentGenericTypeMap.get(g))
+                        s += mapped + " ";
+
+                s+="\n";
+            }
         }
 
         if(interfaceDeclaredGenericTypes.size() > 0) {
             s += prefix + "INTERFACE DECLARED GENERICS\n";
-            for(String g : interfaceDeclaredGenericTypes)
-                s += prefix + prefix + g + " maps to " + implementedGenericTypesMap.get(g) + "\n";
+            for(String g : interfaceDeclaredGenericTypes){
+                s += prefix + prefix + g + " maps to ";
+
+                if(implementedGenericTypesMap.get(g) == null) {
+                    s += "null ";
+                } else {
+                    for (String mapped : implementedGenericTypesMap.get(g))
+                        s += mapped + " ";
+                }
+
+                s+="\n";
+            }
         }
 
         s += prefix + "ATTRIBUTES:\n";

@@ -84,11 +84,6 @@ public class Method extends Unit {
         boolean sameStaticity = isStatic() == m.isStatic();
         boolean samePrivacy = getPrivacy() == m.getPrivacy();
 
-        String s0 = memberOf.getName();
-        String s1 = getName();
-        String s2 = m.getName();
-        String s3 = "";
-
         boolean sameType = typesAreEquivalent(getReturnType(), m.getReturnType());
 
         List<Parameter> parameters1 = getParameters();
@@ -119,21 +114,18 @@ public class Method extends Unit {
     }
 
     private boolean typesAreEquivalent(Type t1, Type t2) {
+        if(Type.isReferenceType(t1) != Type.isReferenceType(t2))
+            return false; //uno es ref-type y el otro no, trivialmente son distintos
+
         if(!Type.isReferenceType(t1))
-            return t1.equals(t2);
+            return t1.equals(t2); //caso trivial 1: ninguno es ref type
 
-        if(!Type.isReferenceType(t2))
-            return false;
-
+        //a partir de aca podemos asumir que ambos son ref-type
+        //hacemos el cast y trabajamos con los rt directamente
         ReferenceType rt1 = (ReferenceType) t1;
         ReferenceType rt2 = (ReferenceType) t2;
 
-        if(!memberOf.isGenericType(rt1.getReferenceName()))
-            return rt1.equals(rt2);
-
-        String s = memberOf.getName();
-        s = "";
-        return memberOf.referenceTypesAreEquivalent(rt1, rt2);
+        return memberOf.referenceTypesAreEquivalentInClass(rt1, rt2);
     }
 
     public String toString() {

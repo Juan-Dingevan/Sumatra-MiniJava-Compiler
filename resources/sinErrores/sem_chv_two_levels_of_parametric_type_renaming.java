@@ -10,5 +10,14 @@ class Padre<Y> extends Abuelo<Y> {
 class Hija<Z> extends Padre<Z> {
     Z metodoAbuelo() {}
     Z metodoPadre() {}
-    Z metodoHija() {}
+    Z metodoHija(Z z) {}
+}
+
+class Bebe extends Hija<String> {
+    String metodoAbuelo() {}
+    String metodoPadre() {}
+    String metodoHija(String z) {}
+    String metodoBebe() {}
+    String s;
+
 }
