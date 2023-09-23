@@ -89,11 +89,14 @@ public abstract class Class extends Symbol {
         if(genericArity1 != genericArity2)
             return false; //Caso trivial 2: uno tiene aridad generica y el otro no. No seran iguales nunca.
 
-        var b = parentDeclaredGenericTypes.contains(rt1.getReferenceName());
+        var b = isParentOrInterfaceDeclaredGenericType(rt1.getReferenceName());
+        var c = isParentOrInterfaceDeclaredGenericType(rt2.getReferenceName());
+
+        var s = "";
 
         if(genericArity1 == 0) {
-            if(!isParentOrInterfaceDeclaredGenericType(rt1.getReferenceName()))
-                return rt1.equals(rt2); //caso en el cual no hay genericidad.
+            if(rt1.equals(rt2))
+                return true; //caso en el cual no hay genericidad, o la genericidad se resuelve trivialmente.
 
             //Caso en el que se comparan tipos parametricos "estandar". Por ejemplo,
             //comparar E con T, o String con A.
@@ -123,23 +126,34 @@ public abstract class Class extends Symbol {
 
     @SuppressWarnings("ReassignedVariable")
     public boolean genericTypesAreEquivalentInClass(String childType, String queriedType) {
-        List<String> mappedTypes = childToParentGenericTypeMap.get(childType);
+        List<String> mappedTypes;
 
-        if(mappedTypes == null)
+        //We can either have inheritance OR implementation, thus, we get the map
+        //accordingly
+        if(inheritsFrom.equals(OBJECT_TOKEN.getLexeme())) {
             mappedTypes = implementedGenericTypesMap.get(childType);
-
-        for(String mappedType : mappedTypes)
-            if(mappedType.equals(queriedType))
-                return true;
-
-        if(token == OBJECT_TOKEN)
-            return false;
+        } else {
+            mappedTypes = childToParentGenericTypeMap.get(childType);
+        }
 
         Class parent = SymbolTable.getInstance().getClassOrInterface(inheritsFrom);
-        boolean match = false;
 
+        //If we didnt have that attribute mapped, we query if our father has it.
+        if(mappedTypes == null)
+            //if we're Object, we dont have a father, so we return false
+            if(token == OBJECT_TOKEN)
+                return false;
+            //else, we do the query
+            else
+                return parent.genericTypesAreEquivalentInClass(childType, queriedType);
+
+        //if we DID have something mapped, we check if it directly maps to the queried type
+        //or if it's equivalent as per our father's side.
+        boolean match = false;
+        String mappedType;
         for(int i = 0; !match && i < mappedTypes.size(); i++) {
-            match = parent.genericTypesAreEquivalentInClass(mappedTypes.get(i), queriedType);
+            mappedType = mappedTypes.get(i);
+            match = mappedType.equals(queriedType) || parent.genericTypesAreEquivalentInClass(mappedType, queriedType);
         }
 
         return match;
