@@ -77,6 +77,13 @@ public class Method extends Unit {
     public Type getReturnType() {
         return returnType;
     }
+    public boolean isMainMethod() {
+        boolean name = getName().equals("main");
+        boolean staticity = isStatic();
+        boolean parameters = parameterMap.size() == 0;
+
+        return name && staticity && parameters;
+    }
 
     @SuppressWarnings("ReassignedVariable")
     public boolean hasSameSignature(Method m) {
@@ -105,7 +112,6 @@ public class Method extends Unit {
 
         return sameParameters && sameType && samePrivacy && sameStaticity && sameName;
     }
-
     public boolean typedEntitiesAreEquivalent(TypedEntity te1, TypedEntity te2) {
         Type t1 = te1.getType();
         Type t2 = te2.getType();

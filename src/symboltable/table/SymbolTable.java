@@ -1,15 +1,19 @@
 package symboltable.table;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import exceptions.general.CompilerException;
 import exceptions.semantical.ClassAlreadyExistsException;
+import exceptions.semantical.NoMainMethodInProgramException;
 import symboltable.symbols.classes.ConcreteClass;
 import symboltable.symbols.classes.Interface;
 import symboltable.symbols.classes.Class;
 import symboltable.symbols.members.Attribute;
 import symboltable.symbols.members.Method;
 import symboltable.symbols.members.Parameter;
+import token.Token;
 
 public class SymbolTable {
     private static SymbolTable instance;
@@ -19,6 +23,8 @@ public class SymbolTable {
     protected ConcreteClass currentConcreteClass;
     protected Interface currentInterface;
     protected Class currentClass;
+    protected List<Method> mainMethods;
+    protected Token eof;
 
 
     public static SymbolTable getInstance() {
@@ -39,6 +45,7 @@ public class SymbolTable {
     private SymbolTable() {
         classes = new HashMap<>();
         interfaces = new HashMap<>();
+        mainMethods = new ArrayList<>();
 
         try {
             addClass(DefaultClassesSetUpHandler.getString());
@@ -118,6 +125,9 @@ public class SymbolTable {
         for(Interface i : interfaces.values()) {
             i.checkDeclaration();
         }
+
+        if(mainMethods.size() < 1)
+            throw new NoMainMethodInProgramException(eof);
     }
 
     public void consolidate() throws CompilerException {
@@ -129,6 +139,14 @@ public class SymbolTable {
         for(Interface i : interfaces.values()) {
             i.consolidate();
         }
+    }
+
+    public void addMainMethod(Method mainMethod) {
+        mainMethods.add(mainMethod);
+    }
+
+    public void setEOF(Token eof) {
+        this.eof = eof;
     }
 
     public String toString() {

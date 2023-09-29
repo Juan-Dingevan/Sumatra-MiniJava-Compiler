@@ -63,7 +63,11 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         printIfDebug("StartingSymbol");
 
         classList();
+        Token eof = currentToken;
+
         match(TokenType.eof);
+
+        SymbolTable.getInstance().setEOF(eof);
 
         printIfDebug("\n");
     }

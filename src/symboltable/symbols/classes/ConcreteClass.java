@@ -80,8 +80,11 @@ public class ConcreteClass extends Class {
         for(Attribute a : attributes.values())
             a.checkDeclaration();
 
-        for(Method m : methods.values())
+        for(Method m : methods.values()) {
             m.checkDeclaration();
+            if(m.isMainMethod())
+                SymbolTable.getInstance().addMainMethod(m);
+        }
 
         if(constructor != null)
             constructor.checkDeclaration();
