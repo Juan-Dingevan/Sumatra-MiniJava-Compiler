@@ -8,6 +8,7 @@ import symboltable.symbols.classes.ConcreteClass;
 import symboltable.table.SymbolTable;
 import symboltable.types.ReferenceType;
 import symboltable.types.Type;
+import symboltable.types.Void;
 import token.Token;
 import utility.StringUtilities;
 
@@ -80,9 +81,10 @@ public class Method extends Unit {
     public boolean isMainMethod() {
         boolean name = getName().equals("main");
         boolean staticity = isStatic();
+        boolean type = getReturnType().equals(new Void());
         boolean parameters = parameterMap.size() == 0;
 
-        return name && staticity && parameters;
+        return name && staticity && type && parameters;
     }
 
     @SuppressWarnings("ReassignedVariable")
