@@ -64,9 +64,10 @@ public class ConcreteClass extends Class {
     }
 
     public void setConstructor(Constructor c) throws CompilerException {
-        if(!constructorExists())
+        if(!constructorExists()) {
             constructor = c;
-        else
+            currentUnit = c;
+        } else
             throw new ClassAlreadyHasConstructorException(c.getToken());
     }
 

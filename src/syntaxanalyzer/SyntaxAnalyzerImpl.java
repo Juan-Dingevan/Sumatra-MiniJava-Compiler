@@ -525,7 +525,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         Parameter p = new Parameter(declarationToken, currentClassOrInterface);
         p.setType(type);
-        currentClassOrInterface.getCurrentMethod().addParameter(p);
+        currentClassOrInterface.getCurrentUnit().addParameter(p);
     }
 
     private void formalArgumentListSuccessor() throws CompilerException {

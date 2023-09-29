@@ -5,6 +5,7 @@ import exceptions.semantical.GenericsException;
 import exceptions.semantical.MethodAlreadyExistsException;
 import symboltable.symbols.Symbol;
 import symboltable.symbols.members.Method;
+import symboltable.symbols.members.Unit;
 import symboltable.table.SymbolTable;
 import symboltable.types.ReferenceType;
 import token.Token;
@@ -23,7 +24,7 @@ public abstract class Class extends Symbol {
     protected HashMap<String, List<String>> childToParentGenericTypeMap;
     protected HashMap<String, List<String>> implementedGenericTypesMap;
     protected String inheritsFrom;
-    protected Method currentMethod;
+    protected Unit currentUnit;
     protected boolean hasBeenConsolidated;
 
     public Class(Token t) {
@@ -34,7 +35,7 @@ public abstract class Class extends Symbol {
         parentDeclaredGenericTypes = new ArrayList<>();
         childToParentGenericTypeMap = new HashMap<>();
         implementedGenericTypesMap = new HashMap<>();
-        currentMethod = null;
+        currentUnit = null;
         hasBeenConsolidated = false;
 
         inheritsFrom = "";
@@ -44,8 +45,8 @@ public abstract class Class extends Symbol {
         inheritsFrom = t.getLexeme();
     }
 
-    public Method getCurrentMethod() {
-        return currentMethod;
+    public Unit getCurrentUnit() {
+        return currentUnit;
     }
 
     protected boolean methodExists(Method m) {
@@ -62,7 +63,7 @@ public abstract class Class extends Symbol {
     public void addMethod(Method m) throws CompilerException {
         if(!methodExists(m)) {
             methods.put(m.getName(), m);
-            currentMethod = m;
+            currentUnit = m;
         } else
             throw new MethodAlreadyExistsException(m.getToken());
     }
