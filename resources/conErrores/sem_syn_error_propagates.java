@@ -2,3 +2,7 @@
 class static C {
 
 }
+
+class Main {
+    public static void main() {}
+}

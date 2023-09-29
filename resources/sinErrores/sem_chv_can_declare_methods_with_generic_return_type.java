@@ -6,3 +6,7 @@ class Tree<E> {
     private static E m4() {}
     E m5() {}
 }
+
+class Main {
+    public static void main() {}
+}

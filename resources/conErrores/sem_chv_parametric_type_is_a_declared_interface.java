@@ -6,3 +6,7 @@ class Class<K, A> {
 interface A {
 
 }
+
+class Main {
+    public static void main() {}
+}

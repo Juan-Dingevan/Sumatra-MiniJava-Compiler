@@ -7,3 +7,7 @@ interface I {
 class C implements I {
     int x;
 }
+
+class Main {
+    public static void main() {}
+}

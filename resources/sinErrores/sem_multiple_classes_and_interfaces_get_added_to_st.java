@@ -18,3 +18,7 @@ class C {
 interface Y {
 
 }
+
+class Main {
+    public static void main() {}
+}

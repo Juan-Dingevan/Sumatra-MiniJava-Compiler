@@ -25,3 +25,7 @@ interface PadreI extends AbueloI{
 interface HijaI extends PadreI {
     void metodoHijaI(Object o);
 }
+
+class Main {
+    public static void main() {}
+}

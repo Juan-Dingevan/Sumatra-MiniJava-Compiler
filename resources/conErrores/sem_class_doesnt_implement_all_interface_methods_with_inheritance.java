@@ -10,3 +10,7 @@ interface I extends Y {
 class C implements I {
     int x;
 }
+
+class Main {
+    public static void main() {}
+}

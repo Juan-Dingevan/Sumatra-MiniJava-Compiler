@@ -3,3 +3,7 @@ class C {
     int a;
     int a;
 }
+
+class Main {
+    public static void main() {}
+}

@@ -7,3 +7,7 @@ class ConConstructor {
     private static int x;
     public ConConstructor() {}
 }
+
+class Main {
+    public static void main() {}
+}

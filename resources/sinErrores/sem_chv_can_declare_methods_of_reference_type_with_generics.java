@@ -11,3 +11,7 @@ class List<E> {
 class StringList {
     Node<String> getRoot() {}
 }
+
+class Main {
+    public static void main() {}
+}

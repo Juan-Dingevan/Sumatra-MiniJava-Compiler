@@ -27,3 +27,7 @@ class C {
     private float a5float;
     float a6float;
 }
+
+class Main {
+    public static void main() {}
+}

@@ -59,3 +59,7 @@ class GenericDaughterClass<T> extends GenericClass<T> {
         this.gi = gi;
     }
 }
+
+class Main {
+    public static void main() {}
+}

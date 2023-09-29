@@ -6,3 +6,7 @@ class C {
 class D extends C {
     char m1(int x) {}
 }
+
+class Main {
+    public static void main() {}
+}

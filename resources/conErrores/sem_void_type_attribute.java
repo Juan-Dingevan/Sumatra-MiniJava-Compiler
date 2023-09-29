@@ -2,3 +2,7 @@
 class C {
     void x;
 }
+
+class Main {
+    public static void main() {}
+}

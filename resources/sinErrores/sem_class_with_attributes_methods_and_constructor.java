@@ -15,3 +15,7 @@ class MyClass {
 class X {
 
 }
+
+class Main {
+    public static void main() {}
+}

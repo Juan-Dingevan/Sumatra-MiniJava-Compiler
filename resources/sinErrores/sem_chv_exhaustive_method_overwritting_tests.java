@@ -47,3 +47,7 @@ class Hija<E> extends Padre<E, Object> {
     char cpp(char c, E a, Object b) {}
     String spp(String s, int i) {}
 }
+
+class Main {
+    public static void main() {}
+}

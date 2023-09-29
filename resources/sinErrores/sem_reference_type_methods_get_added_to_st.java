@@ -7,3 +7,7 @@ class C {
     private String m5() {}
     String m6() {}
 }
+
+class Main {
+    public static void main() {}
+}

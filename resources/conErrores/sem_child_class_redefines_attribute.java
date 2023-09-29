@@ -6,3 +6,7 @@ class C {
 class D extends C {
     int a;
 }
+
+class Main {
+    public static void main() {}
+}

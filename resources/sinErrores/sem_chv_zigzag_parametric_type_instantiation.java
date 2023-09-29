@@ -16,3 +16,7 @@ class Hija<X, Y> extends Padre<X, Y> {
     X m2() {}
     A m3() {}
 }
+
+class Main {
+    public static void main() {}
+}

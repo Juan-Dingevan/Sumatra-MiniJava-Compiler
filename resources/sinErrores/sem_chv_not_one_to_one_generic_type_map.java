@@ -33,3 +33,7 @@ class StringPair extends Pair<String, String> {
     public String getB() {}
     public void setB(String b) {}
 }
+
+class Main {
+    public static void main() {}
+}

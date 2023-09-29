@@ -15,3 +15,7 @@ class HashMap<K, V> implements Map<K, V> {
 interface Map<K, V> {
 
 }
+
+class Main {
+    public static void main() {}
+}

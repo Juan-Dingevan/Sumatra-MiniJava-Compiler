@@ -11,3 +11,7 @@ class ChildThree<D> extends Parent<D, Two, One> {}
 class ChildFour extends Parent<Three, Two, One> {}
 
 class ChildFive<T> extends Parent<Three, Two, One> {}
+
+class Main {
+    public static void main() {}
+}

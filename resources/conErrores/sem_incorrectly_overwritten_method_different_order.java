@@ -6,3 +6,7 @@ class C {
 class D extends C {
     int m1(C parametroLegacy, int numeroQueSeUtilizaParaResolverElHanltingProblem) {}
 }
+
+class Main {
+    public static void main() {}
+}

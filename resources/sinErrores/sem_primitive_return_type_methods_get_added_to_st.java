@@ -35,3 +35,7 @@ class C {
     private static void m5void() {}
     private void m6void() {}
 }
+
+class Main {
+    public static void main() {}
+}

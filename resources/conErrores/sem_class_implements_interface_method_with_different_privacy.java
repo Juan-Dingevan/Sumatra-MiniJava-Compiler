@@ -6,3 +6,7 @@ interface I {
 class C implements I {
     private void m1(int x) {}
 }
+
+class Main {
+    public static void main() {}
+}

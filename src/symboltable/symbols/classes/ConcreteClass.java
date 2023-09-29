@@ -73,6 +73,10 @@ public class ConcreteClass extends Class {
     public void checkDeclaration() throws CompilerException {
         checkCircularInheritance();
 
+        if(!implementsInterface.equals(""))
+            if (!SymbolTable.getInstance().interfaceExists(implementsInterface))
+                throw new UndeclaredInterfaceImplementedException(getToken(), implementsInterface);
+
         for(Attribute a : attributes.values())
             a.checkDeclaration();
 
@@ -110,21 +114,24 @@ public class ConcreteClass extends Class {
         ConcreteClass parent = SymbolTable.getInstance().getClass(inheritsFrom);
         parent.consolidate();
 
-        if(!implementsInterface.equals(""))
-            if (!SymbolTable.getInstance().interfaceExists(implementsInterface))
-                throw new UndeclaredInterfaceImplementedException(getToken(), implementsInterface);
+        if(implementsInterface.equals(""))
+            implementsInterface = parent.getImplementedInterface();
 
         checkGenerics();
 
-        checkCorrectImplementationOfInterface();
-
         addInheritedAttributes(parent);
         addInheritedMethods(parent);
+
+        checkCorrectImplementationOfInterface();
 
         if(!constructorExists())
             setConstructor(Constructor.getDefaultConstructorForClass(this));
 
         hasBeenConsolidated = true;
+    }
+
+    protected String getImplementedInterface() {
+        return implementsInterface;
     }
 
     protected void checkCorrectImplementationOfInterface() throws CompilerException {

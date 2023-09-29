@@ -10,3 +10,7 @@ class List<E> {
 class StringList {
     Node<String> n;
 }
+
+class Main {
+    public static void main() {}
+}

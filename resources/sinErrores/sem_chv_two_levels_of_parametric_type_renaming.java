@@ -21,3 +21,7 @@ class Bebe extends Hija<String> {
     String s;
 
 }
+
+class Main {
+    public static void main() {}
+}

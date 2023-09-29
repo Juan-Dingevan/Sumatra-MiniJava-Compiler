@@ -8,3 +8,7 @@ class List<T> implements Iterable<T> {
     public Iterable<T> getIterable() {}
     public void setIterable(Iterable<T> it) {}
 }
+
+class Main {
+    public static void main() {}
+}
