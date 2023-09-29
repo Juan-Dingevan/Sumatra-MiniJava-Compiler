@@ -22,7 +22,7 @@ public abstract class TokenConstants {
     public static final Token PRINTSLN_TOKEN = new Token(TokenType.id_method_variable, "printSln", -1);
 
     public static final Token PARAMETER_B_TOKEN = new Token(TokenType.id_method_variable, "b", -1);
-    public static final Token PARAMETER_C_TOKEN = new Token(TokenType.id_method_variable, "b", -1);
-    public static final Token PARAMETER_I_TOKEN = new Token(TokenType.id_method_variable, "b", -1);
-    public static final Token PARAMETER_S_TOKEN = new Token(TokenType.id_method_variable, "b", -1);
+    public static final Token PARAMETER_C_TOKEN = new Token(TokenType.id_method_variable, "c", -1);
+    public static final Token PARAMETER_I_TOKEN = new Token(TokenType.id_method_variable, "i", -1);
+    public static final Token PARAMETER_S_TOKEN = new Token(TokenType.id_method_variable, "s", -1);
 }
