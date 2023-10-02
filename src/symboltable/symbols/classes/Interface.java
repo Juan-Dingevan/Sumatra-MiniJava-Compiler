@@ -32,6 +32,8 @@ public class Interface extends Class {
 
     @Override
     public void checkDeclaration() throws CompilerException {
+        checkCircularInheritance();
+
         for(Method m : methods.values()) {
             m.checkDeclaration();
             if(m.isStatic())
