@@ -1,8 +1,7 @@
 package symboltable.symbols.classes;
 
 import exceptions.general.CompilerException;
-import exceptions.semantical.GenericsException;
-import exceptions.semantical.MethodAlreadyExistsException;
+import exceptions.semantical.*;
 import symboltable.symbols.Symbol;
 import symboltable.symbols.members.Method;
 import symboltable.symbols.members.Unit;
@@ -82,33 +81,44 @@ public abstract class Class extends Symbol {
         return childToParentGenericTypeMap.get(t) != null || implementedGenericTypesMap.get(t) != null;
     }
 
+    public String getInheritsFrom() {
+        return inheritsFrom;
+    }
+
+    @SuppressWarnings("ReassignedVariable")
+    protected void checkCircularInheritance() throws SemanticException {
+        Class currentClass = this;
+
+        while(!currentClass.getInheritsFrom().equals("")) {
+            String parentName = currentClass.getInheritsFrom();
+
+            if(getName().equals(parentName)) {
+                throw new CircularInheritanceException(getToken());
+            }
+
+            currentClass = SymbolTable.getInstance().getClassOrInterface(parentName);
+
+            if(currentClass == null)
+                throw new UndeclaredExtendsException(getToken(), parentName);
+        }
+
+    }
+
     @SuppressWarnings("ReassignedVariable")
     public boolean referenceTypesAreEquivalentInClass(ReferenceType rt1, ReferenceType rt2) {
         int genericArity1 = rt1.getGenericTypes().size();
         int genericArity2 = rt2.getGenericTypes().size();
 
         if(genericArity1 != genericArity2)
-            return false; //Caso trivial 2: uno tiene aridad generica y el otro no. No seran iguales nunca.
-
-        var b = isParentOrInterfaceDeclaredGenericType(rt1.getReferenceName());
-        var c = isParentOrInterfaceDeclaredGenericType(rt2.getReferenceName());
-
-        var s = "";
+            return false;
 
         if(genericArity1 == 0) {
             if(rt1.equals(rt2))
-                return true; //caso en el cual no hay genericidad, o la genericidad se resuelve trivialmente.
+                return true; //Either theres no Generics, or they get resolved trivially (Tree<E> implements Iterable<E>)
 
-            //Caso en el que se comparan tipos parametricos "estandar". Por ejemplo,
-            //comparar E con T, o String con A.
             return genericTypesAreEquivalentInClass(rt1.getReferenceName(), rt2.getReferenceName());
         }
 
-        //Caso final, en el que comparamos tipos que tienen parametros de genericidad, por ejemplo
-        //Tree<E> con Tree<T>, o Box<String> con Box<A>
-        //Notar que casos como E<T> (tipo generico con aridad generica) nunca se dan.
-
-        //Como base para la igualdad, tienen que tener el mismo nombre.
         boolean equivalent = rt1.getReferenceName().equals(rt2.getReferenceName());
 
         List<String> generics1 = rt1.getGenericTypes();
@@ -116,7 +126,6 @@ public abstract class Class extends Symbol {
 
         int i = 0;
 
-        //Y luego, todos los parametros de tipo deben ser equivalentes entre si
         while(equivalent && i < genericArity1) {
             equivalent = genericTypesAreEquivalentInClass(generics1.get(i), generics2.get(i));
             i++;
@@ -163,35 +172,23 @@ public abstract class Class extends Symbol {
     protected void checkGenerics() throws GenericsException {
         Class parent = SymbolTable.getInstance().getClassOrInterface(inheritsFrom);
 
-        //declared parameter types do not share name with other classes or interfaces
-        for(String genericType : genericTypes) {
-            if(SymbolTable.getInstance().exists(genericType)) {
-                Token genericsToken = new Token(TokenType.id_class, genericType, getToken().getLineNumber());
-                String errorMessage = "Error: the generic type " + genericType + " of class " + getName() + " shares a name with a class or interface.";
-                throw new GenericsException(genericsToken, errorMessage);
-            }
-        }
+        genericTypeParametersArentDeclaredNames();
+        extendsTypeParametersArityMatchesParentsRealTypeParameterArity(parent);
+        extendsTypeParametersAreDeclaredClassesOrDeclaredTypeParameters();
+        createChildToParentTypeParameterMap(parent);
+    }
 
-        /*declared parameter types of the parent class have the correct arity
-         * prevents following case:
-         * class A<K, V> {...}
-         * class B<K> extends A<K> {...}
-         * */
-        if(parentDeclaredGenericTypes.size() != parent.getGenericTypes().size()) {
-            String errorMessage = "When the class " + getName() + " declares extension of " + parent.getName()
-                    + ", there is a mismatch of number of generic type parameters (" + parentDeclaredGenericTypes.size()
-                    + " but " + parent.getName() + " has " + parent.getGenericTypes().size() + ")";
-            throw new GenericsException(getToken(), errorMessage);
-        }
+    private void createChildToParentTypeParameterMap(Class parent) {
+        List<String> parentGenericTypes = parent.getGenericTypes();
+        for(int i = 0; i < parentDeclaredGenericTypes.size(); i++) {
+            if(childToParentGenericTypeMap.get(parentDeclaredGenericTypes.get(i)) == null)
+                childToParentGenericTypeMap.put(parentDeclaredGenericTypes.get(i), new ArrayList<String>());
 
-        /*declared parent parameters are either declared classes or interfaces, or parametric types of child
-         * prevents following case:
-         * class A<K, V> {...}
-         * class B<K, V> extends A<Q, K> {...} (Q doesn't exist)
-         * and
-         * class A<K, V> {...}
-         * class B<K> extends A<K, V> {...} (B doesn't have enough type parameters)
-         * */
+            childToParentGenericTypeMap.get(parentDeclaredGenericTypes.get(i)).add(parentGenericTypes.get(i));
+        }
+    }
+
+    private void extendsTypeParametersAreDeclaredClassesOrDeclaredTypeParameters() throws GenericsException {
         for(String parentGenericType : parentDeclaredGenericTypes) {
             if(!(SymbolTable.getInstance().exists(parentGenericType) || genericTypes.contains(parentGenericType))) {
                 Token genericsToken = new Token(TokenType.id_class, parentGenericType, getToken().getLineNumber());
@@ -199,19 +196,25 @@ public abstract class Class extends Symbol {
                 throw new GenericsException(genericsToken, errorMessage);
             }
         }
+    }
 
-        //At this point, we can assume that (at least arity-wise), the parameters are well-defined.
-        List<String> parentGenericTypes = parent.getGenericTypes();
-        for(int i = 0; i < parentDeclaredGenericTypes.size(); i++) {
-            if(childToParentGenericTypeMap.get(parentDeclaredGenericTypes.get(i)) == null)
-                childToParentGenericTypeMap.put(parentDeclaredGenericTypes.get(i), new ArrayList<String>());
-
-            childToParentGenericTypeMap.get(parentDeclaredGenericTypes.get(i)).add(parentGenericTypes.get(i));
-
-            //childToParentGenericTypeMap.put(parentDeclaredGenericTypes.get(i), parentGenericTypes.get(i));
-            System.out.println("in " + getName() + " mapping " + parentDeclaredGenericTypes.get(i) + " to " + parentGenericTypes.get(i));
+    private void extendsTypeParametersArityMatchesParentsRealTypeParameterArity(Class parent) throws GenericsException {
+        if(parentDeclaredGenericTypes.size() != parent.getGenericTypes().size()) {
+            String errorMessage = "When the class " + getName() + " declares extension of " + parent.getName()
+                    + ", there is a mismatch of number of generic type parameters (" + parentDeclaredGenericTypes.size()
+                    + " but " + parent.getName() + " has " + parent.getGenericTypes().size() + ")";
+            throw new GenericsException(getToken(), errorMessage);
         }
+    }
 
+    private void genericTypeParametersArentDeclaredNames() throws GenericsException {
+        for(String genericType : genericTypes) {
+            if(SymbolTable.getInstance().exists(genericType)) {
+                Token genericsToken = new Token(TokenType.id_class, genericType, getToken().getLineNumber());
+                String errorMessage = "Error: the generic type " + genericType + " of class " + getName() + " shares a name with a class or interface.";
+                throw new GenericsException(genericsToken, errorMessage);
+            }
+        }
     }
 
     public void setParentDeclaredGenericTypes(List<String> parentDeclaredGenericTypes) {

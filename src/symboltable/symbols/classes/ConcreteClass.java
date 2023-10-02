@@ -91,25 +91,6 @@ public class ConcreteClass extends Class {
             constructor.checkDeclaration();
     }
 
-    @SuppressWarnings("ReassignedVariable")
-    protected void checkCircularInheritance() throws SemanticException {
-        ConcreteClass currentClass = this;
-
-        while(currentClass.getToken() != OBJECT_TOKEN) {
-            String parentName = currentClass.inheritsFrom;
-
-            if(getName().equals(parentName)) {
-                throw new CircularInheritanceException(getToken());
-            }
-
-            currentClass = SymbolTable.getInstance().getClass(parentName);
-
-            if(currentClass == null)
-                throw new UndeclaredExtendsException(getToken(), parentName);
-        }
-
-    }
-
     @Override
     public void consolidate() throws CompilerException {
         if(hasBeenConsolidated || token == OBJECT_TOKEN)
@@ -194,32 +175,44 @@ public class ConcreteClass extends Class {
         super.checkGenerics();
 
         if(!implementsInterface.equals("")) {
-            Interface implemented = SymbolTable.getInstance().getInterface(implementsInterface);
-            List<String> interfaceGenericTypes = implemented.getGenericTypes();
+            checkImplementedInterfaceGenerics();
+        }
+    }
 
-            if(interfaceDeclaredGenericTypes.size() != implemented.getGenericTypes().size()) {
-                String errorMessage = "When the class " + getName() + " declares implementation of " + implemented.getName()
-                        + ", there is a mismatch of number of generic type parameters (" + interfaceDeclaredGenericTypes.size()
-                        + " but " + implemented.getName() + " has " + implemented.getGenericTypes().size() + ")";
-                throw new GenericsException(getToken(), errorMessage);
+    private void checkImplementedInterfaceGenerics() throws GenericsException {
+        Interface implemented = SymbolTable.getInstance().getInterface(implementsInterface);
+        List<String> interfaceGenericTypes = implemented.getGenericTypes();
+
+        implementsTypeParametersArityMatchesInterfaceRealTypeParameterArity(implemented);
+        implementsTypeParametersAreDeclaredClassesOrDeclaredTypeParameters();
+        createClassToInterfaceGenericTypeMap(interfaceGenericTypes);
+    }
+
+    private void createClassToInterfaceGenericTypeMap(List<String> interfaceGenericTypes) {
+        for(int i = 0; i < interfaceDeclaredGenericTypes.size(); i++) {
+            if(implementedGenericTypesMap.get(interfaceDeclaredGenericTypes.get(i)) == null)
+                implementedGenericTypesMap.put(interfaceDeclaredGenericTypes.get(i), new ArrayList<String>());
+
+            implementedGenericTypesMap.get(interfaceDeclaredGenericTypes.get(i)).add(interfaceGenericTypes.get(i));
+        }
+    }
+
+    private void implementsTypeParametersAreDeclaredClassesOrDeclaredTypeParameters() throws GenericsException {
+        for(String implementedGenericType : interfaceDeclaredGenericTypes) {
+            if(!(SymbolTable.getInstance().exists(implementedGenericType) || genericTypes.contains(implementedGenericType))) {
+                Token genericsToken = new Token(TokenType.id_class, implementedGenericType, getToken().getLineNumber());
+                String errorMessage = "The parametric type " + implementedGenericType + " is not valid in that context.";
+                throw new GenericsException(genericsToken, errorMessage);
             }
+        }
+    }
 
-            for(String implementedGenericType : interfaceDeclaredGenericTypes) {
-                if(!(SymbolTable.getInstance().exists(implementedGenericType) || genericTypes.contains(implementedGenericType))) {
-                    Token genericsToken = new Token(TokenType.id_class, implementedGenericType, getToken().getLineNumber());
-                    String errorMessage = "The parametric type " + implementedGenericType + " is not valid in that context.";
-                    throw new GenericsException(genericsToken, errorMessage);
-                }
-            }
-
-            for(int i = 0; i < interfaceDeclaredGenericTypes.size(); i++) {
-                if(implementedGenericTypesMap.get(interfaceDeclaredGenericTypes.get(i)) == null)
-                    implementedGenericTypesMap.put(interfaceDeclaredGenericTypes.get(i), new ArrayList<String>());
-
-                implementedGenericTypesMap.get(interfaceDeclaredGenericTypes.get(i)).add(interfaceGenericTypes.get(i));
-
-                System.out.println("in " + getName() + " mapping " + interfaceDeclaredGenericTypes.get(i) + " to " + interfaceGenericTypes.get(i));
-            }
+    private void implementsTypeParametersArityMatchesInterfaceRealTypeParameterArity(Interface implemented) throws GenericsException {
+        if(interfaceDeclaredGenericTypes.size() != implemented.getGenericTypes().size()) {
+            String errorMessage = "When the class " + getName() + " declares implementation of " + implemented.getName()
+                    + ", there is a mismatch of number of generic type parameters (" + interfaceDeclaredGenericTypes.size()
+                    + " but " + implemented.getName() + " has " + implemented.getGenericTypes().size() + ")";
+            throw new GenericsException(getToken(), errorMessage);
         }
     }
 
