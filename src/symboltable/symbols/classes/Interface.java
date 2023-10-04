@@ -1,8 +1,8 @@
 package symboltable.symbols.classes;
 
 import exceptions.general.CompilerException;
-import exceptions.semantical.IncorrectlyOverwrittenMethodException;
-import exceptions.semantical.StaticMethodInInterfaceException;
+import exceptions.semantical.declaration.IncorrectlyOverwrittenMethodException;
+import exceptions.semantical.declaration.StaticMethodInInterfaceException;
 import symboltable.symbols.members.Method;
 import symboltable.table.SymbolTable;
 import token.Token;

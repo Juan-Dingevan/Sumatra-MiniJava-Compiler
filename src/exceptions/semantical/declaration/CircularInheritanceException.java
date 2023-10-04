@@ -1,8 +1,8 @@
-package exceptions.semantical;
+package exceptions.semantical.declaration;
 
 import token.Token;
 
-public class CircularInheritanceException extends SemanticException{
+public class CircularInheritanceException extends DeclarationException {
     public CircularInheritanceException(Token t) {
         super(t);
     }

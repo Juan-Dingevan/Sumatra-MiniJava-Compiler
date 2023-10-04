@@ -1,8 +1,8 @@
-package exceptions.semantical;
+package exceptions.semantical.declaration;
 
 import token.Token;
 
-public class IncorrectlyOverwrittenMethodException extends SemanticException{
+public class IncorrectlyOverwrittenMethodException extends DeclarationException{
     protected Token classToken;
     public IncorrectlyOverwrittenMethodException(Token t, Token ct) {
         super(t);

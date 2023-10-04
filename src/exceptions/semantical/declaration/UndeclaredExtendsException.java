@@ -1,8 +1,8 @@
-package exceptions.semantical;
+package exceptions.semantical.declaration;
 
 import token.Token;
 
-public class UndeclaredExtendsException extends SemanticException{
+public class UndeclaredExtendsException extends DeclarationException{
     protected String className;
     public UndeclaredExtendsException(Token t, String className) {
         super(t);

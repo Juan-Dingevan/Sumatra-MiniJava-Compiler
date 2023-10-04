@@ -1,13 +1,8 @@
 package symboltable.symbols.members;
 
 import exceptions.general.CompilerException;
-import exceptions.semantical.GenericsException;
-import exceptions.semantical.InvalidTypeException;
-import exceptions.semantical.UndeclaredTypeException;
+import exceptions.semantical.declaration.InvalidTypeException;
 import symboltable.symbols.classes.Class;
-import symboltable.symbols.classes.ConcreteClass;
-import symboltable.table.SymbolTable;
-import symboltable.types.ReferenceType;
 import symboltable.types.Type;
 import token.Token;
 import utility.StringUtilities;

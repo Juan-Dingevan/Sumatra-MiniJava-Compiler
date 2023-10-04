@@ -1,8 +1,8 @@
-package exceptions.semantical;
+package exceptions.semantical.declaration;
 
 import token.Token;
 
-public class InterfaceAlreadyExistsException extends SemanticException {
+public class InterfaceAlreadyExistsException extends DeclarationException {
     public InterfaceAlreadyExistsException(Token t) {
         super(t);
     }

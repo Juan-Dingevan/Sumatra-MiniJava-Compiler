@@ -1,8 +1,8 @@
-package exceptions.semantical;
+package exceptions.semantical.declaration;
 
 import token.Token;
 
-public class NoMainMethodInProgramException extends SemanticException {
+public class NoMainMethodInProgramException extends DeclarationException {
     public NoMainMethodInProgramException(Token t) {
         super(t);
     }

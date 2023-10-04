@@ -1,7 +1,7 @@
 package symboltable.symbols.classes;
 
 import exceptions.general.CompilerException;
-import exceptions.semantical.*;
+import exceptions.semantical.declaration.*;
 import symboltable.symbols.members.Attribute;
 import symboltable.symbols.members.Constructor;
 import symboltable.symbols.members.Method;

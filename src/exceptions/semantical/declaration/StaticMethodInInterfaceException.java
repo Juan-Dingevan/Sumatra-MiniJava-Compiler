@@ -1,8 +1,8 @@
-package exceptions.semantical;
+package exceptions.semantical.declaration;
 
 import token.Token;
 
-public class StaticMethodInInterfaceException extends SemanticException{
+public class StaticMethodInInterfaceException extends DeclarationException{
     protected Token interfaceToken;
     public StaticMethodInInterfaceException(Token t, Token it) {
         super(t);

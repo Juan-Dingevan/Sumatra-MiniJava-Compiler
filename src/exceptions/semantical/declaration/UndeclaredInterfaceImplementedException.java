@@ -1,8 +1,8 @@
-package exceptions.semantical;
+package exceptions.semantical.declaration;
 
 import token.Token;
 
-public class UndeclaredInterfaceImplementedException extends SemanticException{
+public class UndeclaredInterfaceImplementedException extends DeclarationException{
     protected String interfaceName;
     public UndeclaredInterfaceImplementedException(Token t, String interfaceName) {
         super(t);

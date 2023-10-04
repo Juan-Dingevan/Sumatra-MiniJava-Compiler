@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import exceptions.general.CompilerException;
-import exceptions.semantical.ClassAlreadyExistsException;
-import exceptions.semantical.NoMainMethodInProgramException;
+import exceptions.semantical.declaration.ClassAlreadyExistsException;
+import exceptions.semantical.declaration.NoMainMethodInProgramException;
 import symboltable.symbols.classes.ConcreteClass;
 import symboltable.symbols.classes.Interface;
 import symboltable.symbols.classes.Class;

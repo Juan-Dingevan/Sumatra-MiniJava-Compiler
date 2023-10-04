@@ -1,8 +1,8 @@
-package exceptions.semantical;
+package exceptions.semantical.declaration;
 
 import token.Token;
 
-public class OverwrittenAttributeException extends SemanticException{
+public class OverwrittenAttributeException extends DeclarationException{
     Token originalAttributeToken;
     public OverwrittenAttributeException(Token t, Token oat) {
         super(t);

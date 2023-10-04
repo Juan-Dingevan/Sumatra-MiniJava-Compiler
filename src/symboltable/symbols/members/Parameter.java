@@ -1,9 +1,7 @@
 package symboltable.symbols.members;
 
 import exceptions.general.CompilerException;
-import exceptions.semantical.InvalidTypeException;
-import exceptions.semantical.UndeclaredTypeException;
-import symboltable.table.SymbolTable;
+import exceptions.semantical.declaration.InvalidTypeException;
 import symboltable.symbols.classes.Class;
 import symboltable.types.ReferenceType;
 import symboltable.types.Type;

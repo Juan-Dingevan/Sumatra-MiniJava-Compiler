@@ -1,12 +1,11 @@
 package symboltable.symbols.members;
 
 import exceptions.general.CompilerException;
-import exceptions.semantical.ParameterAlreadyExistsException;
+import exceptions.semantical.declaration.ParameterAlreadyExistsException;
 import symboltable.symbols.classes.Class;
 import token.Token;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 

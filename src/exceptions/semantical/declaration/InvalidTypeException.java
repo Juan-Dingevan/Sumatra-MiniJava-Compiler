@@ -1,9 +1,9 @@
-package exceptions.semantical;
+package exceptions.semantical.declaration;
 
 import symboltable.types.Type;
 import token.Token;
 
-public class InvalidTypeException extends SemanticException{
+public class InvalidTypeException extends DeclarationException {
     protected Type ty;
     public InvalidTypeException(Token t, Type ty) {
         super(t);
