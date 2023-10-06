@@ -166,14 +166,19 @@ public class SymbolTable {
 
         s += "ABSTRACT SYNTAX TREES: \n";
         for(ConcreteClass c : classes.values()) {
-            for (Method m : c.getMethods()) {
-                s += "CLASS " + c.getName() + " METHOD " + m.getName() + " AST: \n";
-                s += m.getAST() == null ? "null\n" : m.getAST().toString() + "\n";
-            }
+            if(!(c.getName().equals("Object") || c.getName().equals("System") || c.getName().equals("String"))) {
+                for (Method m : c.getMethods()) {
+                    s += "CLASS " + c.getName() + " METHOD " + m.getName() + " AST: \n";
+                    s += m.getAST() == null ? "null\n\n" : m.getAST().toString() + "\n";
+                }
 
-            s += "CLASS " + c.getName() + " CONSTRUCTOR AST: \n";
-            s += c.getConstructor().getAST() == null ? "null\n" : c.getConstructor().getAST().toString() + "\n";
-            s += "\n";
+                s += "CLASS " + c.getName() + " CONSTRUCTOR AST: \n";
+                if(c.getConstructor() != null)
+                    s += c.getConstructor().getAST() == null ? "null\n" : c.getConstructor().getAST().toString() + "\n";
+                else
+                    s += "null constructor\n";
+                s += "\n";
+            }
         }
 
         return s;

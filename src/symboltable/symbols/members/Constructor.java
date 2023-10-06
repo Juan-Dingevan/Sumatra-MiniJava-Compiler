@@ -17,7 +17,7 @@ public class Constructor extends Unit {
 
         BlockNode ast = new BlockNode();
         ast.setToken(new Token(TokenType.punctuation_open_curly, "{", c.getToken().getLineNumber()));
-        //ast.setParent(NULL_BLOCK_NODE);
+        ast.setParentBlock(BlockNode.NULL_PARENT);
         constructor.setAST(ast);
 
         return constructor;

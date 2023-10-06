@@ -15,6 +15,4 @@ class Main {
     private int m3int() {}
     public static int m4int() {}
     private static int m5int() {}
-
-    Main() {}
 }

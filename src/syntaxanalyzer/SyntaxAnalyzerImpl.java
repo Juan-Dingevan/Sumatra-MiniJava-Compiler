@@ -4,7 +4,7 @@ import exceptions.general.CompilerException;
 import exceptions.syntax.InvalidTokenFoundException;
 import exceptions.syntax.TokenMismatchException;
 import lexicalanalizer.LexicalAnalyzer;
-import symboltable.ast.sentencenodes.BlockNode;
+import symboltable.ast.sentencenodes.*;
 import symboltable.privacy.Privacy;
 import symboltable.symbols.classes.Class;
 import symboltable.symbols.members.Attribute;
@@ -288,7 +288,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
             currentClass.setConstructor(c);
 
             formalArguments();
-            BlockNode block = block();
+            BlockNode block = block(BlockNode.NULL_PARENT);
 
             c.setAST(block);
         }
@@ -490,7 +490,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         // RULE <method_successor> ::= <formal_arguments><block>
         formalArguments();
-        BlockNode block = block();
+        BlockNode block = block(BlockNode.NULL_PARENT);
 
         m.setAST(block);
     }
@@ -626,22 +626,24 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         match(TokenType.punctuation_semicolon);
     }
 
-    private BlockNode block() throws CompilerException {
+    private BlockNode block(BlockNode parent) throws CompilerException {
         printIfDebug("->Block");
         Token openBlock = currentToken;
 
         match(TokenType.punctuation_open_curly);
 
         BlockNode block = new BlockNode();
-        block.setToken(openBlock);
 
-        sentenceList();
+        sentenceList(block);
         match(TokenType.punctuation_close_curly);
+
+        block.setParentBlock(parent);
+        block.setToken(openBlock);
 
         return block;
     }
 
-    private void sentenceList() throws CompilerException {
+    private void sentenceList(BlockNode parent) throws CompilerException {
         printIfDebug("->SentenceList");
         TokenType[] sentenceFirsts = {
                 TokenType.punctuation_semicolon,
@@ -669,15 +671,17 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         // RULE: <sentence_list> ::= <sentence><sentence_list>
         if(currentTokenIn(sentenceFirsts)) {
-            sentence();
-            sentenceList();
+            SentenceNode s = sentence(parent);
+            parent.addSentence(s);
+            sentenceList(parent);
         }
         // RULE <sentence_list> ::= epsilon
         // We do nothing
     }
 
-    private void sentence() throws CompilerException {
+    private SentenceNode sentence(BlockNode parent) throws CompilerException {
         printIfDebug("->Sentence");
+
         TokenType[] assignmentCallFirsts = {
                 TokenType.operand_plus,
                 TokenType.operand_minus,
@@ -696,6 +700,8 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
                 TokenType.punctuation_open_parenthesis
         };
 
+        SentenceNode s = null;
+
         //RULE <sentence> ::= <assignment_call>
         if(currentTokenIn(assignmentCallFirsts)) {
             assignmentCall();
@@ -713,13 +719,13 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
             match(TokenType.punctuation_semicolon);
         } //RULE <sentence> ::= <if>
         else if (currentTokenIn(new TokenType[]{TokenType.reserved_word_if})) {
-            ifNT();
+            s = ifNT(parent);
         } //RULE <sentence> ::= <while>
         else if (currentTokenIn(new TokenType[]{TokenType.reserved_word_while})) {
-            whileNT();
+            s = whileNT(parent);
         } //RULE <sentence> ::= <block>
         else if (currentTokenIn(new TokenType[]{TokenType.punctuation_open_curly})) {
-            block();
+            block(parent);
         } else {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
@@ -737,44 +743,89 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
             };
             throw new InvalidTokenFoundException(line, lexeme, validTokens);
         }
+
+        return s;
     }
 
-    private void whileNT() throws CompilerException {
+    private WhileNode whileNT(BlockNode parent) throws CompilerException {
+        printIfDebug("->WhileNT");
+
+        Token whileToken = currentToken;
+
         match(TokenType.reserved_word_while);
         match(TokenType.punctuation_open_parenthesis);
         expression();
         match(TokenType.punctuation_close_parenthesis);
-        sentence();
+        SentenceNode s = sentence(parent);
+
+        WhileNode w = new WhileNode();
+        w.setParentBlock(parent);
+        w.setToken(whileToken);
+        w.setSentence(s);
+        //w.setExpression(e);
+
+        return w;
     }
 
-    private void ifNT() throws CompilerException {
+    private IfNode ifNT(BlockNode parent) throws CompilerException {
         printIfDebug("->IfNT");
+
+        Token ifToken = currentToken;
+
         match(TokenType.reserved_word_if);
         match(TokenType.punctuation_open_parenthesis);
         expression();
         match(TokenType.punctuation_close_parenthesis);
-        sentence();
-        optionalElse();
+        SentenceNode s = sentence(parent);
+        ElseNode elseNode = optionalElse(parent);
+
+        IfNode i = new IfNode();
+        i.setParentBlock(parent);
+        i.setToken(ifToken);
+        i.setSentence(s);
+        //i.setElseNode(elseNode);
+        //i.setExpression(e);
+
+        return i;
     }
 
-    private void optionalElse() throws CompilerException {
+    private ElseNode optionalElse(BlockNode parent) throws CompilerException {
         printIfDebug("->OptionalElse");
+
+        ElseNode en;
+
         // RULE: <optional_else> ::= else <sentence>
         if(currentTokenIn(new TokenType[]{TokenType.reserved_word_else})) {
-            elseNT();
+            en = elseNT(parent);
+        } // RULE: <optional_else> ::= epsilon
+        else {
+            en = ElseNode.NULL_ELSE;
         }
-        // RULE: <optional_else> ::= epsilon
-        // We do nothing
+
+        return en;
     }
 
-    private void elseNT() throws CompilerException {
+    private ElseNode elseNT(BlockNode parent) throws CompilerException {
         printIfDebug("->ElseNT");
+
+        Token elseToken = currentToken;
+
         match(TokenType.reserved_word_else);
-        sentence();
+        SentenceNode s = sentence(parent);
+
+        ElseNode e = new ElseNode();
+        e.setParentBlock(parent);
+        e.setToken(elseToken);
+        e.setSentence(s);
+
+        return e;
     }
 
     private void returnNT() throws CompilerException {
         printIfDebug("->ReturnNT");
+
+        Token returnToken = currentToken;
+
         match(TokenType.reserved_word_return);
         optionalExpression();
     }
