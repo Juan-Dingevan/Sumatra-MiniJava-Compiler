@@ -2,6 +2,7 @@ package symboltable.symbols.members;
 
 import exceptions.general.CompilerException;
 import exceptions.semantical.declaration.ParameterAlreadyExistsException;
+import symboltable.ast.sentencenodes.BlockNode;
 import symboltable.symbols.classes.Class;
 import token.Token;
 
@@ -13,6 +14,7 @@ public abstract class Unit extends Member{
 
     protected HashMap<String, Parameter> parameterMap;
     protected List<Parameter> parameterList;
+    protected BlockNode ast;
     public Unit(Token t, Class memberOf) {
         super(t, memberOf);
         parameterMap = new HashMap<>();
@@ -35,8 +37,15 @@ public abstract class Unit extends Member{
         } else
             throw new ParameterAlreadyExistsException(p.getToken());
     }
-
     public List<Parameter> getParameters() {
         return parameterList;
+    }
+
+    public void setAST(BlockNode ast) {
+        this.ast = ast;
+    }
+
+    public BlockNode getAST() {
+        return ast;
     }
 }

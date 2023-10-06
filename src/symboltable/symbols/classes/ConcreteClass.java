@@ -63,6 +63,10 @@ public class ConcreteClass extends Class {
             throw new AttributeAlreadyExistsException(a.getToken());
     }
 
+    public Constructor getConstructor() {
+        return constructor;
+    }
+
     public void setConstructor(Constructor c) throws CompilerException {
         if(!constructorExists()) {
             constructor = c;

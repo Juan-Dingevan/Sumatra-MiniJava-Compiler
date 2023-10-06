@@ -2,6 +2,7 @@ package symboltable.table;
 
 import exceptions.general.CompilerException;
 import symboltable.symbols.classes.ConcreteClass;
+import symboltable.symbols.members.Constructor;
 import symboltable.symbols.members.Method;
 import symboltable.symbols.members.Parameter;
 import symboltable.types.Char;
@@ -29,6 +30,8 @@ public abstract class DefaultClassesSetUpHandler {
             debugPrint.addParameter(iDebugPrint);
 
             object.addMethod(debugPrint);
+
+            object.setConstructor(Constructor.getDefaultConstructorForClass(object));
 
             return object;
         } catch(CompilerException ex) {

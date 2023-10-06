@@ -162,6 +162,20 @@ public class SymbolTable {
         for(Interface i : interfaces.values())
             s += i.toString() + "\n";
 
+        s += "\n\n";
+
+        s += "ABSTRACT SYNTAX TREES: \n";
+        for(ConcreteClass c : classes.values()) {
+            for (Method m : c.getMethods()) {
+                s += "CLASS " + c.getName() + " METHOD " + m.getName() + " AST: \n";
+                s += m.getAST() == null ? "null\n" : m.getAST().toString() + "\n";
+            }
+
+            s += "CLASS " + c.getName() + " CONSTRUCTOR AST: \n";
+            s += c.getConstructor().getAST() == null ? "null\n" : c.getConstructor().getAST().toString() + "\n";
+            s += "\n";
+        }
+
         return s;
     }
 }

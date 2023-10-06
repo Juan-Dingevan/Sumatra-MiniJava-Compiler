@@ -4,6 +4,7 @@ import exceptions.general.CompilerException;
 import exceptions.syntax.InvalidTokenFoundException;
 import exceptions.syntax.TokenMismatchException;
 import lexicalanalizer.LexicalAnalyzer;
+import symboltable.ast.sentencenodes.BlockNode;
 import symboltable.privacy.Privacy;
 import symboltable.symbols.classes.Class;
 import symboltable.symbols.members.Attribute;
@@ -287,7 +288,9 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
             currentClass.setConstructor(c);
 
             formalArguments();
-            block();
+            BlockNode block = block();
+
+            c.setAST(block);
         }
         // RULE: <member_id_class_successor> ::= <optional_generics> id_method_variable <attribute_method_successor>
         // This rule captures methods that have a reference-type return type and attributes that are of a reference type and NOT static.
@@ -487,7 +490,9 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         // RULE <method_successor> ::= <formal_arguments><block>
         formalArguments();
-        block();
+        BlockNode block = block();
+
+        m.setAST(block);
     }
 
     private void formalArguments() throws CompilerException {
@@ -621,11 +626,19 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         match(TokenType.punctuation_semicolon);
     }
 
-    private void block() throws CompilerException {
+    private BlockNode block() throws CompilerException {
         printIfDebug("->Block");
+        Token openBlock = currentToken;
+
         match(TokenType.punctuation_open_curly);
+
+        BlockNode block = new BlockNode();
+        block.setToken(openBlock);
+
         sentenceList();
         match(TokenType.punctuation_close_curly);
+
+        return block;
     }
 
     private void sentenceList() throws CompilerException {
