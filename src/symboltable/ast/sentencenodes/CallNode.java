@@ -18,4 +18,23 @@ public class CallNode extends SentenceNode{
     public void setExpression(ExpressionNode expression) {
         this.expression = expression;
     }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(super.toString());
+
+        sb.append("\n");
+        sb.append(tabs());
+        sb.append("expression: \n");
+
+        if(expression != null) {
+            expression.stringDepth = stringDepth+1;
+            sb.append(expression);
+        } else {
+            sb.append(tabs());
+            sb.append("[null]");
+        }
+
+        return sb.toString();
+    }
 }
