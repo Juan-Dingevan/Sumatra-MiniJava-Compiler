@@ -1,6 +1,7 @@
 package symboltable.ast.expressionnodes;
 
 import symboltable.ast.Node;
+import token.Token;
 
-public class ExpressionNode extends Node {
+public abstract class ExpressionNode extends Node {
 }
