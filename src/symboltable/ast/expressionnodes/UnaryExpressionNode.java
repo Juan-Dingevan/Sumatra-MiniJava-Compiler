@@ -9,4 +9,14 @@ public abstract class UnaryExpressionNode extends ExpressionNode{
     public void setOperandExpression(ExpressionNode operandExpression) {
         this.operandExpression = operandExpression;
     }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(super.toString());
+        sb.append("\n\t");
+        sb.append("Operand: \n\t\t");
+        sb.append(operandExpression);
+
+        return sb.toString();
+    }
 }

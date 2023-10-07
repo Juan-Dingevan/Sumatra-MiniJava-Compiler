@@ -649,12 +649,11 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         match(TokenType.punctuation_open_curly);
 
         BlockNode block = new BlockNode();
+        block.setToken(openBlock);
+        block.setParentBlock(parent);
 
         sentenceList(block);
         match(TokenType.punctuation_close_curly);
-
-        block.setParentBlock(parent);
-        block.setToken(openBlock);
 
         return block;
     }
@@ -991,12 +990,13 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         // RULE: <composite_expression_recursion> ::= <binary_operand><basic_expression><composite_expression_recursion>
         if(currentTokenIn(binaryOperatorFirsts)) {
             BinaryExpressionNode ben = binaryOperator();
-            ExpressionNode rhs = basicExpression();
+            ExpressionNode incompleteRHS = basicExpression();
+            ExpressionNode finalRHS = compositeExpressionRecursion(incompleteRHS);
 
             ben.setLHS(possibleLHS);
-            ben.setRHS(rhs);
+            ben.setRHS(finalRHS);
 
-            en = compositeExpressionRecursion(ben);
+            en = ben;
         }// RULE: <composite_expression_recursion> ::= epsilon
         else {
             en = possibleLHS;
@@ -1017,6 +1017,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
             match(TokenType.assign_normal);
             ExpressionNode rhs = expression();
 
+            //si anda mal, ver composite expression recursion
             BinaryExpressionNode aen = new AssignmentExpressionNode();
             aen.setToken(declarationToken);
             aen.setLHS(possibleLHS);
@@ -1229,7 +1230,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
             throw new InvalidTokenFoundException(line, lexeme, validTokens);
         }
 
-        ln.setToken(currentToken);
+        ln.setToken(declarationToken);
 
         return ln;
     }
@@ -1278,12 +1279,13 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
     private ParenthesizedExpressionAccessNode parenthesizedExpression() throws CompilerException {
         printIfDebug("->ParenthesizedExpression");
+        Token openToken = currentToken;
         match(TokenType.punctuation_open_parenthesis);
         ExpressionNode en = expression();
         match(TokenType.punctuation_close_parenthesis);
 
         ParenthesizedExpressionAccessNode pean = new ParenthesizedExpressionAccessNode();
-        pean.setToken(en.getToken());
+        pean.setToken(openToken);
         pean.setExpression(en);
 
         return pean;
