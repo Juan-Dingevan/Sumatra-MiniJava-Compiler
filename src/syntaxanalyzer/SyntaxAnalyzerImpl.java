@@ -769,7 +769,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         match(TokenType.reserved_word_while);
         match(TokenType.punctuation_open_parenthesis);
-        expression();
+        ExpressionNode e = expression();
         match(TokenType.punctuation_close_parenthesis);
         SentenceNode s = sentence(parent);
 
@@ -777,7 +777,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         w.setParentBlock(parent);
         w.setToken(whileToken);
         w.setSentence(s);
-        //w.setExpression(e);
+        w.setExpression(e);
 
         return w;
     }
@@ -789,7 +789,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         match(TokenType.reserved_word_if);
         match(TokenType.punctuation_open_parenthesis);
-        expression();
+        ExpressionNode e = expression();
         match(TokenType.punctuation_close_parenthesis);
         SentenceNode s = sentence(parent);
         ElseNode elseNode = optionalElse(parent);
@@ -798,8 +798,8 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         i.setParentBlock(parent);
         i.setToken(ifToken);
         i.setSentence(s);
-        //i.setElseNode(elseNode);
-        //i.setExpression(e);
+        i.setElseNode(elseNode);
+        i.setExpression(e);
 
         return i;
     }
@@ -1505,7 +1505,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
             chainingNode = new MethodChainingNode();
             chainingNode.setToken(declarationToken);
-            chainToChain.setChainingNode(chainToChain);
+            chainingNode.setChainingNode(chainToChain);
         } else {
             /*
              * Lo ponemos en el else, sin chequear primeros porque, si

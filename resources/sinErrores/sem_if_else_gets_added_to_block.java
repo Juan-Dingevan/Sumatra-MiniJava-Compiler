@@ -6,5 +6,7 @@ class Main {
     public void m() {
         if(4 >= 2)
             x = x + 1;
+        else
+            x = x - 1;
     }
 }

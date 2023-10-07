@@ -12,4 +12,19 @@ public abstract class AccessNode extends OperandNode {
     public void setChainingNode(ChainingNode chainingNode) {
         this.chainingNode = chainingNode;
     }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(super.toString());
+
+        if(chainingNode != ChainingNode.NO_CHAINING) {
+            sb.append("\n");
+            sb.append(tabs());
+            sb.append("chaining: \n");
+            chainingNode.stringDepth = stringDepth + 1;
+            sb.append(chainingNode);
+        }
+
+        return sb.toString();
+    }
 }

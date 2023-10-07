@@ -4,7 +4,8 @@ class Main {
     public static void main() {}
 
     public void m() {
-        if(4 >= 2)
+        if(4 >= 2) {
             x = x + 1;
+        }
     }
 }
