@@ -15,7 +15,7 @@ import utility.StringUtilities;
 import java.util.List;
 
 public class Method extends Unit {
-    private static int classID = 0;
+    public static int classID = 0;
     private static final int LEVEL = 2;
 
     protected int instanceID;

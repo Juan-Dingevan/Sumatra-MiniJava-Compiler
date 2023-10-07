@@ -7,6 +7,7 @@ import java.util.List;
 import exceptions.general.CompilerException;
 import exceptions.semantical.declaration.ClassAlreadyExistsException;
 import exceptions.semantical.declaration.NoMainMethodInProgramException;
+import symboltable.ast.sentencenodes.*;
 import symboltable.symbols.classes.ConcreteClass;
 import symboltable.symbols.classes.Interface;
 import symboltable.symbols.classes.Class;
@@ -36,10 +37,20 @@ public class SymbolTable {
 
     public static void resetInstance() {
         instance = null;
-        ConcreteClass.resetID();
-        Attribute.resetID();
-        Method.resetID();
-        Parameter.resetID();
+
+        ConcreteClass.classID = 0;
+        Attribute.classID = 0;
+        Method.classID = 0;
+        Parameter.classID = 0;
+
+        AssignmentNode.classID = 0;
+        BlockNode.classID = 0;
+        CallNode.classID = 0;
+        ElseNode.classID = 0;
+        IfNode.classID = 0;
+        LocalVariableNode.classID = 0;
+        ReturnNode.classID = 0;
+        WhileNode.classID = 0;
     }
 
     private SymbolTable() {

@@ -7,8 +7,8 @@ import symboltable.types.Type;
 import token.Token;
 import utility.StringUtilities;
 
-public class Attribute extends TypedEntity {
-    private static int classID = 0;
+public class Attribute extends Variable {
+    public static int classID = 0;
     private static final int LEVEL = 2;
 
     protected int instanceID;

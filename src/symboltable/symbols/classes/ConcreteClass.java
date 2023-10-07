@@ -17,7 +17,7 @@ import java.util.List;
 import static token.TokenConstants.OBJECT_TOKEN;
 
 public class ConcreteClass extends Class {
-    private static int classID = 0;
+    public static int classID = 0;
     private static final int LEVEL = 1;
 
     protected int instanceID;
@@ -25,10 +25,6 @@ public class ConcreteClass extends Class {
     protected List<String> interfaceDeclaredGenericTypes;
     protected Constructor constructor;
     protected String implementsInterface;
-
-    public static void resetID() {
-        classID = 0;
-    }
 
     public ConcreteClass(Token t) {
         super(t);

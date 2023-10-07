@@ -9,7 +9,7 @@ import token.Token;
 import utility.StringUtilities;
 
 public class Parameter extends TypedEntity {
-    private static int classID = 0;
+    public static int classID = 0;
     private static final int LEVEL = 3;
     protected int instanceID;
 

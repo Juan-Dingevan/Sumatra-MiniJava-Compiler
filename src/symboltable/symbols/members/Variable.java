@@ -5,7 +5,7 @@ import symboltable.symbols.classes.Class;
 import token.Token;
 
 public class Variable extends TypedEntity {
-    private static int classID = 0;
+    public static int classID = 0;
     protected int instanceID;
     public Variable(Token t, Class memberOf) {
         super(t, memberOf);
