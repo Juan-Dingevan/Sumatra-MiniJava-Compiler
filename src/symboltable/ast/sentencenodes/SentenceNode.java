@@ -3,6 +3,7 @@ package symboltable.ast.sentencenodes;
 import symboltable.ast.Node;
 
 public abstract class SentenceNode extends Node {
+    public static final SentenceNode SEMICOLON_SENTENCE = null;
     protected BlockNode parentBlock;
 
     public BlockNode getParentBlock() {

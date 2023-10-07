@@ -21,4 +21,9 @@ public abstract class UnaryExpressionNode extends ExpressionNode{
 
         return sb.toString();
     }
+
+    public String getDeclarationForm() {
+        String operand = operandExpression.getDeclarationForm();
+        return token.getLexeme() + operand;
+    }
 }

@@ -1,6 +1,7 @@
 package syntaxanalyzer;
 
 import exceptions.general.CompilerException;
+import exceptions.semantical.sentence.InvalidExpressionAsSentenceException;
 import exceptions.syntax.InvalidTokenFoundException;
 import exceptions.syntax.TokenMismatchException;
 import lexicalanalizer.LexicalAnalyzer;
@@ -35,11 +36,13 @@ import symboltable.types.Void;
 import token.Token;
 import token.TokenConstants;
 import token.TokenType;
+import utility.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static symboltable.ast.sentencenodes.SentenceNode.SEMICOLON_SENTENCE;
 import static symboltable.privacy.Privacy.pub;
 
 public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
@@ -715,14 +718,15 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
                 TokenType.punctuation_open_parenthesis
         };
 
-        SentenceNode s = null;
+        SentenceNode s;
 
         //RULE <sentence> ::= <assignment_call>
         if(currentTokenIn(assignmentCallFirsts)) {
-            assignmentCall();
+            s = assignmentCall(parent);
             match(TokenType.punctuation_semicolon);
         } //RULE <sentence> ::= ;
         else if(currentTokenIn(new TokenType[]{TokenType.punctuation_semicolon})) {
+            s = SEMICOLON_SENTENCE;
             match(TokenType.punctuation_semicolon);
         } //RULE <sentence> ::= <local_variable> ;
         else if(currentTokenIn(new TokenType[]{TokenType.reserved_word_var})) {
@@ -730,7 +734,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
             match(TokenType.punctuation_semicolon);
         } //RULE <sentence> ::= <return> ;
         else if(currentTokenIn(new TokenType[]{TokenType.reserved_word_return})) {
-            returnNT();
+            s = returnNT(parent);
             match(TokenType.punctuation_semicolon);
         } //RULE <sentence> ::= <if>
         else if (currentTokenIn(new TokenType[]{TokenType.reserved_word_if})) {
@@ -836,13 +840,20 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         return e;
     }
 
-    private void returnNT() throws CompilerException {
+    private ReturnNode returnNT(BlockNode parent) throws CompilerException {
         printIfDebug("->ReturnNT");
 
         Token returnToken = currentToken;
 
         match(TokenType.reserved_word_return);
-        optionalExpression();
+        ExpressionNode e = optionalExpression();
+
+        ReturnNode rn = new ReturnNode();
+        rn.setToken(returnToken);
+        rn.setExpression(e);
+        rn.setParentBlock(parent);
+
+        return rn;
     }
 
     private LocalVariableNode localVariable(BlockNode parent) throws CompilerException {
@@ -867,12 +878,33 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         return lvn;
     }
 
-    private void assignmentCall() throws CompilerException {
+    private SentenceNode assignmentCall(BlockNode parent) throws CompilerException {
         printIfDebug("->AssignmentCall");
-        expression();
+        SentenceNode sn;
+        ExpressionNode e = expression();
+
+        if(e.isAssignment()) {
+            AssignmentNode an = new AssignmentNode();
+            an.setToken(e.getToken());
+            an.setExpression(e);
+            an.setParentBlock(parent);
+
+            sn = an;
+        } else if (e.isValidAsSentence()) {
+            CallNode cn = new CallNode();
+            cn.setToken(e.getToken());
+            cn.setExpression(e);
+            cn.setParentBlock(parent);
+
+            sn = cn;
+        } else {
+            throw new InvalidExpressionAsSentenceException(e.getToken(), e);
+        }
+
+        return sn;
     }
 
-    private void optionalExpression() throws CompilerException {
+    private ExpressionNode optionalExpression() throws CompilerException {
         printIfDebug("->OptionalExpression");
         TokenType[] expressionFirsts = {
                 TokenType.operand_plus,
@@ -892,13 +924,18 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
                 TokenType.punctuation_open_parenthesis
         };
 
+        ExpressionNode e;
+
         // RULE: <optional_expression> ::= <expression>
         if(currentTokenIn(expressionFirsts)) {
-            expression();
+            e = expression();
+        }
+        // RULE: <optional_expression> ::= epsilon
+        else {
+            e = ExpressionNode.NULL_EXPRESSION;
         }
 
-        // RULE: <optional_expression> ::= epsilon
-        // We do nothing
+        return e;
     }
 
     private ExpressionNode expression() throws CompilerException {

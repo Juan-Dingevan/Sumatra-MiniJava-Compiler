@@ -32,4 +32,5 @@ public abstract class ChainingNode extends Node {
 
         return sb.toString();
     }
+    public abstract String getDeclarationForm();
 }

@@ -13,4 +13,8 @@ public class ConstructorAccessNode extends AccessNode {
     public void setClassToken(Token classToken) {
         this.classToken = classToken;
     }
+
+    public String getDeclarationForm() {
+        return token.getLexeme() + " " + classToken.getLexeme() + "(...)" + getChainingDeclarationForm();
+    }
 }

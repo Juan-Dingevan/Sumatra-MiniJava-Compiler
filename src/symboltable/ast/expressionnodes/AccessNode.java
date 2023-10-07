@@ -13,6 +13,12 @@ public abstract class AccessNode extends OperandNode {
         this.chainingNode = chainingNode;
     }
 
+    @Override
+    public boolean isValidAsSentence() {
+        return true;
+    }
+
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(super.toString());
@@ -26,5 +32,15 @@ public abstract class AccessNode extends OperandNode {
         }
 
         return sb.toString();
+    }
+
+    public String getDeclarationForm() {
+        String s = super.getDeclarationForm();
+        String c = getChainingDeclarationForm();
+        return s + c;
+    }
+
+    protected String getChainingDeclarationForm() {
+        return chainingNode == ChainingNode.NO_CHAINING ? "" : chainingNode.getDeclarationForm();
     }
 }
