@@ -690,7 +690,10 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         // RULE: <sentence_list> ::= <sentence><sentence_list>
         if(currentTokenIn(sentenceFirsts)) {
             SentenceNode s = sentence(parent);
-            parent.addSentence(s);
+
+            if(s != SEMICOLON_SENTENCE)
+                parent.addSentence(s);
+
             sentenceList(parent);
         }
         // RULE <sentence_list> ::= epsilon
