@@ -1,4 +1,6 @@
 package symboltable.ast.expressionnodes.binaryexpressions;
 
-public abstract class BooleanToBooleanBinaryExpressionNode {
+import symboltable.ast.expressionnodes.BinaryExpressionNode;
+
+public abstract class BooleanToBooleanBinaryExpressionNode extends BinaryExpressionNode {
 }

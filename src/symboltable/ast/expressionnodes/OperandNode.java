@@ -1,4 +1,4 @@
 package symboltable.ast.expressionnodes;
 
-public abstract class OperandNode {
+public abstract class OperandNode extends ExpressionNode{
 }

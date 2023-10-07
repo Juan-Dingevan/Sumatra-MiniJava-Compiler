@@ -4,13 +4,29 @@ import exceptions.general.CompilerException;
 import exceptions.syntax.InvalidTokenFoundException;
 import exceptions.syntax.TokenMismatchException;
 import lexicalanalizer.LexicalAnalyzer;
+import symboltable.ast.chaining.ChainingNode;
+import symboltable.ast.chaining.MethodChainingNode;
+import symboltable.ast.chaining.VariableChainingNode;
+import symboltable.ast.expressionnodes.*;
+import symboltable.ast.expressionnodes.accesses.*;
+import symboltable.ast.expressionnodes.binaryexpressions.booltobool.AndExpressionNode;
+import symboltable.ast.expressionnodes.binaryexpressions.booltobool.OrExpressionNode;
+import symboltable.ast.expressionnodes.binaryexpressions.numtobool.GreaterEqualExpressionNode;
+import symboltable.ast.expressionnodes.binaryexpressions.numtobool.GreaterExpressionNode;
+import symboltable.ast.expressionnodes.binaryexpressions.numtobool.LesserEqualExpressionNode;
+import symboltable.ast.expressionnodes.binaryexpressions.numtobool.LesserExpressionNode;
+import symboltable.ast.expressionnodes.binaryexpressions.numtonum.*;
+import symboltable.ast.expressionnodes.binaryexpressions.others.AssignmentExpressionNode;
+import symboltable.ast.expressionnodes.binaryexpressions.others.DiffersExpressionNode;
+import symboltable.ast.expressionnodes.binaryexpressions.others.EqualsExpressionNode;
+import symboltable.ast.expressionnodes.literals.*;
+import symboltable.ast.expressionnodes.unaryexpressions.bool.NotExpressionNode;
+import symboltable.ast.expressionnodes.unaryexpressions.num.MinusExpressionNode;
+import symboltable.ast.expressionnodes.unaryexpressions.num.PlusExpressionNode;
 import symboltable.ast.sentencenodes.*;
 import symboltable.privacy.Privacy;
 import symboltable.symbols.classes.Class;
-import symboltable.symbols.members.Attribute;
-import symboltable.symbols.members.Constructor;
-import symboltable.symbols.members.Method;
-import symboltable.symbols.members.Parameter;
+import symboltable.symbols.members.*;
 import symboltable.types.*;
 import symboltable.symbols.classes.ConcreteClass;
 import symboltable.symbols.classes.Interface;
@@ -711,7 +727,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
             match(TokenType.punctuation_semicolon);
         } //RULE <sentence> ::= <local_variable> ;
         else if(currentTokenIn(new TokenType[]{TokenType.reserved_word_var})) {
-            localVariable();
+            s = localVariable(parent);
             match(TokenType.punctuation_semicolon);
         } //RULE <sentence> ::= <return> ;
         else if(currentTokenIn(new TokenType[]{TokenType.reserved_word_return})) {
@@ -725,7 +741,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
             s = whileNT(parent);
         } //RULE <sentence> ::= <block>
         else if (currentTokenIn(new TokenType[]{TokenType.punctuation_open_curly})) {
-            block(parent);
+            s = block(parent);
         } else {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
@@ -830,12 +846,26 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         optionalExpression();
     }
 
-    private void localVariable() throws CompilerException {
+    private LocalVariableNode localVariable(BlockNode parent) throws CompilerException {
         printIfDebug("->LocalVariable");
         match(TokenType.reserved_word_var);
+
+        Token declarationToken = currentToken;
+
         match(TokenType.id_method_variable);
         match(TokenType.assign_normal);
-        compositeExpression();
+        ExpressionNode ex = compositeExpression();
+
+        LocalVariableNode lvn = new LocalVariableNode();
+        lvn.setToken(declarationToken);
+        lvn.setParentBlock(parent);
+        lvn.setExpression(ex);
+
+        Class c = SymbolTable.getInstance().getCurrentClassOrInterface();
+        Variable v = new Variable(declarationToken, c);
+        parent.addLocalVariable(v);
+
+        return lvn;
     }
 
     private void assignmentCall() throws CompilerException {
@@ -872,19 +902,21 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         // We do nothing
     }
 
-    private void expression() throws CompilerException {
+    private ExpressionNode expression() throws CompilerException {
         printIfDebug("->Expression");
-        compositeExpression();
-        expressionSuccessor();
+        ExpressionNode possibleLHS = compositeExpression();
+        ExpressionNode finalExpression = expressionSuccessor(possibleLHS);
+        return finalExpression;
     }
 
-    private void compositeExpression() throws CompilerException {
+    private ExpressionNode compositeExpression() throws CompilerException {
         printIfDebug("->CompositeExpression");
-        basicExpression();
-        compositeExpressionRecursion();
+        ExpressionNode possibleLHS = basicExpression();
+        ExpressionNode finalExpression = compositeExpressionRecursion(possibleLHS);
+        return finalExpression;
     }
 
-    private void basicExpression() throws CompilerException {
+    private ExpressionNode basicExpression() throws CompilerException {
         printIfDebug("->BasicExpression");
         TokenType[] unaryOperatorFirsts = {
                 TokenType.operand_plus,
@@ -907,11 +939,16 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
                 TokenType.punctuation_open_parenthesis
         };
 
+        ExpressionNode en;
+
         if(currentTokenIn(unaryOperatorFirsts)) {
-            unaryOperator();
-            operand();
+            UnaryExpressionNode uen = unaryOperator();
+            OperandNode on = operand();
+            uen.setOperandExpression(on);
+
+            en = uen;
         } else if(currentTokenIn(operandFirsts)) {
-            operand();
+            en = operand();
         } else {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
@@ -927,9 +964,11 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
             throw new InvalidTokenFoundException(line, lexeme, validTokens);
         }
+
+        return en;
     }
 
-    private void compositeExpressionRecursion() throws CompilerException {
+    private ExpressionNode compositeExpressionRecursion(ExpressionNode possibleLHS) throws CompilerException {
         printIfDebug("->CompositeExpressionRecursion");
         TokenType[] binaryOperatorFirsts = {
                 TokenType.operand_or,
@@ -947,37 +986,66 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
                 TokenType.operand_modulo
         };
 
+        ExpressionNode en;
+
         // RULE: <composite_expression_recursion> ::= <binary_operand><basic_expression><composite_expression_recursion>
         if(currentTokenIn(binaryOperatorFirsts)) {
-            binaryOperator();
-            basicExpression();
-            compositeExpressionRecursion();
+            BinaryExpressionNode ben = binaryOperator();
+            ExpressionNode rhs = basicExpression();
+
+            ben.setLHS(possibleLHS);
+            ben.setRHS(rhs);
+
+            en = compositeExpressionRecursion(ben);
+        }// RULE: <composite_expression_recursion> ::= epsilon
+        else {
+            en = possibleLHS;
         }
 
-        // RULE: <composite_expression_recursion> ::= epsilon
-        // We do nothing
+        return en;
     }
 
-    private void expressionSuccessor() throws CompilerException {
+    private ExpressionNode expressionSuccessor(ExpressionNode possibleLHS) throws CompilerException {
         printIfDebug("->ExpressionSuccessor");
+
+        ExpressionNode en;
+
         // RULE: <expression_successor> ::= = <expression>
         if(currentTokenIn(new TokenType[]{TokenType.assign_normal})) {
+            Token declarationToken = currentToken;
+
             match(TokenType.assign_normal);
-            expression();
+            ExpressionNode rhs = expression();
+
+            BinaryExpressionNode aen = new AssignmentExpressionNode();
+            aen.setToken(declarationToken);
+            aen.setLHS(possibleLHS);
+            aen.setRHS(rhs);
+
+            en = aen;
+        }// RULE: <expression_successor> ::= epsilon
+        else {
+            en = possibleLHS;
         }
 
-        // RULE: <expression_successor> ::= epsilon
-        // We do nothing
+        return en;
     }
 
-    private void unaryOperator() throws CompilerException {
+    private UnaryExpressionNode unaryOperator() throws CompilerException {
         printIfDebug("->UnaryOperator");
+
+        Token operatorToken = currentToken;
+        UnaryExpressionNode uen;
+
         if(currentTokenIn(new TokenType[]{TokenType.operand_plus})) {
             match(TokenType.operand_plus);
+            uen = new PlusExpressionNode();
         } else if(currentTokenIn(new TokenType[]{TokenType.operand_minus})) {
             match(TokenType.operand_minus);
+            uen = new MinusExpressionNode();
         } else if(currentTokenIn(new TokenType[]{TokenType.operand_not})) {
             match(TokenType.operand_not);
+            uen = new NotExpressionNode();
         } else {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
@@ -989,36 +1057,57 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
             throw new InvalidTokenFoundException(line, lexeme, validTokens);
         }
+
+        uen.setToken(operatorToken);
+
+        return uen;
     }
 
-    private void binaryOperator() throws CompilerException {
+    private BinaryExpressionNode binaryOperator() throws CompilerException {
         printIfDebug("->BinaryOperator");
+
+        Token operatorToken = currentToken;
+        BinaryExpressionNode ben;
+
         if(currentTokenIn(new TokenType[]{TokenType.operand_or})) {
             match(TokenType.operand_or);
+            ben = new OrExpressionNode();
         } else if(currentTokenIn(new TokenType[]{TokenType.operand_and})) {
             match(TokenType.operand_and);
+            ben = new AndExpressionNode();
         } else if(currentTokenIn(new TokenType[]{TokenType.operand_equals})) {
             match(TokenType.operand_equals);
+            ben = new EqualsExpressionNode();
         } else if(currentTokenIn(new TokenType[]{TokenType.operand_not_equals})) {
             match(TokenType.operand_not_equals);
+            ben = new DiffersExpressionNode();
         } else if(currentTokenIn(new TokenType[]{TokenType.operand_lesser})) {
             match(TokenType.operand_lesser);
+            ben = new LesserExpressionNode();
         } else if(currentTokenIn(new TokenType[]{TokenType.operand_greater})) {
             match(TokenType.operand_greater);
+            ben = new GreaterExpressionNode();
         } else if(currentTokenIn(new TokenType[]{TokenType.operand_lesser_equal})) {
             match(TokenType.operand_lesser_equal);
+            ben = new LesserEqualExpressionNode();
         } else if(currentTokenIn(new TokenType[]{TokenType.operand_greater_equal})) {
             match(TokenType.operand_greater_equal);
+            ben = new GreaterEqualExpressionNode();
         } else if(currentTokenIn(new TokenType[]{TokenType.operand_plus})) {
             match(TokenType.operand_plus);
+            ben = new AddExpressionNode();
         } else if(currentTokenIn(new TokenType[]{TokenType.operand_minus})) {
             match(TokenType.operand_minus);
+            ben = new SubtractExpressionNode();
         } else if(currentTokenIn(new TokenType[]{TokenType.operand_times})) {
             match(TokenType.operand_times);
+            ben = new MultiplyExpressionNode();
         } else if(currentTokenIn(new TokenType[]{TokenType.operand_division})) {
             match(TokenType.operand_division);
+            ben = new DividesExpressionNode();
         } else if(currentTokenIn(new TokenType[]{TokenType.operand_modulo})) {
             match(TokenType.operand_modulo);
+            ben = new ModuloExpressionNode();
         } else {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
@@ -1040,10 +1129,17 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
             throw new InvalidTokenFoundException(line, lexeme, validTokens);
         }
+
+        ben.setToken(operatorToken);
+
+        return ben;
     }
 
-    private void operand() throws CompilerException {
+    private OperandNode operand() throws CompilerException {
         printIfDebug("->Operand");
+
+        OperandNode op;
+
         TokenType[] literalFirsts = {
                 TokenType.reserved_word_null,
                 TokenType.reserved_word_true,
@@ -1063,9 +1159,9 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         };
 
         if(currentTokenIn(literalFirsts)) {
-            literal();
+            op = literal();
         } else if(currentTokenIn(accessFirsts)) {
-            access();
+            op = access();
         } else {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
@@ -1087,24 +1183,36 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
             throw new InvalidTokenFoundException(line, lexeme, validTokens);
         }
 
+        return op;
     }
 
-    private void literal() throws CompilerException {
+    private LiteralNode literal() throws CompilerException {
         printIfDebug("->Literal");
+
+        LiteralNode ln;
+        Token declarationToken = currentToken;
+
         if(currentTokenIn(new TokenType[]{TokenType.literal_int})) {
             match(TokenType.literal_int);
+            ln = new IntLiteralNode();
         } else if(currentTokenIn(new TokenType[]{TokenType.literal_char})) {
             match(TokenType.literal_char);
+            ln = new CharLiteralNode();
         } else if(currentTokenIn(new TokenType[]{TokenType.literal_string})) {
             match(TokenType.literal_string);
+            ln = new StringLiteralNode();
         } else if(currentTokenIn(new TokenType[]{TokenType.literal_float})) {
             match(TokenType.literal_float);
+            ln = new FloatLiteralNode();
         } else if(currentTokenIn(new TokenType[]{TokenType.reserved_word_true})) {
             match(TokenType.reserved_word_true);
+            ln = new TrueLiteralNode();
         } else if(currentTokenIn(new TokenType[]{TokenType.reserved_word_false})) {
             match(TokenType.reserved_word_false);
+            ln = new FalseLiteralNode();
         } else if(currentTokenIn(new TokenType[]{TokenType.reserved_word_null})) {
             match(TokenType.reserved_word_null);
+            ln = new NullLiteralNode();
         } else {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
@@ -1120,26 +1228,37 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
             throw new InvalidTokenFoundException(line, lexeme, validTokens);
         }
+
+        ln.setToken(currentToken);
+
+        return ln;
     }
 
-    private void access() throws CompilerException {
+    private AccessNode access() throws CompilerException {
         printIfDebug("->Access");
-        primary();
-        optionalChaining();
+        AccessNode an = primary();
+        ChainingNode cn = optionalChaining();
+
+        an.setChainingNode(cn);
+
+        return an;
     }
 
-    private void primary() throws CompilerException {
+    private AccessNode primary() throws CompilerException {
         printIfDebug("->Primary");
+
+        AccessNode primary;
+
         if(currentTokenIn(new TokenType[]{TokenType.reserved_word_this})) {
-            thisAccess();
+            primary = thisAccess();
         } else if(currentTokenIn(new TokenType[]{TokenType.id_method_variable})) {
-            methodVariableAccess();
+            primary = methodVariableAccess();
         } else if(currentTokenIn(new TokenType[]{TokenType.reserved_word_new})) {
-            constructorAccess();
+            primary = constructorAccess();
         } else if(currentTokenIn(new TokenType[]{TokenType.id_class})) {
-            staticMethodAccess();
+            primary = staticMethodAccess();
         } else if(currentTokenIn(new TokenType[]{TokenType.punctuation_open_parenthesis})) {
-            parenthesizedExpression();
+            primary = parenthesizedExpression();
         } else {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
@@ -1153,29 +1272,63 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
             throw new InvalidTokenFoundException(line, lexeme, validTokens);
         }
+
+        return primary;
     }
 
-    private void parenthesizedExpression() throws CompilerException {
+    private ParenthesizedExpressionAccessNode parenthesizedExpression() throws CompilerException {
         printIfDebug("->ParenthesizedExpression");
         match(TokenType.punctuation_open_parenthesis);
-        expression();
+        ExpressionNode en = expression();
         match(TokenType.punctuation_close_parenthesis);
+
+        ParenthesizedExpressionAccessNode pean = new ParenthesizedExpressionAccessNode();
+        pean.setToken(en.getToken());
+        pean.setExpression(en);
+
+        return pean;
     }
 
-    private void staticMethodAccess() throws CompilerException {
+    private StaticMethodAccessNode staticMethodAccess() throws CompilerException {
         printIfDebug("->StaticMethodAccess");
+
+        Token classToken = currentToken;
+
         match(TokenType.id_class);
         match(TokenType.punctuation_colon);
+
+        Token declarationToken = currentToken;
+
         match(TokenType.id_method_variable);
         actualArguments();
+
+        StaticMethodAccessNode sman = new StaticMethodAccessNode();
+        sman.setToken(declarationToken);
+        sman.setClassToken(classToken);
+
+        return sman;
     }
 
-    private void constructorAccess() throws CompilerException {
+    private ConstructorAccessNode constructorAccess() throws CompilerException {
         printIfDebug("->ConstructorAccess");
+
+        Token declarationToken = currentToken;
+
         match(TokenType.reserved_word_new);
+
+        Token classToken = currentToken;
+
         match(TokenType.id_class);
+
+
         optionalGenericsInstantiation();
         actualArguments();
+
+        ConstructorAccessNode can = new ConstructorAccessNode();
+        can.setToken(declarationToken);
+        can.setClassToken(classToken);
+
+        return can;
     }
 
     private void optionalGenericsInstantiation() throws CompilerException {
@@ -1208,26 +1361,49 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         return genericTypes;
     }
 
-    private void methodVariableAccess() throws CompilerException {
+    private AccessNode methodVariableAccess() throws CompilerException {
         printIfDebug("->MethodVariableAccess");
+
+        Token declarationToken = currentToken;
+
         match(TokenType.id_method_variable);
-        methodVariableAccessSuccessor();
+        AccessNode mvan = methodVariableAccessSuccessor(declarationToken);
+
+        return mvan;
     }
 
-    private void methodVariableAccessSuccessor() throws CompilerException {
+    private AccessNode methodVariableAccessSuccessor(Token declarationToken) throws CompilerException {
         printIfDebug("->MethodVariableAccessSuccessor");
+
+        AccessNode an;
+
         // Rule: <method_variable_access_successor> ::= <actual_arguments>
         if(currentTokenIn(new TokenType[]{TokenType.punctuation_open_parenthesis})) {
+            an = new MethodAccessNode();
+            an.setToken(declarationToken);
+
             actualArguments();
         }
-
         // Rule: <method_variable_access_successor> ::= epsilon
-        // We do nothing!
+        else {
+            an = new VariableAccessNode();
+            an.setToken(declarationToken);
+        }
+
+        return an;
     }
 
-    private void thisAccess() throws CompilerException {
+    private ThisAccessNode thisAccess() throws CompilerException {
         printIfDebug("->ThisAccess");
+
+        Token declarationToken = currentToken;
+
         match(TokenType.reserved_word_this);
+
+        ThisAccessNode tan = new ThisAccessNode();
+        tan.setToken(declarationToken);
+
+        return tan;
     }
 
     private void actualArguments() throws CompilerException {
@@ -1284,37 +1460,62 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         // We do nothing
     }
 
-    private void optionalChaining() throws CompilerException {
+    private ChainingNode optionalChaining() throws CompilerException {
         printIfDebug("->OptionalChaining");
+
+        ChainingNode chainingNode;
+
         // RULE: <optional_chaining> ::= <chaining>
         // Note: in the grammar, there is no <chaining> non-terminal symbol,
         // we add the method to have a cleaner code
         if(currentTokenIn(new TokenType[]{TokenType.punctuation_colon})) {
-            chaining();
+            chainingNode = chaining();
+        } else {
+            chainingNode = ChainingNode.NO_CHAINING;
         }
 
         // RULE: <optional_chaining> ::= epsilon
         // We do nothing
+        return chainingNode;
     }
 
-    private void chaining() throws CompilerException {
+    private ChainingNode chaining() throws CompilerException {
         printIfDebug("->Chaining");
         match(TokenType.punctuation_colon);
+
+        Token declarationToken = currentToken;
+
         match(TokenType.id_method_variable);
-        chainingSuccessor();
+
+        ChainingNode chainingNode = chainingSuccessor(declarationToken);
+
+        return chainingNode;
     }
 
-    private void chainingSuccessor() throws CompilerException {
+    private ChainingNode chainingSuccessor(Token declarationToken) throws CompilerException {
         printIfDebug("->ChainingSuccessor");
+
+        ChainingNode chainingNode;
+
         if(currentTokenIn(new TokenType[]{TokenType.punctuation_open_parenthesis})) {
             actualArguments();
-            optionalChaining();
+            ChainingNode chainToChain = optionalChaining();
+
+            chainingNode = new MethodChainingNode();
+            chainingNode.setToken(declarationToken);
+            chainToChain.setChainingNode(chainToChain);
         } else {
             /*
              * Lo ponemos en el else, sin chequear primeros porque, si
              * llega a venir epsilon, se lidia con eso en optionalChaining.
              * */
-            optionalChaining();
+            ChainingNode chainToChain = optionalChaining();
+
+            chainingNode = new VariableChainingNode();
+            chainingNode.setToken(declarationToken);
+            chainingNode.setChainingNode(chainToChain);
         }
+
+        return chainingNode;
     }
 }
