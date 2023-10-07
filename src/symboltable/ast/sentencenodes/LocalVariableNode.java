@@ -24,13 +24,15 @@ public class LocalVariableNode extends SentenceNode {
         sb.append(super.toString());
         sb.append("var ");
         sb.append(token.getLexeme());
-        sb.append("\n\t");
-        sb.append("expression: \n\t");
+        sb.append("\n");
+        sb.append(tabs());
+        sb.append("expression: \n");
 
         if(expression != null) {
-            sb.append("\t\t");
+            expression.stringDepth = stringDepth+1;
             sb.append(expression);
         } else {
+            sb.append(tabs());
             sb.append("[null]");
         }
 

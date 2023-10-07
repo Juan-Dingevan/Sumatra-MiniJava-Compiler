@@ -17,8 +17,10 @@ public class ParenthesizedExpressionAccessNode extends AccessNode {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(super.toString());
-        sb.append("\n\t");
-        sb.append("expression: \n\t");
+        sb.append("\n");
+        sb.append(tabs());
+        sb.append("expression: \n");
+        expression.stringDepth = stringDepth + 1;
         sb.append(expression);
 
         return sb.toString();

@@ -23,11 +23,17 @@ public abstract class BinaryExpressionNode extends ExpressionNode {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(super.toString());
-        sb.append("\n\t");
-        sb.append("Left Hand Side: \n\t\t");
+
+        sb.append("\n");
+        sb.append(tabs());
+        sb.append("Left Hand Side: \n");
+        lhs.stringDepth = stringDepth + 1;
         sb.append(lhs);
-        sb.append("\n\t");
-        sb.append("Right Hand Side: \n\t\t");
+
+        sb.append("\n");
+        sb.append(tabs());
+        sb.append("Right Hand Side: \n");
+        rhs.stringDepth = stringDepth + 1;
         sb.append(rhs);
 
         return sb.toString();

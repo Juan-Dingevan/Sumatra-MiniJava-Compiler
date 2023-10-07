@@ -13,8 +13,10 @@ public abstract class UnaryExpressionNode extends ExpressionNode{
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(super.toString());
-        sb.append("\n\t");
-        sb.append("Operand: \n\t\t");
+        sb.append("\n");
+        sb.append(tabs());
+        sb.append("Operand: \n");
+        operandExpression.stringDepth = stringDepth+1;
         sb.append(operandExpression);
 
         return sb.toString();

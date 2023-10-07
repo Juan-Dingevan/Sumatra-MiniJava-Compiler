@@ -17,6 +17,7 @@ public abstract class SentenceNode extends Node {
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
+        sb.append(tabs());
         sb.append(getClass().getSimpleName());
         sb.append("{");
         sb.append(getID());

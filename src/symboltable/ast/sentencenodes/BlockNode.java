@@ -63,7 +63,9 @@ public class BlockNode extends SentenceNode{
         sb.append(super.toString());
 
         if(variables.size() > 0) {
+            sb.append(tabs());
             sb.append("variables: \n");
+            sb.append(tabs());
             sb.append("\t");
 
             for(Variable v : getVariables()) {
@@ -76,12 +78,17 @@ public class BlockNode extends SentenceNode{
         }
 
         if(sentences.size() > 0) {
+            sb.append(tabs());
             sb.append("children:\n");
 
             for(SentenceNode s : sentences) {
-                sb.append("\t");
-                sb.append(s == null ? "null" : s.toString());
-                sb.append("\n");
+                if(s != null) {
+                    s.stringDepth = stringDepth + 1;
+                    sb.append(s);
+                    sb.append("\n");
+                } else {
+                    sb.append("null\n");
+                }
             }
         } else {
             sb.append("[empty]\n");
