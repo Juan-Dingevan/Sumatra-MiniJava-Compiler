@@ -1,6 +1,7 @@
 package symboltable.symbols.classes;
 
 import exceptions.general.CompilerException;
+import exceptions.semantical.SemanticException;
 import exceptions.semantical.declaration.*;
 import symboltable.symbols.members.Attribute;
 import symboltable.symbols.members.Constructor;
@@ -69,6 +70,25 @@ public class ConcreteClass extends Class {
             currentUnit = c;
         } else
             throw new ClassAlreadyHasConstructorException(c.getToken());
+    }
+
+    @SuppressWarnings("ReassignedVariable")
+    protected void checkCircularInheritance() throws SemanticException {
+        Class currentClass = this;
+
+        while(!currentClass.getInheritsFrom().equals("")) {
+            String parentName = currentClass.getInheritsFrom();
+
+            if(getName().equals(parentName)) {
+                throw new CircularInheritanceException(getToken());
+            }
+
+            currentClass = SymbolTable.getInstance().getClass(parentName);
+
+            if(currentClass == null)
+                throw new UndeclaredExtendsException(getToken(), parentName);
+        }
+
     }
 
     public void checkDeclaration() throws CompilerException {

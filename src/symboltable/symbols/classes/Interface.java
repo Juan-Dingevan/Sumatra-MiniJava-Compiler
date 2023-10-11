@@ -1,8 +1,11 @@
 package symboltable.symbols.classes;
 
 import exceptions.general.CompilerException;
+import exceptions.semantical.SemanticException;
+import exceptions.semantical.declaration.CircularInheritanceException;
 import exceptions.semantical.declaration.IncorrectlyOverwrittenMethodException;
 import exceptions.semantical.declaration.StaticMethodInInterfaceException;
+import exceptions.semantical.declaration.UndeclaredExtendsException;
 import symboltable.symbols.members.Method;
 import symboltable.table.SymbolTable;
 import token.Token;
@@ -28,6 +31,25 @@ public class Interface extends Class {
         methods = new HashMap<>();
 
         classID++;
+    }
+
+    @SuppressWarnings("ReassignedVariable")
+    protected void checkCircularInheritance() throws SemanticException {
+        Class currentClass = this;
+
+        while(!currentClass.getInheritsFrom().equals("")) {
+            String parentName = currentClass.getInheritsFrom();
+
+            if(getName().equals(parentName)) {
+                throw new CircularInheritanceException(getToken());
+            }
+
+            currentClass = SymbolTable.getInstance().getInterface(parentName);
+
+            if(currentClass == null)
+                throw new UndeclaredExtendsException(getToken(), parentName);
+        }
+
     }
 
     @Override

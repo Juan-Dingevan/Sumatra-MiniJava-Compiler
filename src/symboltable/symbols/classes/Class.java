@@ -90,23 +90,7 @@ public abstract class Class extends Symbol {
     }
 
     @SuppressWarnings("ReassignedVariable")
-    protected void checkCircularInheritance() throws SemanticException {
-        Class currentClass = this;
-
-        while(!currentClass.getInheritsFrom().equals("")) {
-            String parentName = currentClass.getInheritsFrom();
-
-            if(getName().equals(parentName)) {
-                throw new CircularInheritanceException(getToken());
-            }
-
-            currentClass = SymbolTable.getInstance().getClassOrInterface(parentName);
-
-            if(currentClass == null)
-                throw new UndeclaredExtendsException(getToken(), parentName);
-        }
-
-    }
+    protected abstract void checkCircularInheritance() throws SemanticException;
 
     @SuppressWarnings("ReassignedVariable")
     public boolean referenceTypesAreEquivalentInClass(ReferenceType rt1, ReferenceType rt2) {
