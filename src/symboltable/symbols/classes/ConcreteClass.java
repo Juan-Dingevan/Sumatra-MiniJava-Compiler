@@ -119,9 +119,6 @@ public class ConcreteClass extends Class {
         ConcreteClass parent = SymbolTable.getInstance().getClass(inheritsFrom);
         parent.consolidate();
 
-        if(implementsInterface.equals(""))
-            implementsInterface = parent.getImplementedInterface();
-
         checkGenerics();
 
         addInheritedAttributes(parent);
