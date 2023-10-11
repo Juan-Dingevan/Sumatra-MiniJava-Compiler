@@ -1030,13 +1030,12 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         // RULE: <composite_expression_recursion> ::= <binary_operand><basic_expression><composite_expression_recursion>
         if(currentTokenIn(binaryOperatorFirsts)) {
             BinaryExpressionNode ben = binaryOperator();
-            ExpressionNode incompleteRHS = basicExpression();
-            ExpressionNode finalRHS = compositeExpressionRecursion(incompleteRHS);
+            ExpressionNode rhs = basicExpression();
 
             ben.setLHS(possibleLHS);
-            ben.setRHS(finalRHS);
+            ben.setRHS(rhs);
 
-            en = ben;
+            en = compositeExpressionRecursion(ben);
         }// RULE: <composite_expression_recursion> ::= epsilon
         else {
             en = possibleLHS;
