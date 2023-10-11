@@ -1,5 +1,7 @@
 package symboltable.symbols.members;
 
+import exceptions.general.CompilerException;
+import exceptions.semantical.declaration.IncorrectlyNamedConstructorException;
 import symboltable.ast.sentencenodes.BlockNode;
 import symboltable.privacy.Privacy;
 import symboltable.symbols.classes.Class;
@@ -25,6 +27,14 @@ public class Constructor extends Unit {
 
     public Constructor(Token t, Class memberOf) {
         super(t, memberOf);
+    }
+
+    @Override
+    public void checkDeclaration() throws CompilerException {
+        super.checkDeclaration();
+
+        if(!getName().equals(memberOf.getName()))
+            throw new IncorrectlyNamedConstructorException(token, memberOf.getToken());
     }
 
     public String toString() {
