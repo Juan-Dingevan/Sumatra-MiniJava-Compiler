@@ -5,13 +5,12 @@ import symboltable.ast.expressionnodes.ExpressionNode;
 import token.Token;
 
 public class InvalidExpressionAsSentenceException extends SemanticException {
-    private ExpressionNode expression;
-    public InvalidExpressionAsSentenceException(Token t, ExpressionNode expression) {
+    public InvalidExpressionAsSentenceException(Token t) {
         super(t);
     }
 
     @Override
     protected String getSpecificMessage() {
-        return "The expression " + expression.getDeclarationForm() + " (declared in line " + lineNumber + ") is not valid as a sentence.";
+        return "The expression declared in line " + lineNumber + " is not valid as a sentence.";
     }
 }

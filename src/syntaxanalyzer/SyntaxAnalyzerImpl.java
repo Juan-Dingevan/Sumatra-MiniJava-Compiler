@@ -901,7 +901,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
             sn = cn;
         } else {
-            throw new InvalidExpressionAsSentenceException(e.getToken(), e);
+            throw new InvalidExpressionAsSentenceException(e.getToken());
         }
 
         return sn;
