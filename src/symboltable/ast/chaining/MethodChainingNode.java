@@ -6,4 +6,12 @@ public class MethodChainingNode extends ChainingNode{
         String c = chainingNode == ChainingNode.NO_CHAINING ? "" : chainingNode.getDeclarationForm();
         return s + c;
     }
+
+    @Override
+    public boolean isCall() {
+        if(hasChaining())
+            return chainingNode.isCall();
+        else
+            return true;
+    }
 }

@@ -15,7 +15,10 @@ public abstract class AccessNode extends OperandNode {
 
     @Override
     public boolean isValidAsSentence() {
-        return true;
+        if(chainingNode != ChainingNode.NO_CHAINING)
+            return chainingNode.isCall();
+        else
+            return false;
     }
 
     @Override

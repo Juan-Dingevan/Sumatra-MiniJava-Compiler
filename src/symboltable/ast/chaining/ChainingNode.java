@@ -14,6 +14,14 @@ public abstract class ChainingNode extends Node {
         this.chainingNode = chainingNode;
     }
 
+    public boolean hasChaining() {
+        return chainingNode != NO_CHAINING;
+    }
+
+    public abstract String getDeclarationForm();
+
+    public abstract boolean isCall();
+
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(tabs());
@@ -32,5 +40,4 @@ public abstract class ChainingNode extends Node {
 
         return sb.toString();
     }
-    public abstract String getDeclarationForm();
 }
