@@ -56,12 +56,12 @@ public class TesterOtros {
         //public (dynamic) int m(int x, String y)
 
         Method m1 = new Method(new Token(TokenType.id_method_variable, "m", 0), null);
-        m1.setPrivacy(Privacy.pub);
+        m1.setPrivacy(Privacy.publicS);
         m1.setStatic(false);
         m1.setReturnType(new Int());
 
         Method m2 = new Method(new Token(TokenType.id_method_variable, "m", 0), null);
-        m2.setPrivacy(Privacy.pub);
+        m2.setPrivacy(Privacy.publicS);
         m2.setStatic(false);
         m2.setReturnType(new Int());
 
@@ -110,12 +110,12 @@ public class TesterOtros {
         y2.setType(new ReferenceType("String"));
 
         Method m1 = new Method(new Token(TokenType.id_method_variable, "m", 0), null);
-        m1.setPrivacy(Privacy.pub);
+        m1.setPrivacy(Privacy.publicS);
         m1.setStatic(false);
         m1.setReturnType(new Int());
 
         Method m2 = new Method(new Token(TokenType.id_method_variable, "m", 0), null);
-        m2.setPrivacy(Privacy.pub);
+        m2.setPrivacy(Privacy.publicS);
         m2.setStatic(false);
         m2.setReturnType(new Int());
 
@@ -152,12 +152,12 @@ public class TesterOtros {
         y2.setType(new ReferenceType("String"));
 
         Method m1 = new Method(new Token(TokenType.id_method_variable, "m", 0), null);
-        m1.setPrivacy(Privacy.pub);
+        m1.setPrivacy(Privacy.publicS);
         m1.setStatic(false);
         m1.setReturnType(new Int());
 
         Method m2 = new Method(new Token(TokenType.id_method_variable, "m", 0), null);
-        m2.setPrivacy(Privacy.pub);
+        m2.setPrivacy(Privacy.publicS);
         m2.setStatic(false);
         m2.setReturnType(new Int());
 
@@ -178,12 +178,12 @@ public class TesterOtros {
     @Test
     public void sameSignatureWorksAsExpectedInMethodsWithoutParameters() {
         Method m1 = new Method(new Token(TokenType.id_method_variable, "m", 0), null);
-        m1.setPrivacy(Privacy.pub);
+        m1.setPrivacy(Privacy.publicS);
         m1.setStatic(false);
         m1.setReturnType(new Int());
 
         Method m2 = new Method(new Token(TokenType.id_method_variable, "m", 0), null);
-        m2.setPrivacy(Privacy.pub);
+        m2.setPrivacy(Privacy.publicS);
         m2.setStatic(false);
         m2.setReturnType(new Int());
 

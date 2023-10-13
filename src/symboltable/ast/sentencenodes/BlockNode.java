@@ -25,6 +25,12 @@ public class BlockNode extends SentenceNode{
         return id;
     }
 
+    @Override
+    protected void checkSelf() throws CompilerException {
+        for(SentenceNode s : sentences)
+            s.check();
+    }
+
     public List<SentenceNode> getSentences() {
         return sentences;
     }
@@ -49,6 +55,19 @@ public class BlockNode extends SentenceNode{
     public boolean existsLocally(Variable v) {
         return variables.get(v.getName()) != null;
     }
+
+    public Variable getLocalVariable(String name) {
+        Variable v = variables.get(name);
+
+        if(v != null)
+            return v;
+
+        if(parentBlock == NULL_PARENT)
+            return null;
+
+        return parentBlock.getLocalVariable(name);
+    }
+
     public void addLocalVariable(Variable v) throws CompilerException {
         if(!existsInScope(v)) {
             variables.put(v.getName(), v);

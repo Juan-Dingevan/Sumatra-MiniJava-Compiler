@@ -11,6 +11,10 @@ public abstract class Type {
         return t instanceof Void;
     }
 
+    public static boolean isNumber(Type t) {
+        return t instanceof SNumber;
+    }
+
     public static boolean typedEntitiesAreEquivalentInContext(TypedEntity te1, TypedEntity te2, Class contextClass) {
         Type t1 = te1.getType();
         Type t2 = te2.getType();

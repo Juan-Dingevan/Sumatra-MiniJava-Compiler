@@ -12,6 +12,7 @@ import symboltable.symbols.classes.ConcreteClass;
 import symboltable.symbols.classes.Interface;
 import symboltable.symbols.classes.Class;
 import symboltable.symbols.members.Attribute;
+import symboltable.symbols.members.Constructor;
 import symboltable.symbols.members.Method;
 import symboltable.symbols.members.Parameter;
 import token.Token;
@@ -124,6 +125,19 @@ public class SymbolTable {
             currentClass = i;
         } else {
             throw new ClassAlreadyExistsException(i.getToken());
+        }
+    }
+
+    public void checkSentences() throws CompilerException {
+        for(ConcreteClass c : classes.values()) {
+            for(Method m : c.getMethods()) {
+                m.checkSentences();
+            }
+
+            if(c.constructorExists()) {
+                Constructor constructor = c.getConstructor();
+                constructor.checkSentences();
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 package userinterface;
 
 import exceptionhandler.ExceptionHandler;
+import exceptions.general.CompilerCallException;
 import exceptions.general.CompilerException;
 import exceptions.general.UnexpectedErrorException;
 import exceptions.lexical.LexicalException;
@@ -17,7 +18,7 @@ import utility.StringUtilities;
 
 import java.io.FileNotFoundException;
 
-public abstract class UserInterfaceImpl implements UserInterface{
+public class StageThreeUserInterface implements UserInterface {
     public void launch(String[] args) {
         SymbolTable.resetInstance();
 
@@ -36,7 +37,6 @@ public abstract class UserInterfaceImpl implements UserInterface{
             syntaxAnalyzer.analyze();
             SymbolTable.getInstance().checkDeclaration();
             SymbolTable.getInstance().consolidate();
-            SymbolTable.getInstance().checkSentences();
         } catch(LexicalException ex) {
             exceptionHandler.handleLexicalException(ex);
         } catch(SyntaxException ex) {
@@ -64,7 +64,22 @@ public abstract class UserInterfaceImpl implements UserInterface{
                 " lines in " + millisSpentCompiling +
                 "ms and found " + exceptionHandler.getExceptionsHandled() + " errors. ---");
     }
-    protected abstract String safelyGetPath(String[] args, ExceptionHandler exceptionHandler);
+    protected void validateCall(String[] args) throws CompilerCallException {
+        if(args.length != 1)
+            throw new CompilerCallException(args.length);
+    }
+
+    protected String safelyGetPath(String[] args, ExceptionHandler exceptionHandler) {
+        try {
+            validateCall(args);
+        } catch(CompilerException ex) {
+            exceptionHandler.handleGenericException(ex);
+            return "";
+        }
+
+        return args[0];
+    }
+
     protected void safelyOpenFile(String path, SourceManager sourceManager, ExceptionHandler exceptionHandler) {
         try {
             openFile(sourceManager, path);

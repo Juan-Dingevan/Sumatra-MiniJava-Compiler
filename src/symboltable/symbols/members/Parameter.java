@@ -8,7 +8,7 @@ import symboltable.types.Type;
 import token.Token;
 import utility.StringUtilities;
 
-public class Parameter extends TypedEntity {
+public class Parameter extends Variable {
     public static int classID = 0;
     private static final int LEVEL = 3;
     protected int instanceID;

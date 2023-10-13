@@ -26,8 +26,12 @@ public abstract class Unit extends Member{
             p.checkDeclaration();
     }
 
-    protected boolean exists(Parameter p) {
+    public boolean exists(Parameter p) {
         return parameterMap.get(p.getName()) != null;
+    }
+
+    public Parameter getParameter(String name) {
+        return parameterMap.get(name);
     }
 
     public void addParameter(Parameter p) throws CompilerException {
@@ -44,8 +48,11 @@ public abstract class Unit extends Member{
     public void setAST(BlockNode ast) {
         this.ast = ast;
     }
-
     public BlockNode getAST() {
         return ast;
+    }
+
+    public void checkSentences() throws CompilerException {
+        ast.check();
     }
 }

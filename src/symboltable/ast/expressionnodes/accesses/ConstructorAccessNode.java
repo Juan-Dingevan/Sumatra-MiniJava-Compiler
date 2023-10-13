@@ -1,7 +1,10 @@
 package symboltable.ast.expressionnodes.accesses;
 
+import exceptions.general.CompilerException;
 import symboltable.ast.chaining.ChainingNode;
 import symboltable.ast.expressionnodes.AccessNode;
+import symboltable.types.ReferenceType;
+import symboltable.types.Type;
 import token.Token;
 
 public class ConstructorAccessNode extends AccessNode {
@@ -13,6 +16,12 @@ public class ConstructorAccessNode extends AccessNode {
 
     public void setClassToken(Token classToken) {
         this.classToken = classToken;
+    }
+
+    @Override
+    protected Type accessCheck() throws CompilerException {
+        //TODO: make the necessary checks
+        return new ReferenceType(classToken.getLexeme());
     }
 
     @Override

@@ -1,6 +1,7 @@
 package symboltable.symbols.members;
 
 import exceptions.general.CompilerException;
+import symboltable.privacy.Privacy;
 import symboltable.symbols.classes.Class;
 import token.Token;
 
@@ -11,6 +12,11 @@ public class Variable extends TypedEntity {
         super(t, memberOf);
         instanceID = classID;
         classID++;
+    }
+
+    @Override
+    public Privacy getPrivacy() {
+        return Privacy.publicS;
     }
 
     @Override

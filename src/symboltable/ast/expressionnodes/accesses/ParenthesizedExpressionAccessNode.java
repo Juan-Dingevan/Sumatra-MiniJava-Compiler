@@ -1,8 +1,10 @@
 package symboltable.ast.expressionnodes.accesses;
 
+import exceptions.general.CompilerException;
 import symboltable.ast.chaining.ChainingNode;
 import symboltable.ast.expressionnodes.AccessNode;
 import symboltable.ast.expressionnodes.ExpressionNode;
+import symboltable.types.Type;
 
 public class ParenthesizedExpressionAccessNode extends AccessNode {
     ExpressionNode expression;
@@ -13,6 +15,11 @@ public class ParenthesizedExpressionAccessNode extends AccessNode {
 
     public void setExpression(ExpressionNode expression) {
         this.expression = expression;
+    }
+
+    @Override
+    protected Type accessCheck() throws CompilerException {
+        return expression.check();
     }
 
     @Override

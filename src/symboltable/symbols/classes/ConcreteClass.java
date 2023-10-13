@@ -45,11 +45,15 @@ public class ConcreteClass extends Class {
         implementsInterface = t.getLexeme();
     }
 
+    public Attribute getAttribute(String name) {
+        return attributes.get(name);
+    }
+
     protected boolean attributeExists(Attribute a) {
         return attributes.get(a.getName()) != null;
     }
 
-    protected boolean constructorExists() {
+    public boolean constructorExists() {
         return constructor != null;
     }
 

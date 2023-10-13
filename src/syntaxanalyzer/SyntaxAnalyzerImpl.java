@@ -36,14 +36,13 @@ import symboltable.types.Void;
 import token.Token;
 import token.TokenConstants;
 import token.TokenType;
-import utility.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static symboltable.ast.sentencenodes.SentenceNode.SEMICOLON_SENTENCE;
-import static symboltable.privacy.Privacy.pub;
+import static symboltable.privacy.Privacy.publicS;
 
 public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
     private static final boolean DEBUG = true;
@@ -339,17 +338,17 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         //RULE: <optional_privacy> ::= private
         if(currentTokenIn(new TokenType[]{TokenType.reserved_word_private})){
             match(TokenType.reserved_word_private);
-            return Privacy.priv;
+            return Privacy.privateS;
         }
         //RULE: <optional_privacy> ::= public
         else if(currentTokenIn(new TokenType[]{TokenType.reserved_word_public})){
             match(TokenType.reserved_word_public);
-            return pub;
+            return publicS;
         }
 
         //RULE: <optional_privacy> ::= epsilon
         //Since by default a member is public, we return public
-        return pub;
+        return publicS;
     }
 
     private boolean optionalStatic() throws CompilerException {
@@ -635,7 +634,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         Interface i = SymbolTable.getInstance().getCurrentInterface();
 
         Method m = new Method(declarationToken, i);
-        m.setPrivacy(pub);
+        m.setPrivacy(publicS);
         m.setReturnType(type);
         m.setStatic(staticity);
 
@@ -691,8 +690,12 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         if(currentTokenIn(sentenceFirsts)) {
             SentenceNode s = sentence(parent);
 
-            if(s != SEMICOLON_SENTENCE)
+            ConcreteClass c = SymbolTable.getInstance().getCurrentConcreteClass();
+
+            if(s != SEMICOLON_SENTENCE) {
+                s.setContextClass(c);
                 parent.addSentence(s);
+            }
 
             sentenceList(parent);
         }
@@ -869,13 +872,15 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         match(TokenType.assign_normal);
         ExpressionNode ex = compositeExpression();
 
+        Class c = SymbolTable.getInstance().getCurrentClassOrInterface();
+        Variable v = new Variable(declarationToken, c);
+
         LocalVariableNode lvn = new LocalVariableNode();
         lvn.setToken(declarationToken);
         lvn.setParentBlock(parent);
         lvn.setExpression(ex);
+        lvn.setVariable(v);
 
-        Class c = SymbolTable.getInstance().getCurrentClassOrInterface();
-        Variable v = new Variable(declarationToken, c);
         parent.addLocalVariable(v);
 
         return lvn;
@@ -1417,18 +1422,26 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         printIfDebug("->MethodVariableAccessSuccessor");
 
         AccessNode an;
+        ConcreteClass contextClass = SymbolTable.getInstance().getCurrentConcreteClass();
+        Unit contextUnit = contextClass.getCurrentUnit();
+
 
         // Rule: <method_variable_access_successor> ::= <actual_arguments>
         if(currentTokenIn(new TokenType[]{TokenType.punctuation_open_parenthesis})) {
             an = new MethodAccessNode();
             an.setToken(declarationToken);
+            an.setContextClass(contextClass);
 
             actualArguments();
         }
         // Rule: <method_variable_access_successor> ::= epsilon
         else {
-            an = new VariableAccessNode();
-            an.setToken(declarationToken);
+            VariableAccessNode van = new VariableAccessNode();
+            van.setToken(declarationToken);
+            van.setContextClass(contextClass);
+            van.setContextUnit(contextUnit);
+
+            an = van;
         }
 
         return an;
@@ -1441,8 +1454,11 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         match(TokenType.reserved_word_this);
 
+        ConcreteClass contextClass = SymbolTable.getInstance().getCurrentConcreteClass();
+
         ThisAccessNode tan = new ThisAccessNode();
         tan.setToken(declarationToken);
+        tan.setContextClass(contextClass);
 
         return tan;
     }

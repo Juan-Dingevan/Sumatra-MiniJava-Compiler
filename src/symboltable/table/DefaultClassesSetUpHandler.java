@@ -13,7 +13,7 @@ import symboltable.types.SBoolean;
 import symboltable.types.Void;
 import token.TokenConstants;
 
-import static symboltable.privacy.Privacy.pub;
+import static symboltable.privacy.Privacy.publicS;
 import static token.TokenConstants.*;
 
 public abstract class DefaultClassesSetUpHandler {
@@ -26,7 +26,7 @@ public abstract class DefaultClassesSetUpHandler {
 
             Method debugPrint = new Method(DEBUG_PRINT_TOKEN, object);
             debugPrint.setStatic(true);
-            debugPrint.setPrivacy(pub);
+            debugPrint.setPrivacy(publicS);
             debugPrint.setReturnType(new Void());
             debugPrint.addParameter(iDebugPrint);
             debugPrint.setAST(new DebugPrintBlockNode());
@@ -71,68 +71,68 @@ public abstract class DefaultClassesSetUpHandler {
 
             Method read = new Method(TokenConstants.READ_TOKEN, system);
             read.setStatic(true);
-            read.setPrivacy(pub);
+            read.setPrivacy(publicS);
             read.setReturnType(new Int());
             read.setAST(new ReadBlockNode());
 
             Method printB = new Method(TokenConstants.PRINTB_TOKEN, system);
             printB.setStatic(true);
-            printB.setPrivacy(pub);
+            printB.setPrivacy(publicS);
             printB.setReturnType(new Void());
             printB.addParameter(b);
             printB.setAST(new PrintBooleanBlockNode());
 
             Method printC = new Method(TokenConstants.PRINTC_TOKEN, system);
             printC.setStatic(true);
-            printC.setPrivacy(pub);
+            printC.setPrivacy(publicS);
             printC.setReturnType(new Void());
             printC.addParameter(c);
             printC.setAST(new PrintCharBlockNode());
 
             Method printI = new Method(TokenConstants.PRINTI_TOKEN, system);
             printI.setStatic(true);
-            printI.setPrivacy(pub);
+            printI.setPrivacy(publicS);
             printI.setReturnType(new Void());
             printI.addParameter(i);
             printI.setAST(new PrintIntBlockNode());
 
             Method printS = new Method(TokenConstants.PRINTS_TOKEN, system);
             printS.setStatic(true);
-            printS.setPrivacy(pub);
+            printS.setPrivacy(publicS);
             printS.setReturnType(new Void());
             printS.addParameter(s);
             printS.setAST(new PrintStringBlockNode());
 
             Method println = new Method(TokenConstants.PRINTLN_TOKEN, system);
             println.setStatic(true);
-            println.setPrivacy(pub);
+            println.setPrivacy(publicS);
             println.setReturnType(new Void());
             println.setAST(new PrintLineBlockNode());
 
             Method printBln = new Method(TokenConstants.PRINTBLN_TOKEN, system);
             printBln.setStatic(true);
-            printBln.setPrivacy(pub);
+            printBln.setPrivacy(publicS);
             printBln.setReturnType(new Void());
             printBln.addParameter(bln);
             printBln.setAST(new PrintLineBooleanBlockNode());
 
             Method printCln = new Method(TokenConstants.PRINTCLN_TOKEN, system);
             printCln.setStatic(true);
-            printCln.setPrivacy(pub);
+            printCln.setPrivacy(publicS);
             printCln.setReturnType(new Void());
             printCln.addParameter(cln);
             printCln.setAST(new PrintLineCharBlockNode());
 
             Method printIln = new Method(TokenConstants.PRINTILN_TOKEN, system);
             printIln.setStatic(true);
-            printIln.setPrivacy(pub);
+            printIln.setPrivacy(publicS);
             printIln.setReturnType(new Void());
             printIln.addParameter(iln);
             printIln.setAST(new PrintLineIntBlockNode());
 
             Method printSln = new Method(TokenConstants.PRINTSLN_TOKEN, system);
             printSln.setStatic(true);
-            printSln.setPrivacy(pub);
+            printSln.setPrivacy(publicS);
             printSln.setReturnType(new Void());
             printSln.addParameter(sln);
             printSln.setAST(new PrintLineStringBlockNode());

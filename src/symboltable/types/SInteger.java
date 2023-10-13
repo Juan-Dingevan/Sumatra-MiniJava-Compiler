@@ -1,4 +1,4 @@
 package symboltable.types;
 
-public class SInteger extends SNumber {
+public abstract class SInteger extends SNumber {
 }
