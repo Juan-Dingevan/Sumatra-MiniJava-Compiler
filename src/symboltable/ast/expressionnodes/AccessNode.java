@@ -1,6 +1,8 @@
 package symboltable.ast.expressionnodes;
 
+import exceptions.general.CompilerException;
 import symboltable.ast.chaining.ChainingNode;
+import symboltable.types.Type;
 
 public abstract class AccessNode extends OperandNode {
     protected ChainingNode chainingNode;
@@ -12,6 +14,20 @@ public abstract class AccessNode extends OperandNode {
     public void setChainingNode(ChainingNode chainingNode) {
         this.chainingNode = chainingNode;
     }
+
+    public Type check() throws CompilerException {
+        /**Type accessCheck = accessCheck();
+
+        if(chainingNode != ChainingNode.NO_CHAINING) {
+            chainingNode.check(...);
+        } else {
+            return accessCheck;
+        }**/
+
+        return null;
+    }
+
+    //protected abstract Type accessCheck() throws CompilerException;
 
     @Override
     public boolean isValidAsSentence() {

@@ -56,7 +56,7 @@ public abstract class Class extends Symbol {
         return methods.get(m.getName()) != null;
     }
 
-    protected Method getMethod(String name) {
+    public Method getMethod(String name) {
         return methods.get(name);
     }
     public Iterable<Method> getMethods() {
