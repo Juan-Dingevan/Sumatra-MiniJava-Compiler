@@ -1,6 +1,6 @@
 package symboltable.types;
 
-public class Char extends Type{
+public class Char extends SInteger {
     public String toString() {
         return "char";
     }

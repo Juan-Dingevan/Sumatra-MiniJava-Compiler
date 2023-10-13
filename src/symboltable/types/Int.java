@@ -1,6 +1,6 @@
 package symboltable.types;
 
-public class Int extends PrimitiveType {
+public class Int extends SInteger {
     public String toString() {
         return "int";
     }
