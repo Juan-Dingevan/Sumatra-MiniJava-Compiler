@@ -2,10 +2,8 @@ package symboltable.symbols.classes;
 
 import exceptions.general.CompilerException;
 import exceptions.semantical.*;
-import exceptions.semantical.declaration.CircularInheritanceException;
 import exceptions.semantical.declaration.GenericsException;
 import exceptions.semantical.declaration.MethodAlreadyExistsException;
-import exceptions.semantical.declaration.UndeclaredExtendsException;
 import symboltable.symbols.Symbol;
 import symboltable.symbols.members.Method;
 import symboltable.symbols.members.Unit;
@@ -91,6 +89,8 @@ public abstract class Class extends Symbol {
 
     @SuppressWarnings("ReassignedVariable")
     protected abstract void checkCircularInheritance() throws SemanticException;
+
+    public abstract boolean isDescendantOf(Class c);
 
     @SuppressWarnings("ReassignedVariable")
     public boolean referenceTypesAreEquivalentInClass(ReferenceType rt1, ReferenceType rt2) {

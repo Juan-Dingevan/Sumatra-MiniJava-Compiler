@@ -13,6 +13,8 @@ import utility.StringUtilities;
 
 import java.util.HashMap;
 
+import static token.TokenConstants.OBJECT_TOKEN;
+
 public class Interface extends Class {
     private static int classID = 0;
     private static final int LEVEL = 1;
@@ -50,6 +52,25 @@ public class Interface extends Class {
                 throw new UndeclaredExtendsException(getToken(), parentName);
         }
 
+    }
+
+    @Override
+    public boolean isDescendantOf(Class possibleAncestor) {
+        String possibleAncestorName = possibleAncestor.getName();
+
+        boolean sameClass = getName().equals(possibleAncestorName);
+
+        if (sameClass) {
+            return true;
+        }
+
+        if(inheritsFrom.equals("")) {
+            return false;
+        }
+
+        Class parent = SymbolTable.getInstance().getInterface(inheritsFrom);
+
+        return parent.isDescendantOf(possibleAncestor);
     }
 
     @Override

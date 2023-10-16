@@ -95,6 +95,26 @@ public class ConcreteClass extends Class {
 
     }
 
+    @Override
+    public boolean isDescendantOf(Class possibleAncestor) {
+        String possibleAncestorName = possibleAncestor.getName();
+
+        boolean sameClass = getName().equals(possibleAncestorName);
+        boolean directImplementation = implementsInterface.equals(possibleAncestorName);
+
+        if (sameClass || directImplementation) {
+            return true;
+        }
+
+        if(token == OBJECT_TOKEN) {
+            return false;
+        }
+
+        Class parent = SymbolTable.getInstance().getClass(inheritsFrom);
+
+        return parent.isDescendantOf(possibleAncestor);
+    }
+
     public void checkDeclaration() throws CompilerException {
         checkCircularInheritance();
 
