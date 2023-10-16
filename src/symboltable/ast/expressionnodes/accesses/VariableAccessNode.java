@@ -30,15 +30,21 @@ public class VariableAccessNode extends AccessNode {
     }
 
     @Override
+    protected boolean accessCanBeAssigned() {
+        return true;
+    }
+
+    @Override
     protected Type accessCheck() throws CompilerException {
         //TODO: chequear que si comparte nombre con parametro no se pueda definir
         String name = token.getLexeme();
         Variable v = resolveName(name);
 
-        Privacy privacy = v.getPrivacy();
+        //TODO: Este codigo comentado NO va, ¿correcto?
+        /**Privacy privacy = v.getPrivacy();
 
         if(privacy != Privacy.publicS)
-            throw new PrivateMemberAccessException(token);
+            throw new PrivateMemberAccessException(token);**/
 
         int declarationLine = v.getToken().getLineNumber();
         int usageLine = token.getLineNumber();

@@ -30,10 +30,16 @@ public abstract class ChainingNode extends Node {
             return selfType;
     }
 
+    public boolean canBeAssigned() {
+        if(hasChaining())
+            return chainingNode.canBeAssigned();
+        else
+            return selfCanBeAssigned();
+    }
+
+    protected abstract boolean selfCanBeAssigned();
+
     protected abstract Type checkSelf(Type callerType, Token callerToken) throws CompilerException;
-
-    public abstract String getDeclarationForm();
-
     public abstract boolean isCall();
 
     public String toString() {

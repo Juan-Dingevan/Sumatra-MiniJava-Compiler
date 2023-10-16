@@ -7,6 +7,7 @@ import symboltable.types.Type;
 public abstract class ExpressionNode extends Node {
     public static final ExpressionNode NULL_EXPRESSION = null;
 
+    public boolean canBeAssigned() {return false;}
     public boolean isAssignment() {
         return false;
     }
@@ -27,7 +28,4 @@ public abstract class ExpressionNode extends Node {
         return sb.toString();
     }
 
-    public String getDeclarationForm() {
-        return token.getLexeme();
-    }
 }

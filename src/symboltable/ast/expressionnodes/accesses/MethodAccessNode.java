@@ -19,10 +19,12 @@ public class MethodAccessNode extends AccessNode {
         if(method == null)
             throw new UnresolvedNameException(token, contextClass.getToken());
 
+        /*
         Privacy privacy = method.getPrivacy();
 
         if(privacy != Privacy.publicS)
             throw new PrivateMemberAccessException(token);
+        */
 
         Type returnType = method.getReturnType();
 

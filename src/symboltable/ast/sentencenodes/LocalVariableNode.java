@@ -1,6 +1,7 @@
 package symboltable.ast.sentencenodes;
 
 import exceptions.general.CompilerException;
+import exceptions.semantical.sentence.VoidInTypedExpressionException;
 import symboltable.ast.expressionnodes.ExpressionNode;
 import symboltable.symbols.members.Variable;
 import symboltable.types.Type;
@@ -28,6 +29,10 @@ public class LocalVariableNode extends SentenceNode {
     @Override
     protected void checkSelf() throws CompilerException {
         Type expressionType = expression.check();
+
+        if(Type.isVoid(expressionType))
+            throw new VoidInTypedExpressionException(token);
+
         variable.setType(expressionType);
     }
 

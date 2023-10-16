@@ -40,7 +40,4 @@ public class ParenthesizedExpressionAccessNode extends AccessNode {
         return sb.toString();
     }
 
-    public String getDeclarationForm() {
-        return "(" + expression.getDeclarationForm() + ")" + getChainingDeclarationForm();
-    }
 }

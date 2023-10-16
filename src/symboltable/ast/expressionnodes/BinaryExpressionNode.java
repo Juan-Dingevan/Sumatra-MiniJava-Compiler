@@ -39,9 +39,4 @@ public abstract class BinaryExpressionNode extends ExpressionNode {
         return sb.toString();
     }
 
-    public String getDeclarationForm() {
-        String lhsDeclarationForm = lhs.getDeclarationForm();
-        String rhsDeclarationForm = rhs.getDeclarationForm();
-        return lhsDeclarationForm + token.getLexeme() + rhsDeclarationForm;
-    }
 }

@@ -2,6 +2,7 @@ package symboltable.symbols.members;
 
 import exceptions.general.CompilerException;
 import exceptions.semantical.declaration.InvalidTypeException;
+import symboltable.privacy.Privacy;
 import symboltable.symbols.classes.Class;
 import symboltable.types.Type;
 import token.Token;
@@ -41,6 +42,11 @@ public class Attribute extends Variable {
 
     public void setStatic(boolean isStatic) {
         this.isStatic = isStatic;
+    }
+
+    @Override
+    public Privacy getPrivacy() {
+        return privacy;
     }
 
     public String toString() {

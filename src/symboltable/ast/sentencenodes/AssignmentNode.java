@@ -1,5 +1,6 @@
 package symboltable.ast.sentencenodes;
 
+import exceptions.general.CompilerException;
 import symboltable.ast.expressionnodes.ExpressionNode;
 
 public class AssignmentNode extends SentenceNode{
@@ -18,6 +19,10 @@ public class AssignmentNode extends SentenceNode{
 
     public void setExpression(ExpressionNode expression) {
         this.expression = expression;
+    }
+
+    public void checkSelf() throws CompilerException {
+        expression.check();
     }
 
     public String toString() {

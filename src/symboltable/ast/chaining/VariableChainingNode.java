@@ -14,6 +14,11 @@ import token.Token;
 
 public class VariableChainingNode extends ChainingNode{
     @Override
+    protected boolean selfCanBeAssigned() {
+        return true;
+    }
+
+    @Override
     protected Type checkSelf(Type callerType, Token callerToken) throws CompilerException {
         if(!Type.isReferenceType(callerType))
             throw new PrimitiveTypeHasChainingException(token, callerType);
@@ -48,9 +53,4 @@ public class VariableChainingNode extends ChainingNode{
     }
 
 
-    public String getDeclarationForm() {
-        String s = "." + token.getLexeme();
-        String c = chainingNode == ChainingNode.NO_CHAINING ? "" : chainingNode.getDeclarationForm();
-        return s + c;
-    }
 }

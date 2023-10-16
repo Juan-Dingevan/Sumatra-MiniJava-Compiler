@@ -8,7 +8,6 @@ import exceptions.semantical.sentence.UnresolvedNameException;
 import symboltable.privacy.Privacy;
 import symboltable.symbols.classes.ConcreteClass;
 import symboltable.symbols.members.Method;
-import symboltable.symbols.members.Unit;
 import symboltable.table.SymbolTable;
 import symboltable.types.ReferenceType;
 import symboltable.types.Type;
@@ -16,6 +15,11 @@ import token.Token;
 import token.TokenType;
 
 public class MethodChainingNode extends ChainingNode{
+    @Override
+    protected boolean selfCanBeAssigned() {
+        return false;
+    }
+
     @Override
     protected Type checkSelf(Type callerType, Token callerToken) throws CompilerException {
         if(!Type.isReferenceType(callerType))
@@ -46,12 +50,6 @@ public class MethodChainingNode extends ChainingNode{
         Type returnType = method.getReturnType();
 
         return returnType;
-    }
-
-    public String getDeclarationForm() {
-        String s = "." + token.getLexeme() + "(...)";
-        String c = chainingNode == ChainingNode.NO_CHAINING ? "" : chainingNode.getDeclarationForm();
-        return s + c;
     }
 
     @Override
