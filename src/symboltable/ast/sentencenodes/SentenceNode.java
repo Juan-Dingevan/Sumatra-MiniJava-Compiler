@@ -45,7 +45,5 @@ public abstract class SentenceNode extends Node {
         }
     }
 
-    protected void checkSelf() throws CompilerException {
-        //TODO make abstract and implement it in each extension.
-    }
+    protected abstract void checkSelf() throws CompilerException;
 }

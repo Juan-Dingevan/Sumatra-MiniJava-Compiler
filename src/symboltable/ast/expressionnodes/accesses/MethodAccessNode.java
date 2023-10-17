@@ -5,11 +5,16 @@ import exceptions.semantical.sentence.PrivateMemberAccessException;
 import exceptions.semantical.sentence.UnresolvedNameException;
 import symboltable.ast.chaining.ChainingNode;
 import symboltable.ast.expressionnodes.AccessNode;
+import symboltable.ast.expressionnodes.ExpressionNode;
 import symboltable.privacy.Privacy;
 import symboltable.symbols.members.Method;
 import symboltable.types.Type;
+import utility.ActualArgumentsHandler;
+
+import java.util.List;
 
 public class MethodAccessNode extends AccessNode {
+    protected List<ExpressionNode> actualArguments;
     @Override
     protected Type accessCheck() throws CompilerException {
         String methodName = token.getLexeme();
@@ -18,6 +23,8 @@ public class MethodAccessNode extends AccessNode {
 
         if(method == null)
             throw new UnresolvedNameException(token, contextClass.getToken());
+
+        ActualArgumentsHandler.checkActualArguments(method, actualArguments);
 
         /*
         Privacy privacy = method.getPrivacy();
@@ -29,6 +36,10 @@ public class MethodAccessNode extends AccessNode {
         Type returnType = method.getReturnType();
 
         return returnType;
+    }
+
+    public void setActualArguments(List<ExpressionNode> actualArguments) {
+        this.actualArguments = actualArguments;
     }
 
     @Override

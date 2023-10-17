@@ -1,11 +1,20 @@
 package symboltable.ast.sentencenodes;
 
+import exceptions.general.CompilerException;
+import exceptions.semantical.sentence.ExpressionInVoidOrConstructorReturn;
+import exceptions.semantical.sentence.NoExpressionInTypedMethodReturnException;
+import exceptions.semantical.sentence.TypesDontConformException;
 import symboltable.ast.expressionnodes.ExpressionNode;
+import symboltable.symbols.members.Method;
+import symboltable.symbols.members.Unit;
+import symboltable.types.Type;
+import symboltable.types.Void;
 
 public class ReturnNode extends SentenceNode{
     public static int classID = 0;
     private final int id = classID;
     protected ExpressionNode expression;
+    protected Unit contextUnit;
 
     public ExpressionNode getExpression() {
         return expression;
@@ -13,6 +22,10 @@ public class ReturnNode extends SentenceNode{
 
     public void setExpression(ExpressionNode expression) {
         this.expression = expression;
+    }
+
+    public void setContextUnit(Unit contextUnit) {
+        this.contextUnit = contextUnit;
     }
 
     @Override
@@ -37,5 +50,35 @@ public class ReturnNode extends SentenceNode{
         }
 
         return sb.toString();
+    }
+
+    @Override
+    protected void checkSelf() throws CompilerException {
+        if (Unit.isConstructor(contextUnit)) {
+            checkConstructorOrVoidReturn();
+        } else {
+            Method m = (Method) contextUnit;
+            Type expectedType = m.getReturnType();
+
+            if(Type.isVoid(expectedType))
+                checkConstructorOrVoidReturn();
+            else
+                checkExpressionReturn(expectedType);
+        }
+    }
+
+    private void checkConstructorOrVoidReturn() throws ExpressionInVoidOrConstructorReturn {
+        if(expression != null)
+            throw new ExpressionInVoidOrConstructorReturn(token, contextUnit.getToken());
+    }
+
+    private void checkExpressionReturn(Type expectedType) throws CompilerException {
+        if(expression == null)
+            throw new NoExpressionInTypedMethodReturnException(token, contextUnit.getToken());
+
+        Type gotType = expression.check();
+
+        if(!Type.typesConform(gotType, expectedType))
+            throw new TypesDontConformException(token, expectedType, gotType);
     }
 }

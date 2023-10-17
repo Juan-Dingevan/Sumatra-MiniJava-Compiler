@@ -1,5 +1,10 @@
 package symboltable.ast.sentencenodes;
 
+import exceptions.general.CompilerException;
+import exceptions.semantical.sentence.TypesDontConformException;
+import symboltable.types.SBoolean;
+import symboltable.types.Type;
+
 public class IfNode extends ControlStructureNode {
     public static int classID = 0;
     private final int id = classID;
@@ -15,6 +20,13 @@ public class IfNode extends ControlStructureNode {
 
     public void setElseNode(ElseNode elseNode) {
         this.elseNode = elseNode;
+    }
+
+    @Override
+    protected void checkSelf() throws CompilerException {
+        super.checkSelf();
+        if(elseNode != ElseNode.NULL_ELSE)
+            elseNode.check();
     }
 
     public String toString() {

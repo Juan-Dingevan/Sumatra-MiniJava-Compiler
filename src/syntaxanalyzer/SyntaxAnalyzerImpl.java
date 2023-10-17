@@ -854,10 +854,13 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         match(TokenType.reserved_word_return);
         ExpressionNode e = optionalExpression();
 
+        Unit contextUnit = SymbolTable.getInstance().getCurrentConcreteClass().getCurrentUnit();
+
         ReturnNode rn = new ReturnNode();
         rn.setToken(returnToken);
         rn.setExpression(e);
         rn.setParentBlock(parent);
+        rn.setContextUnit(contextUnit);
 
         return rn;
     }
@@ -1368,11 +1371,12 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
 
         optionalGenericsInstantiation();
-        actualArguments();
+        List<ExpressionNode> actualArguments = actualArguments();
 
         ConstructorAccessNode can = new ConstructorAccessNode();
         can.setToken(declarationToken);
         can.setClassToken(classToken);
+        can.setActualArguments(actualArguments);
 
         return can;
     }
@@ -1428,11 +1432,15 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         // Rule: <method_variable_access_successor> ::= <actual_arguments>
         if(currentTokenIn(new TokenType[]{TokenType.punctuation_open_parenthesis})) {
-            an = new MethodAccessNode();
-            an.setToken(declarationToken);
-            an.setContextClass(contextClass);
+            MethodAccessNode man = new MethodAccessNode();
+            man.setToken(declarationToken);
+            man.setContextClass(contextClass);
 
-            actualArguments();
+            List<ExpressionNode> actualArguments = actualArguments();
+
+            man.setActualArguments(actualArguments);
+
+            an = man;
         }
         // Rule: <method_variable_access_successor> ::= epsilon
         else {
@@ -1463,14 +1471,17 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         return tan;
     }
 
-    private void actualArguments() throws CompilerException {
+    private List<ExpressionNode> actualArguments() throws CompilerException {
         printIfDebug("->ActualArguments");
+
         match(TokenType.punctuation_open_parenthesis);
-        optionalExpressionList();
+        List<ExpressionNode> expressions = optionalExpressionList(new ArrayList<>());
         match(TokenType.punctuation_close_parenthesis);
+
+        return expressions;
     }
 
-    private void optionalExpressionList() throws CompilerException {
+    private List<ExpressionNode> optionalExpressionList(List<ExpressionNode> expressions) throws CompilerException {
         printIfDebug("->OptionalExpressionList");
         TokenType[] expressionFirsts = {
                 TokenType.operand_plus,
@@ -1492,25 +1503,28 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         // Rule: <optional_expression_list> ::= <expression_list>
         if(currentTokenIn(expressionFirsts)) {
-            expressionList();
+            expressionList(expressions);
         }
 
         // Rule: <optional_expression_list> ::= epsilon
         // We do nothing
+
+        return expressions;
     }
 
-    private void expressionList() throws CompilerException {
+    private void expressionList(List<ExpressionNode> expressions) throws CompilerException {
         printIfDebug("->ExpressionList");
-        expression();
-        expressionListSuccessor();
+        ExpressionNode ex = expression();
+        expressions.add(ex);
+        expressionListSuccessor(expressions);
     }
 
-    private void expressionListSuccessor() throws CompilerException {
+    private void expressionListSuccessor(List<ExpressionNode> expressions) throws CompilerException {
         printIfDebug("->ExpressionListSuccessor");
         // Rule: <expression_list_successor> ::= ,<expression_list>
         if(currentTokenIn(new TokenType[]{TokenType.punctuation_comma})) {
             match(TokenType.punctuation_comma);
-            expressionList();
+            expressionList(expressions);
         }
 
         // Rule: <expression_list_successor> ::= epsilon

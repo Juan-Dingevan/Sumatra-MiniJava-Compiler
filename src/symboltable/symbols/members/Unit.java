@@ -11,6 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 
 public abstract class Unit extends Member{
+    public static boolean isConstructor(Unit u){
+        return u instanceof Constructor;
+    }
 
     protected HashMap<String, Parameter> parameterMap;
     protected List<Parameter> parameterList;

@@ -1,5 +1,10 @@
 package symboltable.ast.sentencenodes;
 
+import exceptions.general.CompilerException;
+import exceptions.semantical.sentence.TypesDontConformException;
+import symboltable.types.SBoolean;
+import symboltable.types.Type;
+
 public class ElseNode extends SentenceNode {
     public static final ElseNode NULL_ELSE = new ElseNode();
     protected SentenceNode sentence;
@@ -17,6 +22,11 @@ public class ElseNode extends SentenceNode {
 
     public void setSentence(SentenceNode sentence) {
         this.sentence = sentence;
+    }
+
+    @Override
+    protected void checkSelf() throws CompilerException {
+        sentence.check();
     }
 
     public String toString() {
