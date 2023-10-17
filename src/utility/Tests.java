@@ -44,5 +44,11 @@ public class Tests {
         padre = v;
         padre = x;
         padre = y;
+
+        boolean bool;
+
+        if(bool = true) {
+
+        }
     }
 }
