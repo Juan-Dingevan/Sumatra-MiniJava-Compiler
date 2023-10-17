@@ -5,6 +5,7 @@ import exceptions.semantical.sentence.InvalidDynamicAccessException;
 import exceptions.semantical.sentence.PrimitiveTypeHasChainingException;
 import exceptions.semantical.sentence.PrivateMemberAccessException;
 import exceptions.semantical.sentence.UnresolvedNameException;
+import symboltable.ast.expressionnodes.ExpressionNode;
 import symboltable.privacy.Privacy;
 import symboltable.symbols.classes.ConcreteClass;
 import symboltable.symbols.members.Method;
@@ -13,8 +14,17 @@ import symboltable.types.ReferenceType;
 import symboltable.types.Type;
 import token.Token;
 import token.TokenType;
+import utility.ActualArgumentsHandler;
+
+import java.util.List;
 
 public class MethodChainingNode extends ChainingNode{
+    protected List<ExpressionNode> actualArguments;
+
+    public void setActualArguments(List<ExpressionNode> actualArguments) {
+        this.actualArguments = actualArguments;
+    }
+
     @Override
     protected boolean selfCanBeAssigned() {
         return false;
@@ -46,6 +56,8 @@ public class MethodChainingNode extends ChainingNode{
 
         if(callerIsClassID && !isStatic)
             throw new InvalidDynamicAccessException(token, contextClass.getToken());
+
+        ActualArgumentsHandler.checkActualArguments(method, actualArguments, token);
 
         Type returnType = method.getReturnType();
 

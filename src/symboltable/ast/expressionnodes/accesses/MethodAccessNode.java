@@ -24,7 +24,7 @@ public class MethodAccessNode extends AccessNode {
         if(method == null)
             throw new UnresolvedNameException(token, contextClass.getToken());
 
-        ActualArgumentsHandler.checkActualArguments(method, actualArguments);
+        ActualArgumentsHandler.checkActualArguments(method, actualArguments, token);
 
         /*
         Privacy privacy = method.getPrivacy();

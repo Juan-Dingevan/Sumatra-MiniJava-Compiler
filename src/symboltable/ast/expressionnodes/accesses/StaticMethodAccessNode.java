@@ -7,15 +7,20 @@ import exceptions.semantical.sentence.UndeclaredClassException;
 import exceptions.semantical.sentence.UnresolvedNameException;
 import symboltable.ast.chaining.ChainingNode;
 import symboltable.ast.expressionnodes.AccessNode;
+import symboltable.ast.expressionnodes.ExpressionNode;
 import symboltable.privacy.Privacy;
 import symboltable.symbols.classes.ConcreteClass;
 import symboltable.symbols.members.Method;
 import symboltable.table.SymbolTable;
 import symboltable.types.Type;
 import token.Token;
+import utility.ActualArgumentsHandler;
+
+import java.util.List;
 
 public class StaticMethodAccessNode extends AccessNode {
     protected Token classToken;
+    protected List<ExpressionNode> actualArguments;
 
     public Token getClassToken() {
         return classToken;
@@ -23,6 +28,10 @@ public class StaticMethodAccessNode extends AccessNode {
 
     public void setClassToken(Token classToken) {
         this.classToken = classToken;
+    }
+
+    public void setActualArguments(List<ExpressionNode> actualArguments) {
+        this.actualArguments = actualArguments;
     }
 
     @Override
@@ -45,6 +54,8 @@ public class StaticMethodAccessNode extends AccessNode {
         boolean isStatic = method.isStatic();
         if(!isStatic)
             throw new InvalidDynamicAccessException(token, callerClass.getToken());
+
+        ActualArgumentsHandler.checkActualArguments(method, actualArguments, token);
 
         Type returnType = method.getReturnType();
 

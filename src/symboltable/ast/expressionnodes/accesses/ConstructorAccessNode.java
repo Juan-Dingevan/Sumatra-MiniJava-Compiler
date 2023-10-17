@@ -40,7 +40,7 @@ public class ConstructorAccessNode extends AccessNode {
 
         Constructor constructor = classConstructed.getConstructor();
 
-        ActualArgumentsHandler.checkActualArguments(constructor, actualArguments);
+        ActualArgumentsHandler.checkActualArguments(constructor, actualArguments, classToken);
 
         return new ReferenceType(classToken.getLexeme());
     }

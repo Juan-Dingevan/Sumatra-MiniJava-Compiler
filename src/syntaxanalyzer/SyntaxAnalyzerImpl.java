@@ -657,6 +657,11 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         sentenceList(block);
         match(TokenType.punctuation_close_curly);
 
+        Class currentClass = SymbolTable.getInstance().getCurrentConcreteClass();
+        Unit currentUnit = currentClass.getCurrentUnit();
+
+        block.setContextUnit(currentUnit);
+
         return block;
     }
 
@@ -1349,11 +1354,12 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         Token declarationToken = currentToken;
 
         match(TokenType.id_method_variable);
-        actualArguments();
+        List<ExpressionNode> actualArgs = actualArguments();
 
         StaticMethodAccessNode sman = new StaticMethodAccessNode();
         sman.setToken(declarationToken);
         sman.setClassToken(classToken);
+        sman.setActualArguments(actualArgs);
 
         return sman;
     }
@@ -1569,12 +1575,15 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         ChainingNode chainingNode;
 
         if(currentTokenIn(new TokenType[]{TokenType.punctuation_open_parenthesis})) {
-            actualArguments();
+            List<ExpressionNode> actualArgs = actualArguments();
             ChainingNode chainToChain = optionalChaining();
 
-            chainingNode = new MethodChainingNode();
-            chainingNode.setToken(declarationToken);
-            chainingNode.setChainingNode(chainToChain);
+            MethodChainingNode methodChainingNode = new MethodChainingNode();
+            methodChainingNode.setToken(declarationToken);
+            methodChainingNode.setChainingNode(chainToChain);
+            methodChainingNode.setActualArguments(actualArgs);
+
+            chainingNode = methodChainingNode;
         } else {
             /*
              * Lo ponemos en el else, sin chequear primeros porque, si

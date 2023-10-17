@@ -2,6 +2,7 @@ package symboltable.ast.sentencenodes;
 
 import exceptions.general.CompilerException;
 import exceptions.semantical.sentence.LocalVariableAlreadyExistsException;
+import symboltable.symbols.members.Unit;
 import symboltable.symbols.members.Variable;
 
 import java.util.*;
@@ -12,12 +13,17 @@ public class BlockNode extends SentenceNode{
     private final int id;
     protected List<SentenceNode> sentences;
     protected Map<String, Variable> variables;
+    protected Unit contextUnit;
 
     public BlockNode() {
         sentences = new ArrayList<>();
         variables = new HashMap<>();
         id = classID;
         classID++;
+    }
+
+    public void setContextUnit(Unit contextUnit) {
+        this.contextUnit = contextUnit;
     }
 
     @Override
