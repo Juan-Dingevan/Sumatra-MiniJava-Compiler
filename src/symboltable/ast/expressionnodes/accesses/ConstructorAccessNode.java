@@ -1,10 +1,12 @@
 package symboltable.ast.expressionnodes.accesses;
 
 import exceptions.general.CompilerException;
+import exceptions.semantical.sentence.PrivateMemberAccessException;
 import exceptions.semantical.sentence.UndeclaredClassException;
 import symboltable.ast.chaining.ChainingNode;
 import symboltable.ast.expressionnodes.AccessNode;
 import symboltable.ast.expressionnodes.ExpressionNode;
+import symboltable.privacy.Privacy;
 import symboltable.symbols.classes.ConcreteClass;
 import symboltable.symbols.members.Constructor;
 import symboltable.table.SymbolTable;
@@ -39,6 +41,17 @@ public class ConstructorAccessNode extends AccessNode {
             throw new UndeclaredClassException(classToken);
 
         Constructor constructor = classConstructed.getConstructor();
+
+        Privacy privacy = constructor.getPrivacy();
+
+        boolean accessedFromDeclaringClass = contextClass == constructor.getMemberOf();
+        boolean isPrivate = privacy != Privacy.publicS;
+
+        if(isPrivate && !accessedFromDeclaringClass) {
+            System.out.println("context class name " + contextClass.getName());
+            System.out.println("memerOf class name " + constructor.getMemberOf().getName());
+            throw new PrivateMemberAccessException(token);
+        }
 
         ActualArgumentsHandler.checkActualArguments(constructor, actualArguments, classToken);
 

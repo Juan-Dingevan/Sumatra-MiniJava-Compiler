@@ -40,11 +40,14 @@ public class VariableAccessNode extends AccessNode {
         String name = token.getLexeme();
         Variable v = resolveName(name);
 
-        //TODO: Este codigo comentado NO va, ¿correcto?
-        /**Privacy privacy = v.getPrivacy();
+        Privacy privacy = v.getPrivacy();
 
-        if(privacy != Privacy.publicS)
-            throw new PrivateMemberAccessException(token);**/
+        boolean accessedFromDeclaringClass = contextClass == v.getMemberOf();
+        boolean isPrivate = privacy != Privacy.publicS;
+
+        if(isPrivate && !accessedFromDeclaringClass) {
+            throw new PrivateMemberAccessException(token);
+        }
 
         int declarationLine = v.getToken().getLineNumber();
         int usageLine = token.getLineNumber();

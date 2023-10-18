@@ -26,12 +26,14 @@ public class MethodAccessNode extends AccessNode {
 
         ActualArgumentsHandler.checkActualArguments(method, actualArguments, token);
 
-        /*
         Privacy privacy = method.getPrivacy();
 
-        if(privacy != Privacy.publicS)
+        boolean accessedFromDeclaringClass = contextClass == method.getMemberOf();
+        boolean isPrivate = privacy != Privacy.publicS;
+
+        if(isPrivate && !accessedFromDeclaringClass) {
             throw new PrivateMemberAccessException(token);
-        */
+        }
 
         Type returnType = method.getReturnType();
 

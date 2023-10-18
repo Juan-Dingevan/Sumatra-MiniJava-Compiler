@@ -14,6 +14,10 @@ public abstract class Member extends Symbol {
         this.memberOf = memberOf;
     }
 
+    public Class getMemberOf() {
+        return memberOf;
+    }
+
     public Privacy getPrivacy() {
         return privacy;
     }

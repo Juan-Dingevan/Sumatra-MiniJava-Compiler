@@ -1375,14 +1375,16 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         match(TokenType.id_class);
 
-
         optionalGenericsInstantiation();
         List<ExpressionNode> actualArguments = actualArguments();
+
+        ConcreteClass context = SymbolTable.getInstance().getCurrentConcreteClass();
 
         ConstructorAccessNode can = new ConstructorAccessNode();
         can.setToken(declarationToken);
         can.setClassToken(classToken);
         can.setActualArguments(actualArguments);
+        can.setContextClass(context);
 
         return can;
     }
