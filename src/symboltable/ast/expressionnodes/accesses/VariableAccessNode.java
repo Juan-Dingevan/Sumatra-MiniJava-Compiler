@@ -28,7 +28,6 @@ public class VariableAccessNode extends AccessNode {
 
     @Override
     protected Type accessCheck() throws CompilerException {
-        //TODO: chequear que si comparte nombre con parametro no se pueda definir
         String name = token.getLexeme();
         Variable v = resolveName(name);
 
