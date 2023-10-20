@@ -885,7 +885,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         match(TokenType.assign_normal);
         ExpressionNode ex = compositeExpression();
 
-        Class c = SymbolTable.getInstance().getCurrentClassOrInterface();
+        ConcreteClass c = SymbolTable.getInstance().getCurrentConcreteClass();
         Variable v = new Variable(declarationToken, c);
 
         LocalVariableNode lvn = new LocalVariableNode();

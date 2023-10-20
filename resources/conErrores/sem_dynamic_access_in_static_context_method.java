@@ -1,4 +1,4 @@
-///[Error:x|8]
+///[Error:x|10]
 class Main {
     public static void main() {}
 
@@ -7,6 +7,6 @@ class Main {
     }
 
     public static void m() {
-        var y = x;
+        var y = x();
     }
 }
