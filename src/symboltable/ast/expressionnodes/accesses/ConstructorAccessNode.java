@@ -15,12 +15,15 @@ import symboltable.types.Type;
 import token.Token;
 import utility.ActualArgumentsHandler;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ConstructorAccessNode extends AccessNode {
+    public static final List<String> NO_GENERIC_TYPES = new ArrayList<>();
     protected Token classToken;
 
     protected List<ExpressionNode> actualArguments;
+    protected List<String> genericInstantiation;
 
     public Token getClassToken() {
         return classToken;
@@ -53,6 +56,14 @@ public class ConstructorAccessNode extends AccessNode {
             throw new PrivateMemberAccessException(token);
         }
 
+        /*
+            Chequeos genericos a hacer
+                - que si la clase de la que se usa el constr. tiene parametros de tipo genericos
+                  que la llamada tenga, o bien la misma cantidad, o la notación diamante
+                - que si tiene la notación diamante, se puedan inferir los tipos ¿como?
+                - al Type retornado cargarle los parametros de tipo genericos
+         */
+
         ActualArgumentsHandler.checkActualArguments(constructor, actualArguments, classToken);
 
         return new ReferenceType(classToken.getLexeme());
@@ -60,6 +71,10 @@ public class ConstructorAccessNode extends AccessNode {
 
     public void setActualArguments(List<ExpressionNode> actualArguments) {
         this.actualArguments = actualArguments;
+    }
+
+    public void setGenericInstantiation(List<String> genericInstantiation) {
+        this.genericInstantiation = genericInstantiation;
     }
 
     @Override

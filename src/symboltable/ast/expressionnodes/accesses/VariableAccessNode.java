@@ -2,6 +2,7 @@ package symboltable.ast.expressionnodes.accesses;
 
 import com.sun.security.jgss.GSSUtil;
 import exceptions.general.CompilerException;
+import exceptions.semantical.sentence.DynamicUsageInStaticContextException;
 import exceptions.semantical.sentence.PrivateMemberAccessException;
 import exceptions.semantical.sentence.UnresolvedNameException;
 import symboltable.ast.expressionnodes.AccessNode;
@@ -13,20 +14,11 @@ import symboltable.symbols.members.Variable;
 import symboltable.types.Type;
 
 public class VariableAccessNode extends AccessNode {
-    protected Unit contextUnit;
     protected Variable referencedVariable;
 
     public VariableAccessNode() {
         super();
         referencedVariable = null;
-    }
-
-    public Unit getContextUnit() {
-        return contextUnit;
-    }
-
-    public void setContextUnit(Unit contextUnit) {
-        this.contextUnit = contextUnit;
     }
 
     @Override
@@ -49,6 +41,12 @@ public class VariableAccessNode extends AccessNode {
             throw new PrivateMemberAccessException(token);
         }
 
+        boolean staticContextUnit = contextUnit.isStatic();
+        boolean staticReferencedVar = v.isStatic();
+
+        if(staticContextUnit && !staticReferencedVar)
+            throw new DynamicUsageInStaticContextException(token);
+
         int declarationLine = v.getToken().getLineNumber();
         int usageLine = token.getLineNumber();
 
@@ -57,6 +55,25 @@ public class VariableAccessNode extends AccessNode {
 
         Type type = v.getType();
         referencedVariable = v;
+
+        /*
+            Chequeos para evitar que se acceda a una variable dinamica desde un
+            acceso estatico:
+                - hacer que todos los accesos almacenen una contextUnit
+                - ver si la contextUnit es estática
+                - si lo es, en VariableAccessNode y MethodAccessNode comprobar que
+                  el miembro referenciado sea estático
+                - validar que se pueda acceder a cosas dinámicas cuando deba ser permitido
+                  por ejemplo:
+
+                    public static void m() {
+                        var x = new A();
+                        x.dynamicMethod();
+                        var y = x.dynamicAttribute;
+                    }
+
+                  debria ser permitido
+         */
 
         return type;
     }
