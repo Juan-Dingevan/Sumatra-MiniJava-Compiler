@@ -24,6 +24,8 @@ public abstract class Unit extends Member{
         parameterList = new ArrayList<>();
     }
 
+    public abstract boolean isStatic();
+
     public void checkDeclaration() throws CompilerException {
         for(Parameter p : parameterMap.values())
             p.checkDeclaration();

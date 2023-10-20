@@ -14,6 +14,10 @@ public class Variable extends TypedEntity {
         classID++;
     }
 
+    public boolean isStatic() {
+        return true;
+    }
+
     @Override
     public Privacy getPrivacy() {
         return Privacy.publicS;

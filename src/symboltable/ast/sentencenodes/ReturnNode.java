@@ -14,7 +14,6 @@ public class ReturnNode extends SentenceNode{
     public static int classID = 0;
     private final int id = classID;
     protected ExpressionNode expression;
-    protected Unit contextUnit;
 
     public ExpressionNode getExpression() {
         return expression;
@@ -22,10 +21,6 @@ public class ReturnNode extends SentenceNode{
 
     public void setExpression(ExpressionNode expression) {
         this.expression = expression;
-    }
-
-    public void setContextUnit(Unit contextUnit) {
-        this.contextUnit = contextUnit;
     }
 
     @Override

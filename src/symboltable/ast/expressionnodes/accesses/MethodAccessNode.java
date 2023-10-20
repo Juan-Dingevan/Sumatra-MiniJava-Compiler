@@ -1,6 +1,7 @@
 package symboltable.ast.expressionnodes.accesses;
 
 import exceptions.general.CompilerException;
+import exceptions.semantical.sentence.DynamicUsageInStaticContextException;
 import exceptions.semantical.sentence.PrivateMemberAccessException;
 import exceptions.semantical.sentence.UnresolvedNameException;
 import symboltable.ast.chaining.ChainingNode;
@@ -34,6 +35,12 @@ public class MethodAccessNode extends AccessNode {
         if(isPrivate && !accessedFromDeclaringClass) {
             throw new PrivateMemberAccessException(token);
         }
+
+        boolean staticContextUnit = contextUnit.isStatic();
+        boolean staticReferencedMethod = method.isStatic();
+
+        if(staticContextUnit && !staticReferencedMethod)
+            throw new DynamicUsageInStaticContextException(token);
 
         Type returnType = method.getReturnType();
 

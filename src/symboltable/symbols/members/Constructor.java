@@ -37,6 +37,10 @@ public class Constructor extends Unit {
             throw new IncorrectlyNamedConstructorException(token, memberOf.getToken());
     }
 
+    public boolean isStatic() {
+        return false;
+    }
+
     public String toString() {
         String prefix = StringUtilities.getDashesForDepth(LEVEL);
         String s = prefix + "CONSTRUCTOR PRIVACY:" + privacy + "\n";

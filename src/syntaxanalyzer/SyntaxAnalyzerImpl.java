@@ -695,10 +695,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         if(currentTokenIn(sentenceFirsts)) {
             SentenceNode s = sentence(parent);
 
-            ConcreteClass c = SymbolTable.getInstance().getCurrentConcreteClass();
-
             if(s != SEMICOLON_SENTENCE) {
-                s.setContextClass(c);
                 parent.addSentence(s);
             }
 
@@ -772,6 +769,14 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
                     TokenType.reserved_word_if, TokenType.reserved_word_while
             };
             throw new InvalidTokenFoundException(line, lexeme, validTokens);
+        }
+
+        ConcreteClass contextClass = SymbolTable.getInstance().getCurrentConcreteClass();
+        Unit contextUnit = contextClass.getCurrentUnit();
+
+        if(s != SEMICOLON_SENTENCE) {
+            s.setContextClass(contextClass);
+            s.setContextUnit(contextUnit);
         }
 
         return s;
@@ -1294,6 +1299,12 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         an.setChainingNode(cn);
 
+        ConcreteClass contextClass = SymbolTable.getInstance().getCurrentConcreteClass();
+        Unit contextUnit = contextClass.getCurrentUnit();
+
+        an.setContextClass(contextClass);
+        an.setContextUnit(contextUnit);
+
         return an;
     }
 
@@ -1375,7 +1386,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         match(TokenType.id_class);
 
-        optionalGenericsInstantiation();
+        List<String> genericInstantiation = optionalGenericsInstantiation();
         List<ExpressionNode> actualArguments = actualArguments();
 
         ConcreteClass context = SymbolTable.getInstance().getCurrentConcreteClass();
@@ -1384,23 +1395,30 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         can.setToken(declarationToken);
         can.setClassToken(classToken);
         can.setActualArguments(actualArguments);
+        can.setGenericInstantiation(genericInstantiation);
         can.setContextClass(context);
 
         return can;
     }
 
-    private void optionalGenericsInstantiation() throws CompilerException {
+    private List<String> optionalGenericsInstantiation() throws CompilerException {
         printIfDebug("->OptionalGenericsInstantiation");
+
+        List<String> genericTypes;
 
         // RULE <optional_generic_instantiation> ::= < <optional_generic_types_list> >
         if(currentTokenIn(new TokenType[]{TokenType.operand_lesser})) {
             match(TokenType.operand_lesser);
-            optionalGenericTypesList();
+            genericTypes = optionalGenericTypesList();
             match(TokenType.operand_greater);
+        } else {
+            genericTypes = ConstructorAccessNode.NO_GENERIC_TYPES;
         }
 
         // RULE <optional_generic_instantiation> ::=  epsilon
         // We do nothing
+
+        return genericTypes;
     }
 
     private List<String> optionalGenericTypesList() throws CompilerException {
@@ -1470,11 +1488,8 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         match(TokenType.reserved_word_this);
 
-        ConcreteClass contextClass = SymbolTable.getInstance().getCurrentConcreteClass();
-
         ThisAccessNode tan = new ThisAccessNode();
         tan.setToken(declarationToken);
-        tan.setContextClass(contextClass);
 
         return tan;
     }

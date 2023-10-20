@@ -36,6 +36,7 @@ public class Attribute extends Variable {
         }
     }
 
+    @Override
     public boolean isStatic() {
         return isStatic;
     }

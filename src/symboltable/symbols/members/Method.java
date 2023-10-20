@@ -64,6 +64,7 @@ public class Method extends Unit {
         }
     }
 
+    @Override
     public boolean isStatic() {
         return isStatic;
     }

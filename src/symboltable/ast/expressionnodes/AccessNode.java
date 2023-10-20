@@ -2,12 +2,15 @@ package symboltable.ast.expressionnodes;
 
 import exceptions.general.CompilerException;
 import symboltable.ast.chaining.ChainingNode;
+import symboltable.ast.sentencenodes.BlockNode;
 import symboltable.symbols.classes.ConcreteClass;
+import symboltable.symbols.members.Unit;
 import symboltable.types.Type;
 
 public abstract class AccessNode extends OperandNode {
     protected ChainingNode chainingNode;
-    protected ConcreteClass contextClass;
+    protected Unit contextUnit;
+    protected BlockNode parentBlock;
 
     public ChainingNode getChainingNode() {
         return chainingNode;
@@ -25,6 +28,14 @@ public abstract class AccessNode extends OperandNode {
     @Override
     public void setContextClass(ConcreteClass contextClass) {
         this.contextClass = contextClass;
+    }
+
+    public Unit getContextUnit() {
+        return contextUnit;
+    }
+
+    public void setContextUnit(Unit contextUnit) {
+        this.contextUnit = contextUnit;
     }
 
     public boolean hasChaining() {
