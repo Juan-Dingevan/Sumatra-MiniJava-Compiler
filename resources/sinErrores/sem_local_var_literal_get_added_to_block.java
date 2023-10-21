@@ -10,6 +10,6 @@ class Main {
         var floatLiteral = 1.0;
         var trueLiteral = true;
         var falseLiteral = false;
-        var nullLiteral = null;
+        //var nullLiteral = null;
     }
 }

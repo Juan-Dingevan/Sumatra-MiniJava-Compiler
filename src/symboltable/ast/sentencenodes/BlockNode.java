@@ -50,7 +50,7 @@ public class BlockNode extends SentenceNode{
         if(parentBlock == NULL_PARENT)
             return false;
 
-        return parentBlock.existsLocally(v);
+        return parentBlock.existsInScope(v);
     }
 
     public boolean existsLocally(Variable v) {

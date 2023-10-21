@@ -35,6 +35,8 @@ public abstract class SentenceNode extends Node {
             sb.append("parent BlockNode{");
             sb.append(parentBlock == null ? "null" : parentBlock.getID());
             sb.append("} ");
+        } else {
+            sb.append("parent NULL_PARENT\n");
         }
 
         return sb.toString();
