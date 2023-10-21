@@ -34,10 +34,14 @@ public class ParenthesizedExpressionAccessNode extends AccessNode {
         return expression.check();
     }
 
+    /*
+
     @Override
     protected boolean accessCanBeAssigned() {
         return expression.canBeAssigned();
     }
+
+    */
 
     @Override
     public boolean isValidAsSentence() {

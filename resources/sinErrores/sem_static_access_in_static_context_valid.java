@@ -9,8 +9,6 @@ class Main {
 
     public static void m2() {
         x = m();
-        this.x = this.m();
-        (this).x = (this).m();
-        (((((((this))))))).x = (((((((this))))))).m();
+        m();
     }
 }

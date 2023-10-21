@@ -1,4 +1,4 @@
-///[Error:x|8]
+///[Error:this|8]
 class Main {
     public static void main() {}
 

@@ -51,24 +51,6 @@ public class MethodChainingNode extends ChainingNode{
             throw new PrivateMemberAccessException(token);
         }
 
-        if(callerToken.getTokenType() == TokenType.reserved_word_this) {
-            boolean staticContextUnit = contextUnit.isStatic();
-            boolean staticReferencedMethod = method.isStatic();
-
-            if(staticContextUnit && !staticReferencedMethod)
-                throw new DynamicUsageInStaticContextException(token);
-        }
-
-        /*
-
-        boolean callerIsClassID = callerToken.getTokenType() == TokenType.id_class;
-        boolean isStatic = method.isStatic();
-
-        if(callerIsClassID && !isStatic)
-            throw new InvalidDynamicAccessException(token, referencedClass.getToken());
-
-        */
-
         ActualArgumentsHandler.checkActualArguments(method, actualArguments, token);
 
         Type returnType = method.getReturnType();

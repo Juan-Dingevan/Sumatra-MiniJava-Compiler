@@ -45,14 +45,6 @@ public class VariableChainingNode extends ChainingNode{
             throw new PrivateMemberAccessException(token);
         }
 
-        if(callerToken.getTokenType() == TokenType.reserved_word_this) {
-            boolean staticContextUnit = contextUnit.isStatic();
-            boolean staticReferencedMethod = attribute.isStatic();
-
-            if(staticContextUnit && !staticReferencedMethod)
-                throw new DynamicUsageInStaticContextException(token);
-        }
-
         Type type = attribute.getType();
 
         return type;

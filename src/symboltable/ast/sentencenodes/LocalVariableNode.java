@@ -2,6 +2,7 @@ package symboltable.ast.sentencenodes;
 
 import exceptions.general.CompilerException;
 import exceptions.semantical.sentence.LocalVarAndParameterShareNameException;
+import exceptions.semantical.sentence.LocalVariableInitializedWithNullException;
 import exceptions.semantical.sentence.VoidInTypedExpressionException;
 import symboltable.ast.expressionnodes.ExpressionNode;
 import symboltable.symbols.members.Variable;
@@ -33,6 +34,9 @@ public class LocalVariableNode extends SentenceNode {
 
         if(Type.isVoid(expressionType))
             throw new VoidInTypedExpressionException(token);
+
+        if(Type.isNull(expressionType))
+            throw new LocalVariableInitializedWithNullException(token);
 
         if(sharesNameWithParameter())
             throw new LocalVarAndParameterShareNameException(token);
