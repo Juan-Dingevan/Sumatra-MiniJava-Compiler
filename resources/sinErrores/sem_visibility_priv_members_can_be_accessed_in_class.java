@@ -11,6 +11,15 @@ class A {
     }
 }
 
+class X {
+    private int attr = 1;
+
+    public void m() {
+        var x = new X();
+        x.attr = 2;
+    }
+}
+
 class Main {
     public static void main() {}
 }

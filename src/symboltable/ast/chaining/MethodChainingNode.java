@@ -51,7 +51,7 @@ public class MethodChainingNode extends ChainingNode{
             throw new PrivateMemberAccessException(token);
         }
 
-        if(callerToken.getTokenType() != TokenType.id_method_variable) {
+        if(callerToken.getTokenType() == TokenType.reserved_word_this) {
             boolean staticContextUnit = contextUnit.isStatic();
             boolean staticReferencedMethod = method.isStatic();
 

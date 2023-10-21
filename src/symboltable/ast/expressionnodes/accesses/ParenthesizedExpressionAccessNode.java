@@ -18,8 +18,25 @@ public class ParenthesizedExpressionAccessNode extends AccessNode {
     }
 
     @Override
+    public Type check() throws CompilerException {
+        Type accessType = accessCheck();
+
+        if(hasChaining()) {
+            Type chainingType = chainingNode.check(accessType, expression.getToken());
+            return chainingType;
+        } else {
+            return accessType;
+        }
+    }
+
+    @Override
     protected Type accessCheck() throws CompilerException {
         return expression.check();
+    }
+
+    @Override
+    protected boolean accessCanBeAssigned() {
+        return expression.canBeAssigned();
     }
 
     @Override

@@ -51,8 +51,6 @@ public class ConstructorAccessNode extends AccessNode {
         boolean isPrivate = privacy != Privacy.publicS;
 
         if(isPrivate && !accessedFromDeclaringClass) {
-            System.out.println("context class name " + contextClass.getName());
-            System.out.println("memerOf class name " + constructor.getMemberOf().getName());
             throw new PrivateMemberAccessException(token);
         }
 
