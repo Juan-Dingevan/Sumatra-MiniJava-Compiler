@@ -1,6 +1,7 @@
 package symboltable.ast.chaining;
 
 import exceptions.general.CompilerException;
+import exceptions.semantical.sentence.DynamicUsageInStaticContextException;
 import exceptions.semantical.sentence.PrimitiveTypeHasChainingException;
 import exceptions.semantical.sentence.PrivateMemberAccessException;
 import exceptions.semantical.sentence.UnresolvedNameException;
@@ -11,6 +12,7 @@ import symboltable.table.SymbolTable;
 import symboltable.types.ReferenceType;
 import symboltable.types.Type;
 import token.Token;
+import token.TokenType;
 
 public class VariableChainingNode extends ChainingNode{
     @Override
@@ -28,16 +30,28 @@ public class VariableChainingNode extends ChainingNode{
         String className = rt.getReferenceName();
         String variableName = token.getLexeme();
 
-        ConcreteClass contextClass = SymbolTable.getInstance().getClass(className);
-        Attribute attribute = contextClass.getAttribute(variableName);
+        ConcreteClass referencedClass = SymbolTable.getInstance().getClass(className);
+        Attribute attribute = referencedClass.getAttribute(variableName);
 
         if(attribute == null)
-            throw new UnresolvedNameException(token, contextClass.getToken());
+            throw new UnresolvedNameException(token, referencedClass.getToken());
 
         Privacy privacy = attribute.getPrivacy();
 
-        if(privacy != Privacy.publicS)
+        boolean accessedFromDeclaringClass = contextClass == attribute.getMemberOf();
+        boolean isPrivate = privacy != Privacy.publicS;
+
+        if(isPrivate && !accessedFromDeclaringClass) {
             throw new PrivateMemberAccessException(token);
+        }
+
+        if(callerToken.getTokenType() != TokenType.id_method_variable) {
+            boolean staticContextUnit = contextUnit.isStatic();
+            boolean staticReferencedMethod = attribute.isStatic();
+
+            if(staticContextUnit && !staticReferencedMethod)
+                throw new DynamicUsageInStaticContextException(token);
+        }
 
         Type type = attribute.getType();
 

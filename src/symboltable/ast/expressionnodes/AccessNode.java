@@ -9,33 +9,13 @@ import symboltable.types.Type;
 
 public abstract class AccessNode extends OperandNode {
     protected ChainingNode chainingNode;
-    protected Unit contextUnit;
     protected BlockNode parentBlock;
-
     public ChainingNode getChainingNode() {
         return chainingNode;
     }
 
     public void setChainingNode(ChainingNode chainingNode) {
         this.chainingNode = chainingNode;
-    }
-
-    @Override
-    public ConcreteClass getContextClass() {
-        return contextClass;
-    }
-
-    @Override
-    public void setContextClass(ConcreteClass contextClass) {
-        this.contextClass = contextClass;
-    }
-
-    public Unit getContextUnit() {
-        return contextUnit;
-    }
-
-    public void setContextUnit(Unit contextUnit) {
-        this.contextUnit = contextUnit;
     }
 
     public boolean hasChaining() {

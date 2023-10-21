@@ -1,10 +1,7 @@
 package symboltable.ast.chaining;
 
 import exceptions.general.CompilerException;
-import exceptions.semantical.sentence.InvalidDynamicAccessException;
-import exceptions.semantical.sentence.PrimitiveTypeHasChainingException;
-import exceptions.semantical.sentence.PrivateMemberAccessException;
-import exceptions.semantical.sentence.UnresolvedNameException;
+import exceptions.semantical.sentence.*;
 import symboltable.ast.expressionnodes.ExpressionNode;
 import symboltable.privacy.Privacy;
 import symboltable.symbols.classes.ConcreteClass;
@@ -40,22 +37,37 @@ public class MethodChainingNode extends ChainingNode{
         String className = rt.getReferenceName();
         String methodName = token.getLexeme();
 
-        ConcreteClass contextClass = SymbolTable.getInstance().getClass(className);
-        Method method = contextClass.getMethod(methodName);
+        ConcreteClass referencedClass = SymbolTable.getInstance().getClass(className);
+        Method method = referencedClass.getMethod(methodName);
 
         if(method == null)
-            throw new UnresolvedNameException(token, contextClass.getToken());
+            throw new UnresolvedNameException(token, referencedClass.getToken());
 
         Privacy privacy = method.getPrivacy();
+        boolean accessedFromDeclaringClass = contextClass == method.getMemberOf();
+        boolean isPrivate = privacy != Privacy.publicS;
 
-        if(privacy != Privacy.publicS)
+        if(isPrivate && !accessedFromDeclaringClass) {
             throw new PrivateMemberAccessException(token);
+        }
+
+        if(callerToken.getTokenType() != TokenType.id_method_variable) {
+            boolean staticContextUnit = contextUnit.isStatic();
+            boolean staticReferencedMethod = method.isStatic();
+
+            if(staticContextUnit && !staticReferencedMethod)
+                throw new DynamicUsageInStaticContextException(token);
+        }
+
+        /*
 
         boolean callerIsClassID = callerToken.getTokenType() == TokenType.id_class;
         boolean isStatic = method.isStatic();
 
         if(callerIsClassID && !isStatic)
-            throw new InvalidDynamicAccessException(token, contextClass.getToken());
+            throw new InvalidDynamicAccessException(token, referencedClass.getToken());
+
+        */
 
         ActualArgumentsHandler.checkActualArguments(method, actualArguments, token);
 

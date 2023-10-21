@@ -1613,6 +1613,12 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
             chainingNode.setChainingNode(chainToChain);
         }
 
+        ConcreteClass contextClass = SymbolTable.getInstance().getCurrentConcreteClass();
+        Unit contextUnit = contextClass.getCurrentUnit();
+
+        chainingNode.setContextClass(contextClass);
+        chainingNode.setContextUnit(contextUnit);
+
         return chainingNode;
     }
 }
