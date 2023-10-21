@@ -5,6 +5,7 @@ import symboltable.ast.chaining.ChainingNode;
 import symboltable.ast.expressionnodes.AccessNode;
 import symboltable.ast.expressionnodes.ExpressionNode;
 import symboltable.types.Type;
+import utility.Pair;
 
 public class ParenthesizedExpressionAccessNode extends AccessNode {
     ExpressionNode expression;
@@ -45,7 +46,7 @@ public class ParenthesizedExpressionAccessNode extends AccessNode {
 
     @Override
     public boolean isValidAsSentence() {
-        return chainingNode != ChainingNode.NO_CHAINING;
+        return chainingNode != ChainingNode.NO_CHAINING && chainingNode.isCall();
     }
 
     @Override

@@ -55,7 +55,7 @@ public class VariableChainingNode extends ChainingNode{
         if(hasChaining())
             return chainingNode.isCall();
         else
-            return true;
+            return false;
     }
 
 
