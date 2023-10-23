@@ -1,6 +1,7 @@
 package symboltable.ast.expressionnodes.accesses;
 
 import exceptions.general.CompilerException;
+import exceptions.semantical.declaration.GenericsException;
 import exceptions.semantical.sentence.PrivateMemberAccessException;
 import exceptions.semantical.sentence.UndeclaredClassException;
 import symboltable.ast.chaining.ChainingNode;
@@ -62,9 +63,41 @@ public class ConstructorAccessNode extends AccessNode {
                 - al Type retornado cargarle los parametros de tipo genericos
          */
 
+        List<String> genericTypes = classConstructed.getGenericTypes();
+
+        if(genericTypes.size() != 0 && genericInstantiation == NO_GENERIC_TYPES) {
+            //caso 1: la clase tiene generic types y no se instancian
+            String error = "Error in line " + token.getLineNumber() + " the constructor doesn't have the correct number of generic type parameters for generic class instantiation.";
+            throw new GenericsException(token, error);
+        }
+
+        if(!usesDiamondNotation() && genericTypes.size() != genericInstantiation.size()) {
+            //caso 2: la clase tiene generic types y se instancian, pero con aridad incorrecta
+            String error = "Error in line " + token.getLineNumber() + " the constructor doesn't have the correct number of generic type parameters for generic class instantiation.";
+            throw new GenericsException(token, error);
+        }
+
+        for(String typeParameter : genericInstantiation) {
+            boolean isClassOrInterface = SymbolTable.getInstance().exists(typeParameter);
+            boolean isGenericType = contextClass.isGenericType(typeParameter);
+
+            if(!(isClassOrInterface || isGenericType)) {
+                String error = "Error in line " + token.getLineNumber() + " the type parameter " + typeParameter + " used to instantiate generics" +
+                               "isn't a declared class or interface, or a generic parameter of the current class.";
+                throw new GenericsException(token, error);
+            }
+        }
+
         ActualArgumentsHandler.checkActualArguments(constructor, actualArguments, classToken);
 
-        return new ReferenceType(classToken.getLexeme());
+        ReferenceType rt = new ReferenceType(classToken.getLexeme());
+        rt.setGenericTypes(genericInstantiation);
+
+        return rt;
+    }
+
+    private boolean usesDiamondNotation() {
+        return genericInstantiation.size() == 0;
     }
 
     public void setActualArguments(List<ExpressionNode> actualArguments) {
