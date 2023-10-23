@@ -1,5 +1,7 @@
 package symboltable.types;
 
+import symboltable.ast.expressionnodes.accesses.ConstructorAccessNode;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +12,18 @@ public class ReferenceType extends Type{
     public ReferenceType(String referenceName) {
         this.referenceName = referenceName;
         genericTypes = new ArrayList<>();
+    }
+
+    public boolean usesDiamondNotation() {
+        boolean hasGenericTypes = genericTypes != ConstructorAccessNode.NO_GENERIC_TYPES;
+        boolean sizeZero = genericTypes.size() == 0;
+        return hasGenericTypes && sizeZero;
+    }
+
+    public boolean hasGenericTypes() {
+        boolean hasGenericTypes = genericTypes != ConstructorAccessNode.NO_GENERIC_TYPES;
+        boolean sizeGreaterThanZero = genericTypes.size() > 0;
+        return hasGenericTypes && sizeGreaterThanZero;
     }
 
     public String getReferenceName() {

@@ -9,12 +9,14 @@ import symboltable.symbols.members.Method;
 import symboltable.symbols.members.Unit;
 import symboltable.table.SymbolTable;
 import symboltable.types.ReferenceType;
+import symboltable.types.Type;
 import token.Token;
 import token.TokenType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static token.TokenConstants.OBJECT_TOKEN;
 
@@ -77,6 +79,29 @@ public abstract class Class extends Symbol {
     }
     public boolean isGenericType(String genericType) {
         return genericTypes.contains(genericType);
+    }
+
+    public boolean isGenericallyInstantiated(String instantiatedType) {
+        Map<String, List<String>> map;
+
+        //We can either have inheritance OR implementation, thus, we get the map
+        //accordingly
+        if(inheritsFrom.equals(OBJECT_TOKEN.getLexeme())) {
+            map = implementedGenericTypesMap;
+        } else {
+            map = childToParentGenericTypeMap;
+        }
+
+        for(Map.Entry<String, List<String>> e : map.entrySet()) {
+            List<String> mappedTypes = e.getValue();
+            for(String mappedType : mappedTypes) {
+                if(mappedType.equals(instantiatedType)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     protected boolean isParentOrInterfaceDeclaredGenericType(String t) {
@@ -155,6 +180,42 @@ public abstract class Class extends Symbol {
         }
 
         return match;
+    }
+
+    public String instantiateGenericType(String genericType) {
+        Map<String, List<String>> map;
+        Class parent = SymbolTable.getInstance().getClassOrInterface(inheritsFrom);
+
+        //We can either have inheritance OR implementation, thus, we get the map
+        //accordingly
+        if(inheritsFrom.equals(OBJECT_TOKEN.getLexeme())) {
+            map = implementedGenericTypesMap;
+        } else {
+            map = childToParentGenericTypeMap;
+        }
+
+        String key = null;
+
+        for(Map.Entry<String, List<String>> e : map.entrySet()) {
+            List<String> mappedTypes = e.getValue();
+            for(String mappedType : mappedTypes) {
+                if(mappedType.equals(genericType)) {
+                    key = e.getKey();
+                    break;
+                }
+            }
+        }
+
+        //If we didnt have that attribute mapped, we query if our father has it.
+        if(key == null)
+            //if we're Object, we dont have a father, so we return false
+            if(token == OBJECT_TOKEN)
+                return null;
+            //else, we do the query
+            else
+                return parent.instantiateGenericType(genericType);
+
+        return key;
     }
 
     protected void checkGenerics() throws GenericsException {
