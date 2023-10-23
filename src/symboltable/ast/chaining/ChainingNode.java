@@ -26,6 +26,15 @@ public abstract class ChainingNode extends Node {
     public Type check(Type callerType, Token callerToken) throws CompilerException {
         Type selfType = checkSelf(callerType, callerToken);
 
+        checkDiamondNotation(callerType, callerToken);
+
+        if(hasChaining())
+            return chainingNode.check(selfType, token);
+        else
+            return selfType;
+    }
+
+    private static void checkDiamondNotation(Type callerType, Token callerToken) throws GenericsException {
         if(Type.isReferenceType(callerType)) {
             ReferenceType rt = (ReferenceType) callerType;
             if(rt.usesDiamondNotation()) {
@@ -33,11 +42,6 @@ public abstract class ChainingNode extends Node {
                 throw new GenericsException(callerToken, error);
             }
         }
-
-        if(hasChaining())
-            return chainingNode.check(selfType, token);
-        else
-            return selfType;
     }
 
     public boolean canBeAssigned() {
