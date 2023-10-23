@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static symboltable.ast.expressionnodes.accesses.ConstructorAccessNode.DIAMOND_NOTATION;
 import static symboltable.ast.sentencenodes.SentenceNode.SEMICOLON_SENTENCE;
 import static symboltable.privacy.Privacy.publicS;
 
@@ -1423,7 +1424,14 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         // RULE <optional_generic_instantiation> ::= < <optional_generic_types_list> >
         if(currentTokenIn(new TokenType[]{TokenType.operand_lesser})) {
             match(TokenType.operand_lesser);
-            genericTypes = optionalGenericTypesList();
+            List<String> gotTypes = optionalGenericTypesList();
+
+            if(gotTypes.size() == 0) {
+                genericTypes = DIAMOND_NOTATION;
+            } else {
+                genericTypes = gotTypes;
+            }
+
             match(TokenType.operand_greater);
         } else {
             genericTypes = ConstructorAccessNode.NO_GENERIC_TYPES;

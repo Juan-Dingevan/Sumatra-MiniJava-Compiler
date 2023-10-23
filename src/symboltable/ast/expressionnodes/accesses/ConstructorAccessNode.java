@@ -21,6 +21,7 @@ import java.util.List;
 
 public class ConstructorAccessNode extends AccessNode {
     public static final List<String> NO_GENERIC_TYPES = new ArrayList<>();
+    public static final List<String> DIAMOND_NOTATION = new ArrayList<>();
     protected Token classToken;
 
     protected List<ExpressionNode> actualArguments;
@@ -36,7 +37,6 @@ public class ConstructorAccessNode extends AccessNode {
 
     @Override
     protected Type accessCheck() throws CompilerException {
-        //TODO: make the necessary checks
         String referenceName = classToken.getLexeme();
         ConcreteClass classConstructed = SymbolTable.getInstance().getClass(referenceName);
         boolean classExists = classConstructed != null;
@@ -54,14 +54,6 @@ public class ConstructorAccessNode extends AccessNode {
         if(isPrivate && !accessedFromDeclaringClass) {
             throw new PrivateMemberAccessException(token);
         }
-
-        /*
-            Chequeos genericos a hacer
-                - que si la clase de la que se usa el constr. tiene parametros de tipo genericos
-                  que la llamada tenga, o bien la misma cantidad, o la notación diamante
-                - que si tiene la notación diamante, se puedan inferir los tipos ¿como?
-                - al Type retornado cargarle los parametros de tipo genericos
-         */
 
         List<String> genericTypes = classConstructed.getGenericTypes();
 
@@ -97,7 +89,7 @@ public class ConstructorAccessNode extends AccessNode {
     }
 
     private boolean usesDiamondNotation() {
-        return genericInstantiation.size() == 0;
+        return genericInstantiation == DIAMOND_NOTATION;
     }
 
     public void setActualArguments(List<ExpressionNode> actualArguments) {

@@ -1,6 +1,7 @@
 package symboltable.ast.expressionnodes.accesses;
 
 import exceptions.general.CompilerException;
+import exceptions.semantical.declaration.GenericsException;
 import exceptions.semantical.sentence.InvalidDynamicAccessException;
 import exceptions.semantical.sentence.PrivateMemberAccessException;
 import exceptions.semantical.sentence.UndeclaredClassException;
@@ -11,7 +12,9 @@ import symboltable.ast.expressionnodes.ExpressionNode;
 import symboltable.privacy.Privacy;
 import symboltable.symbols.classes.ConcreteClass;
 import symboltable.symbols.members.Method;
+import symboltable.symbols.members.Parameter;
 import symboltable.table.SymbolTable;
+import symboltable.types.ReferenceType;
 import symboltable.types.Type;
 import token.Token;
 import utility.ActualArgumentsHandler;
@@ -55,9 +58,33 @@ public class StaticMethodAccessNode extends AccessNode {
         if(!isStatic)
             throw new InvalidDynamicAccessException(token, callerClass.getToken());
 
+        for(Parameter formalArgument : method.getParameters()) {
+            Type type = formalArgument.getType();
+
+            if(Type.isReferenceType(type)) {
+                ReferenceType referenceType = (ReferenceType) type;
+                String reference = referenceType.getReferenceName();
+
+                if(callerClass.isGenericType(reference)) {
+                    String error = "Error in line " + token.getLineNumber() + ": can't reference method with generic return type statically.";
+                    throw new GenericsException(token, error);
+                }
+            }
+        }
+
         ActualArgumentsHandler.checkActualArguments(method, actualArguments, token);
 
         Type returnType = method.getReturnType();
+
+        if(Type.isReferenceType(returnType)) {
+            ReferenceType rt = (ReferenceType) returnType;
+            String reference = rt.getReferenceName();
+
+            if(callerClass.isGenericType(reference)) {
+                String error = "Error in line " + token.getLineNumber() + ": can't reference method with generic return type statically.";
+                throw new GenericsException(token, error);
+            }
+        }
 
         return returnType;
     }

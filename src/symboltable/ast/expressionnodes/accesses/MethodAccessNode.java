@@ -9,6 +9,7 @@ import symboltable.ast.expressionnodes.AccessNode;
 import symboltable.ast.expressionnodes.ExpressionNode;
 import symboltable.privacy.Privacy;
 import symboltable.symbols.members.Method;
+import symboltable.types.ReferenceType;
 import symboltable.types.Type;
 import utility.ActualArgumentsHandler;
 
@@ -43,6 +44,16 @@ public class MethodAccessNode extends AccessNode {
             throw new DynamicUsageInStaticContextException(token);
 
         Type returnType = method.getReturnType();
+
+        if(Type.isReferenceType(returnType)) {
+            ReferenceType referenceReturnType = (ReferenceType) returnType;
+            String reference = referenceReturnType.getReferenceName();
+
+            if(contextClass.isGenericallyInstantiated(reference)) {
+                String genericInstantiation = contextClass.instantiateGenericType(reference);
+                returnType = new ReferenceType(genericInstantiation);
+            }
+        }
 
         return returnType;
     }

@@ -10,11 +10,9 @@ import symboltable.table.SymbolTable;
 import symboltable.types.ReferenceType;
 import symboltable.types.Type;
 import token.Token;
-import token.TokenType;
 import utility.ActualArgumentsHandler;
 
 import java.util.List;
-
 public class MethodChainingNode extends ChainingNode{
     protected List<ExpressionNode> actualArguments;
 
@@ -51,9 +49,26 @@ public class MethodChainingNode extends ChainingNode{
             throw new PrivateMemberAccessException(token);
         }
 
-        ActualArgumentsHandler.checkActualArguments(method, actualArguments, token);
+        ActualArgumentsHandler.checkActualArguments(method, actualArguments, token, rt);
 
         Type returnType = method.getReturnType();
+
+        if(Type.isReferenceType(returnType)){
+            ReferenceType possibleReturnReferenceType = (ReferenceType) returnType;
+            String reference = possibleReturnReferenceType.getReferenceName();
+
+            if(referencedClass.isGenericType(reference)) {
+                List<String> genericDeclaration = referencedClass.getGenericTypes();
+                List<String> genericInstantiation = rt.getGenericTypes();
+
+                int index = genericDeclaration.indexOf(reference);
+
+                String realReference = genericInstantiation.get(index);
+                ReferenceType realReturnType = new ReferenceType(realReference);
+
+                returnType = realReturnType;
+            }
+        }
 
         return returnType;
     }

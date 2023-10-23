@@ -15,7 +15,7 @@ class A {
         //se infiere por el tipo estático
         g1 = new G<>();
         //se infiere por el tipo del parámetro
-        //g3(new G<>());
+        g3(new G<>());
 
         //se infiere por el tipo de g4
         var g4 = new G<String>();

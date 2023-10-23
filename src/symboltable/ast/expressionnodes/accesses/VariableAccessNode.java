@@ -11,6 +11,7 @@ import symboltable.symbols.members.Attribute;
 import symboltable.symbols.members.Parameter;
 import symboltable.symbols.members.Unit;
 import symboltable.symbols.members.Variable;
+import symboltable.types.ReferenceType;
 import symboltable.types.Type;
 
 public class VariableAccessNode extends AccessNode {
@@ -24,6 +25,10 @@ public class VariableAccessNode extends AccessNode {
     @Override
     protected boolean accessCanBeAssigned() {
         return true;
+    }
+
+    public Variable getReferencedVariable() {
+        return referencedVariable;
     }
 
     @Override
@@ -55,24 +60,15 @@ public class VariableAccessNode extends AccessNode {
         Type type = v.getType();
         referencedVariable = v;
 
-        /*
-            Chequeos para evitar que se acceda a una variable dinamica desde un
-            acceso estatico:
-                - hacer que todos los accesos almacenen una contextUnit
-                - ver si la contextUnit es estática
-                - si lo es, en VariableAccessNode y MethodAccessNode comprobar que
-                  el miembro referenciado sea estático
-                - validar que se pueda acceder a cosas dinámicas cuando deba ser permitido
-                  por ejemplo:
+        if(Type.isReferenceType(type)) {
+            ReferenceType referenceReturnType = (ReferenceType) type;
+            String reference = referenceReturnType.getReferenceName();
 
-                    public static void m() {
-                        var x = new A();
-                        x.dynamicMethod();
-                        var y = x.dynamicAttribute;
-                    }
-
-                  debria ser permitido
-         */
+            if(contextClass.isGenericallyInstantiated(reference)) {
+                String genericInstantiation = contextClass.instantiateGenericType(reference);
+                type = new ReferenceType(genericInstantiation);
+            }
+        }
 
         return type;
     }

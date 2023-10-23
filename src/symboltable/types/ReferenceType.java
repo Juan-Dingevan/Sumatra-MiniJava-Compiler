@@ -15,9 +15,7 @@ public class ReferenceType extends Type{
     }
 
     public boolean usesDiamondNotation() {
-        boolean hasGenericTypes = genericTypes != ConstructorAccessNode.NO_GENERIC_TYPES;
-        boolean sizeZero = genericTypes.size() == 0;
-        return hasGenericTypes && sizeZero;
+        return genericTypes == ConstructorAccessNode.DIAMOND_NOTATION;
     }
 
     public boolean hasGenericTypes() {

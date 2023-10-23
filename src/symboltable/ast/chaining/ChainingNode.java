@@ -1,7 +1,9 @@
 package symboltable.ast.chaining;
 
 import exceptions.general.CompilerException;
+import exceptions.semantical.declaration.GenericsException;
 import symboltable.ast.Node;
+import symboltable.types.ReferenceType;
 import symboltable.types.Type;
 import token.Token;
 
@@ -23,6 +25,14 @@ public abstract class ChainingNode extends Node {
 
     public Type check(Type callerType, Token callerToken) throws CompilerException {
         Type selfType = checkSelf(callerType, callerToken);
+
+        if(Type.isReferenceType(callerType)) {
+            ReferenceType rt = (ReferenceType) callerType;
+            if(rt.usesDiamondNotation()) {
+                String error = "Error in line " + callerToken.getLineNumber() + " generic types can't be inferred in that context.";
+                throw new GenericsException(callerToken, error);
+            }
+        }
 
         if(hasChaining())
             return chainingNode.check(selfType, token);

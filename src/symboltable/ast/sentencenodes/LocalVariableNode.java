@@ -1,11 +1,13 @@
 package symboltable.ast.sentencenodes;
 
 import exceptions.general.CompilerException;
+import exceptions.semantical.declaration.GenericsException;
 import exceptions.semantical.sentence.LocalVarAndParameterShareNameException;
 import exceptions.semantical.sentence.LocalVariableInitializedWithNullException;
 import exceptions.semantical.sentence.VoidInTypedExpressionException;
 import symboltable.ast.expressionnodes.ExpressionNode;
 import symboltable.symbols.members.Variable;
+import symboltable.types.ReferenceType;
 import symboltable.types.Type;
 
 public class LocalVariableNode extends SentenceNode {
@@ -40,6 +42,14 @@ public class LocalVariableNode extends SentenceNode {
 
         if(sharesNameWithParameter())
             throw new LocalVarAndParameterShareNameException(token);
+
+        if(Type.isReferenceType(expressionType)) {
+            ReferenceType rt = (ReferenceType) expressionType;
+            if(rt.usesDiamondNotation()) {
+                String error = "Error in line " + token.getLineNumber() + " can't infer generic types in that context.";
+                throw new GenericsException(token, error);
+            }
+        }
 
         variable.setType(expressionType);
     }

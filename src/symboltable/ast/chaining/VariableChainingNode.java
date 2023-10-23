@@ -14,6 +14,8 @@ import symboltable.types.Type;
 import token.Token;
 import token.TokenType;
 
+import java.util.List;
+
 public class VariableChainingNode extends ChainingNode{
     @Override
     protected boolean selfCanBeAssigned() {
@@ -45,9 +47,26 @@ public class VariableChainingNode extends ChainingNode{
             throw new PrivateMemberAccessException(token);
         }
 
-        Type type = attribute.getType();
+        Type returnType = attribute.getType();
 
-        return type;
+        if(Type.isReferenceType(returnType)){
+            ReferenceType possibleReturnReferenceType = (ReferenceType) returnType;
+            String reference = possibleReturnReferenceType.getReferenceName();
+
+            if(referencedClass.isGenericType(reference)) {
+                List<String> genericDeclaration = referencedClass.getGenericTypes();
+                List<String> genericInstantiation = rt.getGenericTypes();
+
+                int index = genericDeclaration.indexOf(reference);
+
+                String realReference = genericInstantiation.get(index);
+                ReferenceType realReturnType = new ReferenceType(realReference);
+
+                returnType = realReturnType;
+            }
+        }
+
+        return returnType;
     }
 
     @Override
