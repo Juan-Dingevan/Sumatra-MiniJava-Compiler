@@ -72,7 +72,9 @@ public class StaticMethodAccessNode extends AccessNode {
             }
         }
 
-        ActualArgumentsHandler.checkActualArguments(method, actualArguments, token);
+        ReferenceType callerType = new ReferenceType(callerClass.getName());
+        callerType.setGenericTypes(callerClass.getGenericTypes());
+        ActualArgumentsHandler.checkActualArguments(method, actualArguments, token, callerType);
 
         Type returnType = method.getReturnType();
 

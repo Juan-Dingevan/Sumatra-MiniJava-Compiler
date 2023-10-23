@@ -39,8 +39,8 @@ public class ConstructorAccessNode extends AccessNode {
     protected Type accessCheck() throws CompilerException {
         String referenceName = classToken.getLexeme();
         ConcreteClass classConstructed = SymbolTable.getInstance().getClass(referenceName);
-        boolean classExists = classConstructed != null;
 
+        boolean classExists = classConstructed != null;
         if(!classExists)
             throw new UndeclaredClassException(classToken);
 
@@ -80,10 +80,15 @@ public class ConstructorAccessNode extends AccessNode {
             }
         }
 
-        ActualArgumentsHandler.checkActualArguments(constructor, actualArguments, classToken);
+        /*
+        * Con lo del diamante hacer lo siguiente: no chequear los argumentos de manera directa,
+        * sino mandarlos a chequear desde el que infirio los tipos.
+        * */
 
         ReferenceType rt = new ReferenceType(classToken.getLexeme());
         rt.setGenericTypes(genericInstantiation);
+
+        ActualArgumentsHandler.checkActualArguments(constructor, actualArguments, classToken, rt);
 
         return rt;
     }

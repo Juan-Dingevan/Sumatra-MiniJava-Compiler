@@ -147,6 +147,33 @@ public abstract class Class extends Symbol {
         return equivalent;
     }
 
+    public boolean referenceTypesConformInClass(ReferenceType rt1, ReferenceType rt2) {
+        int genericArity1 = rt1.getGenericTypes().size();
+        int genericArity2 = rt2.getGenericTypes().size();
+
+        if(genericArity1 != genericArity2)
+            return false;
+
+        Class c1 = SymbolTable.getInstance().getClassOrInterface(rt1.getReferenceName());
+        Class c2 = SymbolTable.getInstance().getClassOrInterface(rt2.getReferenceName());
+
+        boolean equivalent = c1.isDescendantOf(c2);
+
+        List<String> generics1 = rt1.getGenericTypes();
+        List<String> generics2 = rt2.getGenericTypes();
+
+        int i = 0;
+
+        while(equivalent && i < genericArity1) {
+            String type1 = generics1.get(i);
+            String type2 = generics2.get(i);
+            equivalent = type1.equals(type2) || genericTypesAreEquivalentInClass(type1, type2);
+            i++;
+        }
+
+        return equivalent;
+    }
+
     @SuppressWarnings("ReassignedVariable")
     public boolean genericTypesAreEquivalentInClass(String childType, String queriedType) {
         List<String> mappedTypes;

@@ -68,66 +68,12 @@ public abstract class Type {
             boolean genericArityExists = rt1.getGenericTypes().size() > 0 || rt2.getGenericTypes().size() > 0;
             boolean genericTypes = context.isGenericType(rt1.getReferenceName()) || context.isGenericType(rt2.getReferenceName());
 
-            String s = "";
-
-            if(genericArityExists || genericTypes) {
+            if(genericTypes) {
                 return typesAreEquivalentInContext(t1, t2, context);
             }
 
-            Class c1 = SymbolTable.getInstance().getClassOrInterface(rt1.getReferenceName());
-            Class c2 = SymbolTable.getInstance().getClassOrInterface(rt2.getReferenceName());
-
-            return c1.isDescendantOf(c2);
-        }
-
-        //We never get to this case.
-        return false;
-    }
-
-    public static boolean typesConform(Type t1, Type t2) {
-        //returns true if t1 conforms to t2
-        if(!isReferenceType(t1) && !isReferenceType(t2)) {
-            //trivial case: if neither t1 nor t2 are reference types,
-            //they will conform to each other if and only if they are of the same type
-            //or if they can both be coerced into numbers (char conforms to int, int to float)
-
-            boolean t1char = t1.equals(new Char());
-            boolean t1int = t1.equals(new Int());
-
-            if(t1.equals(t2))
-                return true;
-            else if(t1char)
-                return isNumber(t2);
-            else if(t1int)
-                return t2.equals(new SFloat());
-            else
-                return false;
-        }
-
-        if(!isReferenceType(t1) && isReferenceType(t2)) {
-            //the ONLY cases where a non-reference type conforms to a reference type
-            //is when we are coercing char or int into String
-            boolean t1Int = t1.equals(new Int());
-            boolean t1char = t1.equals(new Char());
-
-            boolean coercibleToString = t1Int || t1char;
-            boolean t2String = ((ReferenceType) t2).getReferenceName().equals("String");
-
-            return coercibleToString && t2String;
-        }
-
-        if(isReferenceType(t1) && !isReferenceType(t2)) {
-            //there are NO cases where a rf conforms to a non-rf
-            return false;
-        }
-
-        if(isReferenceType(t1) && isReferenceType(t2)) {
-            ReferenceType rt1 = (ReferenceType) t1;
-            ReferenceType rt2 = (ReferenceType) t2;
-
-            if(isNull(rt1)) {
-                //trivially, Null conforms to any reference type.
-                return true;
+            if(genericArityExists) {
+                return context.referenceTypesConformInClass(rt1, rt2);
             }
 
             Class c1 = SymbolTable.getInstance().getClassOrInterface(rt1.getReferenceName());

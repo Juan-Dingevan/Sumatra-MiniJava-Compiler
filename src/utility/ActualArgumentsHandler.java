@@ -53,49 +53,33 @@ public abstract class ActualArgumentsHandler {
             }
 
             if(!Type.typesConformInContext(gotType, expectedType, referencedClass)) {
-                boolean lhsIsReferenceType = Type.isReferenceType(expectedType);
-                boolean rhsIsReferenceType = Type.isReferenceType(gotType);
-                boolean bothSidesAreReferenceType = lhsIsReferenceType && rhsIsReferenceType;
-
-                if(bothSidesAreReferenceType) {
-                    ReferenceType lhsReferenceType = (ReferenceType) expectedType;
-                    ReferenceType rhsReferenceType = (ReferenceType) gotType;
-
-                    boolean rhsDiamondNotation = rhsReferenceType.usesDiamondNotation();
-                    boolean lhsHasGenericTypes = lhsReferenceType.hasGenericTypes();
-
-                    boolean diamondCanBeInferred = rhsDiamondNotation &&
-                            lhsHasGenericTypes;
-
-                    if(diamondCanBeInferred) {
-                        rhsReferenceType.setGenericTypes(lhsReferenceType.getGenericTypes());
-                    } else {
-                        throw new TypesDontConformException(callerToken, expectedType, gotType);
-                    }
-                } else {
-                    throw new TypesDontConformException(callerToken, expectedType, gotType);
-                }
+                checkDiamondNotation(callerToken, expectedType, gotType);
             }
         }
     }
-    public static void checkActualArguments(Unit u, List<ExpressionNode> actualArgs, Token callerToken) throws CompilerException {
-        List<Parameter> formalArgs = u.getParameters();
 
-        int formalArgsArity = formalArgs.size();
-        int actualArgsArity = actualArgs.size();
+    private static void checkDiamondNotation(Token callerToken, Type expectedType, Type gotType) throws TypesDontConformException {
+        boolean lhsIsReferenceType = Type.isReferenceType(expectedType);
+        boolean rhsIsReferenceType = Type.isReferenceType(gotType);
+        boolean bothSidesAreReferenceType = lhsIsReferenceType && rhsIsReferenceType;
 
-        if(formalArgsArity != actualArgsArity)
-            throw new ParameterArityMismatchException(callerToken, formalArgsArity, actualArgsArity);
+        if(bothSidesAreReferenceType) {
+            ReferenceType lhsReferenceType = (ReferenceType) expectedType;
+            ReferenceType rhsReferenceType = (ReferenceType) gotType;
 
-        for(int i = 0; i < formalArgsArity; i++) {
-            Parameter formalArg = formalArgs.get(i);
-            ExpressionNode actualArg = actualArgs.get(i);
+            boolean rhsDiamondNotation = rhsReferenceType.usesDiamondNotation();
+            boolean lhsHasGenericTypes = lhsReferenceType.hasGenericTypes();
 
-            Type expectedType = formalArg.getType();
-            Type gotType = actualArg.check();
+            boolean diamondCanBeInferred = rhsDiamondNotation &&
+                    lhsHasGenericTypes;
 
-            if(!Type.typesConform(gotType, expectedType))
+            if(diamondCanBeInferred) {
+                rhsReferenceType.setGenericTypes(lhsReferenceType.getGenericTypes());
+            } else {
                 throw new TypesDontConformException(callerToken, expectedType, gotType);
+            }
+        } else {
+            throw new TypesDontConformException(callerToken, expectedType, gotType);
         }
     }
 }

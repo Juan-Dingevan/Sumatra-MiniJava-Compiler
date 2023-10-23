@@ -12,8 +12,8 @@ public abstract class OthersToBooleanBinaryExpressionNode extends BinaryExpressi
         Type lhsType = lhs.check();
         Type rhsType = rhs.check();
 
-        boolean lhsConformsToRHS = Type.isNull(rhsType) || Type.typesConform(lhsType, rhsType);
-        boolean rhsConformsToLHS = Type.isNull(lhsType) || Type.typesConform(rhsType, lhsType);
+        boolean lhsConformsToRHS = Type.isNull(rhsType) || Type.typesConformInContext(lhsType, rhsType, contextClass);
+        boolean rhsConformsToLHS = Type.isNull(lhsType) || Type.typesConformInContext(rhsType, lhsType, contextClass);
         boolean typesConform = lhsConformsToRHS || rhsConformsToLHS;
 
         if(!typesConform)

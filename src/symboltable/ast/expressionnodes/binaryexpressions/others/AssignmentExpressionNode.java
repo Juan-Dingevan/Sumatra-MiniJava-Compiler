@@ -24,44 +24,48 @@ public class AssignmentExpressionNode extends BinaryExpressionNode {
             throw new NonAssignableExpressionException(token);
 
         if(!Type.typesConformInContext(rhsType, lhsType, contextClass)) {
-            boolean lhsIsReferenceType = Type.isReferenceType(lhsType);
-            boolean rhsIsReferenceType = Type.isReferenceType(rhsType);
-            boolean bothSidesAreReferenceType = lhsIsReferenceType && rhsIsReferenceType;
-
-            if(bothSidesAreReferenceType) {
-                ReferenceType lhsReferenceType = (ReferenceType) lhsType;
-                ReferenceType rhsReferenceType = (ReferenceType) rhsType;
-
-                boolean rhsDiamondNotation = rhsReferenceType.usesDiamondNotation();
-                boolean lhsHasGenericTypes = lhsReferenceType.hasGenericTypes();
-
-                boolean lhsIsVariable = lhs instanceof VariableAccessNode;
-                boolean lhsHasChaining;
-
-                VariableAccessNode van;
-
-                if(lhsIsVariable) {
-                    van = (VariableAccessNode) lhs;
-                    lhsHasChaining = van.hasChaining();
-                } else {
-                    lhsHasChaining = true;
-                }
-
-                boolean diamondCanBeInferred = rhsDiamondNotation &&
-                                               lhsHasGenericTypes &&
-                                               lhsIsVariable &&
-                                               !lhsHasChaining;
-
-                if(diamondCanBeInferred) {
-                    rhsReferenceType.setGenericTypes(lhsReferenceType.getGenericTypes());
-                } else {
-                    throw new TypesDontConformException(token, lhsType, rhsType);
-                }
-            } else {
-                throw new TypesDontConformException(token, lhsType, rhsType);
-            }
+            checkDiamondNotation(lhsType, rhsType);
         }
 
         return lhsType;
+    }
+
+    private void checkDiamondNotation(Type lhsType, Type rhsType) throws TypesDontConformException {
+        boolean lhsIsReferenceType = Type.isReferenceType(lhsType);
+        boolean rhsIsReferenceType = Type.isReferenceType(rhsType);
+        boolean bothSidesAreReferenceType = lhsIsReferenceType && rhsIsReferenceType;
+
+        if(bothSidesAreReferenceType) {
+            ReferenceType lhsReferenceType = (ReferenceType) lhsType;
+            ReferenceType rhsReferenceType = (ReferenceType) rhsType;
+
+            boolean rhsDiamondNotation = rhsReferenceType.usesDiamondNotation();
+            boolean lhsHasGenericTypes = lhsReferenceType.hasGenericTypes();
+
+            boolean lhsIsVariable = lhs instanceof VariableAccessNode;
+            boolean lhsHasChaining;
+
+            VariableAccessNode van;
+
+            if(lhsIsVariable) {
+                van = (VariableAccessNode) lhs;
+                lhsHasChaining = van.hasChaining();
+            } else {
+                lhsHasChaining = true;
+            }
+
+            boolean diamondCanBeInferred = rhsDiamondNotation &&
+                                           lhsHasGenericTypes &&
+                                           lhsIsVariable &&
+                                           !lhsHasChaining;
+
+            if(diamondCanBeInferred) {
+                rhsReferenceType.setGenericTypes(lhsReferenceType.getGenericTypes());
+            } else {
+                throw new TypesDontConformException(token, lhsType, rhsType);
+            }
+        } else {
+            throw new TypesDontConformException(token, lhsType, rhsType);
+        }
     }
 }
