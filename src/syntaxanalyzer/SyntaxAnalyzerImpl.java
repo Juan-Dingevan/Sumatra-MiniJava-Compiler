@@ -963,6 +963,10 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         printIfDebug("->Expression");
         ExpressionNode possibleLHS = compositeExpression();
         ExpressionNode finalExpression = expressionSuccessor(possibleLHS);
+
+        ConcreteClass context = SymbolTable.getInstance().getCurrentConcreteClass();
+        finalExpression.setContextClass(context);
+
         return finalExpression;
     }
 
@@ -970,6 +974,10 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         printIfDebug("->CompositeExpression");
         ExpressionNode possibleLHS = basicExpression();
         ExpressionNode finalExpression = compositeExpressionRecursion(possibleLHS);
+
+        ConcreteClass context = SymbolTable.getInstance().getCurrentConcreteClass();
+        finalExpression.setContextClass(context);
+
         return finalExpression;
     }
 
@@ -1021,6 +1029,9 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
             throw new InvalidTokenFoundException(line, lexeme, validTokens);
         }
+
+        ConcreteClass context = SymbolTable.getInstance().getCurrentConcreteClass();
+        en.setContextClass(context);
 
         return en;
     }
@@ -1115,7 +1126,8 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
             throw new InvalidTokenFoundException(line, lexeme, validTokens);
         }
-
+        ConcreteClass context = SymbolTable.getInstance().getCurrentConcreteClass();
+        uen.setContextClass(context);
         uen.setToken(operatorToken);
 
         return uen;
@@ -1188,6 +1200,8 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
             throw new InvalidTokenFoundException(line, lexeme, validTokens);
         }
 
+        ConcreteClass context = SymbolTable.getInstance().getCurrentConcreteClass();
+        ben.setContextClass(context);
         ben.setToken(operatorToken);
 
         return ben;
