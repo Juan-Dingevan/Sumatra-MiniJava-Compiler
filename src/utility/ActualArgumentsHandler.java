@@ -45,10 +45,18 @@ public abstract class ActualArgumentsHandler {
 
                     int index = genericDeclaration.indexOf(reference);
 
-                    String realReference = genericInstantiation.get(index);
-                    ReferenceType instantiatedExpectedType = new ReferenceType(realReference);
+                    if(genericInstantiation.size() > 0) {
+                        String realReference = genericInstantiation.get(index);
+                        ReferenceType instantiatedExpectedType = new ReferenceType(realReference);
+                        expectedType = instantiatedExpectedType;
+                    }
+                }
 
-                    expectedType = instantiatedExpectedType;
+
+                if(referencedClass.isGenericallyInstantiated(reference)) {
+                    String realReference = referencedClass.instantiateGenericType(reference);
+                    ReferenceType realReturnType = new ReferenceType(realReference);
+                    expectedType = realReturnType;
                 }
             }
 

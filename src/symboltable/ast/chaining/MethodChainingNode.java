@@ -57,15 +57,28 @@ public class MethodChainingNode extends ChainingNode{
             ReferenceType possibleReturnReferenceType = (ReferenceType) returnType;
             String reference = possibleReturnReferenceType.getReferenceName();
 
+            //Cubre casos de forma:
+            //B<E> {...}
+            //A<X> extends B<X> {...}
             if(referencedClass.isGenericType(reference)) {
                 List<String> genericDeclaration = referencedClass.getGenericTypes();
                 List<String> genericInstantiation = rt.getGenericTypes();
 
                 int index = genericDeclaration.indexOf(reference);
 
-                String realReference = genericInstantiation.get(index);
-                ReferenceType realReturnType = new ReferenceType(realReference);
+                if(genericInstantiation.size() > 0) {
+                    String realReference = genericInstantiation.get(index);
+                    ReferenceType realReturnType = new ReferenceType(realReference);
+                    returnType = realReturnType;
+                }
+            }
 
+            //Cubre casos de forma:
+            //B<E> {...}
+            //A extends B<String> {...}
+            if(referencedClass.isGenericallyInstantiated(reference)) {
+                String realReference = referencedClass.instantiateGenericType(reference);
+                ReferenceType realReturnType = new ReferenceType(realReference);
                 returnType = realReturnType;
             }
         }

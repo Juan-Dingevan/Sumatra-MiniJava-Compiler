@@ -79,6 +79,8 @@ public abstract class Type {
             Class c1 = SymbolTable.getInstance().getClassOrInterface(rt1.getReferenceName());
             Class c2 = SymbolTable.getInstance().getClassOrInterface(rt2.getReferenceName());
 
+            String s = "";
+
             return c1.isDescendantOf(c2);
         }
 

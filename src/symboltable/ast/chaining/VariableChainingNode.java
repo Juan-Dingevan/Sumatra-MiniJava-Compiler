@@ -59,10 +59,11 @@ public class VariableChainingNode extends ChainingNode{
 
                 int index = genericDeclaration.indexOf(reference);
 
-                String realReference = genericInstantiation.get(index);
-                ReferenceType realReturnType = new ReferenceType(realReference);
-
-                returnType = realReturnType;
+                if(genericInstantiation.size() > 0) {
+                    String realReference = genericInstantiation.get(index);
+                    ReferenceType realReturnType = new ReferenceType(realReference);
+                    returnType = realReturnType;
+                }
             }
         }
 
