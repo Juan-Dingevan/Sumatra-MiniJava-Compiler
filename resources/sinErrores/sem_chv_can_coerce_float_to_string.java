@@ -1,4 +1,4 @@
-///[Error:+|4]
+///[SinErrores]
 class A {
     public void m() {
         var x = 3.14 + " is pi!";

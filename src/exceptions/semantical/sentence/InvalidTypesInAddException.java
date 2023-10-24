@@ -9,7 +9,6 @@ public class InvalidTypesInAddException extends InvalidTypesInBinaryOperatorExce
 
     @Override
     public String getSpecificMessage() {
-        return "Error in line " + lineNumber + " the + operator can be used between numeric types (int, char, float) " +
-               "or to concatenate a char or an int to a String.";
+        return "Error in line " + lineNumber + " the + operator expects at least one numeric operand (int, char, float)";
     }
 }

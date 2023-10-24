@@ -11,24 +11,21 @@ public class AddExpressionNode extends NumberToNumberBinaryExpressionNode {
         Type lhsType = lhs.check();
         Type rhsType = rhs.check();
 
-        boolean lhsInteger = Type.isInteger(lhsType);
-        boolean rhsInteger = Type.isInteger(rhsType);
+        boolean lhsNumber = Type.isNumber(lhsType);
+        boolean rhsNumber = Type.isNumber(rhsType);
 
         boolean lhsFloat = lhsType.equals(new SFloat());
         boolean rhsFloat = rhsType.equals(new SFloat());
 
-        boolean lhsNumber = lhsInteger || lhsFloat;
-        boolean rhsNumber = rhsInteger || rhsFloat;
-
         boolean lhsString = isString(lhsType);
         boolean rhsString = isString(rhsType);
 
-        boolean atLeastOneInteger = lhsInteger || rhsInteger;
-        boolean atLeastOneFloat   = lhsFloat   || rhsFloat;
-        boolean atLeastOneString  = lhsString  || rhsString;
+        boolean atLeastOneNumber = lhsNumber || rhsNumber;
+        boolean atLeastOneFloat  = lhsFloat  || rhsFloat;
+        boolean atLeastOneString = lhsString || rhsString;
 
         boolean bothNumbers = lhsNumber && rhsNumber;
-        boolean stringCoercion = atLeastOneString && atLeastOneInteger;
+        boolean stringCoercion = atLeastOneString && atLeastOneNumber;
 
         boolean validTypes = bothNumbers || stringCoercion;
 
