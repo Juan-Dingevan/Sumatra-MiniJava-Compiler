@@ -10,11 +10,11 @@ class Main {
     }
 
     public String m2() {
-        return '1';
+        return '1' + "";
     }
 
     public String m3() {
-        return 1;
+        return 1 + ", One!!";
     }
 
     public A m4() {

@@ -15,6 +15,9 @@ public abstract class Type {
     public static boolean isNumber(Type t) {
         return t instanceof SNumber;
     }
+    public static boolean isInteger(Type t) {
+        return t instanceof SInteger;
+    }
     public static boolean isNull(Type t) {
         return t instanceof NullType;
     }
@@ -40,15 +43,9 @@ public abstract class Type {
         }
 
         if(!isReferenceType(t1) && isReferenceType(t2)) {
-            //the ONLY cases where a non-reference type conforms to a reference type
-            //is when we are coercing char or int into String
-            boolean t1Int = t1.equals(new Int());
-            boolean t1char = t1.equals(new Char());
-
-            boolean coercibleToString = t1Int || t1char;
-            boolean t2String = ((ReferenceType) t2).getReferenceName().equals("String");
-
-            return coercibleToString && t2String;
+            //there are NO cases where a rf conforms to a non-rf
+            //(Coercion between int, char and String is done in other contexts)
+            return false;
         }
 
         if(isReferenceType(t1) && !isReferenceType(t2)) {
@@ -78,8 +75,6 @@ public abstract class Type {
 
             Class c1 = SymbolTable.getInstance().getClassOrInterface(rt1.getReferenceName());
             Class c2 = SymbolTable.getInstance().getClassOrInterface(rt2.getReferenceName());
-
-            String s = "";
 
             return c1.isDescendantOf(c2);
         }

@@ -29,10 +29,10 @@ class Main {
 
         //In this context, String comforms to String, Object, int and char
         var x1 = "s" == "s";
-        var x2 =  1 == "1";
-        var x3 = 's' == "s";
-        var x4 = "s" == 's';
-        var x5 = "1" == 1;
+        var x2 =  1 + "" == "1";
+        var x3 = 's' + "" == "s";
+        var x4 = "s" == ('s' + "");
+        var x5 = "1" == (1 + "");
         var x6 = "s" == o;
         var x7 = o == "s";
 

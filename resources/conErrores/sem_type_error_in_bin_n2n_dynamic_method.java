@@ -2,8 +2,8 @@
 class Main {
     public static void main() {}
 
-    public String s() {
-        return "3";
+    public Object s() {
+        return new Object();
     }
 
     public void m() {

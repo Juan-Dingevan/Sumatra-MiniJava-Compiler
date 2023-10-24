@@ -33,7 +33,7 @@ class Client {
 
     public void m2() {
         var g = new Generic<String>();
-        g.m1(1, 1); //int coerces to String ;)
+        g.m1(1 + "", 1); //int coerces to String ;)
 
         g.m1("Hello", 1);
         g.m2("Hello", "World");

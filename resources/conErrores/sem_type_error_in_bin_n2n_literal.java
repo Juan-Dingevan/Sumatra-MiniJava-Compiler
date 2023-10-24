@@ -3,6 +3,6 @@ class Main {
     public static void main() {}
 
     public void m() {
-        var x = 1 + "Hello";
+        var x = 1 + new Object();
     }
 }
