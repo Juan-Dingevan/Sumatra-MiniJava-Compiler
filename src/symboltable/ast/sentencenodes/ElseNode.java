@@ -26,7 +26,8 @@ public class ElseNode extends SentenceNode {
 
     @Override
     protected void checkSelf() throws CompilerException {
-        sentence.check();
+        if(sentence != SEMICOLON_SENTENCE)
+            sentence.check();
     }
 
     public String toString() {
