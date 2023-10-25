@@ -46,7 +46,7 @@ import static symboltable.ast.sentencenodes.SentenceNode.SEMICOLON_SENTENCE;
 import static symboltable.privacy.Privacy.publicS;
 
 public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private final LexicalAnalyzer lexicalAnalyzer;
     private Token currentToken;
 

@@ -57,9 +57,6 @@ public class StageThreeUserInterface implements UserInterface {
         long millisSpentCompiling = finishingTimeInMillis - startingTimeInMillis;
 
         System.out.println();
-        System.out.println(SymbolTable.getInstance());
-
-        System.out.println();
         System.out.println("--- Successfully compiled " + sourceManager.getLineNumber() +
                 " lines in " + millisSpentCompiling +
                 "ms and found " + exceptionHandler.getExceptionsHandled() + " errors. ---");

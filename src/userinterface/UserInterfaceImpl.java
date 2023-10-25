@@ -17,7 +17,8 @@ import utility.StringUtilities;
 
 import java.io.FileNotFoundException;
 
-public abstract class UserInterfaceImpl implements UserInterface{
+public abstract class UserInterfaceImpl implements UserInterface {
+    private static final boolean DEBUG = false;
     public void launch(String[] args) {
         SymbolTable.resetInstance();
 
@@ -56,8 +57,10 @@ public abstract class UserInterfaceImpl implements UserInterface{
         long finishingTimeInMillis = System.currentTimeMillis();
         long millisSpentCompiling = finishingTimeInMillis - startingTimeInMillis;
 
-        System.out.println();
-        System.out.println(SymbolTable.getInstance());
+        if(DEBUG) {
+            System.out.println();
+            System.out.println(SymbolTable.getInstance());
+        }
 
         System.out.println();
         System.out.println("--- Successfully compiled " + sourceManager.getLineNumber() +
