@@ -51,8 +51,12 @@ public class StaticMethodAccessNode extends AccessNode {
             throw new UnresolvedNameException(token, callerClass.getToken());
 
         Privacy privacy = method.getPrivacy();
-        if(privacy != Privacy.publicS)
+        boolean accessedFromDeclaringClass = contextClass == method.getMemberOf();
+        boolean isPrivate = privacy != Privacy.publicS;
+
+        if(isPrivate && !accessedFromDeclaringClass) {
             throw new PrivateMemberAccessException(token);
+        }
 
         boolean isStatic = method.isStatic();
         if(!isStatic)
