@@ -12,6 +12,7 @@ import token.TokenType;
 import utility.StringUtilities;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -145,10 +146,47 @@ public class ConcreteClass extends Class {
 
         checkGenerics();
 
+        Collection<Attribute> nonInheritedAttributes = attributes.values();
+
         addInheritedAttributes(parent);
         addInheritedMethods(parent);
 
         checkCorrectImplementationOfInterface();
+
+        if(implementsInterface.equals(""))
+            nextMethodOffset = parent.getNextMethodOffset();
+        else {
+            Interface implementedInterface = SymbolTable.getInstance().getInterface(implementsInterface);
+            nextMethodOffset = implementedInterface.getNextMethodOffset();
+        }
+
+        for(Method method : getMethods()) {
+            boolean isStatic = method.isStatic();
+            boolean isRedefined = method.isRedefined();
+            boolean isInherited = method.getMemberOf() != this;
+
+            boolean needsOffset = !(isStatic || isRedefined || isInherited);
+
+            if(needsOffset) {
+                System.out.println("in " + getName() + " adding offset " + nextMethodOffset + " to met " + method.getName());
+                method.setOffset(nextMethodOffset);
+                nextMethodOffset++;
+            }
+        }
+
+        nextAttributeOffset = parent.getNextAttributeOffset();
+        for(Attribute attribute : getAttributes()) {
+            boolean isStatic = attribute.isStatic();
+            boolean isInherited = attribute.getMemberOf() != this;
+
+            boolean needsOffset = !(isStatic || isInherited);
+
+            if(needsOffset) {
+                System.out.println("in " + getName() + " adding offset " + nextAttributeOffset + " to met " + attribute.getName());
+                attribute.setOffset(nextAttributeOffset);
+                nextAttributeOffset++;
+            }
+        }
 
         if(!constructorExists())
             setConstructor(Constructor.getDefaultConstructorForClass(this));
@@ -168,8 +206,15 @@ public class ConcreteClass extends Class {
             for(Method interfaceMethod : implementedInterface.getMethods())
                 if(methodExists(interfaceMethod)) {
                     Method implementedMethod = getMethod(interfaceMethod.getName());
-                    if(!implementedMethod.hasSameSignature(interfaceMethod))
+
+                    if(implementedMethod.hasSameSignature(interfaceMethod)) {
+                        int interfaceMethodOffset = interfaceMethod.getOffset();
+                        implementedMethod.setOffset(interfaceMethodOffset);
+                        implementedMethod.setRedefined(true);
+                    } else {
                         throw new IncorrectlyOverwrittenMethodException(implementedMethod.getToken(), getToken());
+                    }
+
                 } else {
                     throw new UnimplementedMethodException(interfaceMethod.getToken(), implementedInterface.getToken());
                 }
@@ -182,8 +227,14 @@ public class ConcreteClass extends Class {
                 addMethod(parentMethod);
             } else {
                 Method childMethod = getMethod(parentMethod.getName());
-                if(!childMethod.hasSameSignature(parentMethod))
+
+                if(childMethod.hasSameSignature(parentMethod)) {
+                    int parentMethodOffset = parentMethod.getOffset();
+                    childMethod.setOffset(parentMethodOffset);
+                    childMethod.setRedefined(true);
+                } else {
                     throw new IncorrectlyOverwrittenMethodException(childMethod.getToken(), getToken());
+                }
             }
         }
     }

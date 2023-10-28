@@ -18,7 +18,7 @@ import utility.StringUtilities;
 import java.io.FileNotFoundException;
 
 public abstract class UserInterfaceImpl implements UserInterface {
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     public void launch(String[] args) {
         SymbolTable.resetInstance();
 

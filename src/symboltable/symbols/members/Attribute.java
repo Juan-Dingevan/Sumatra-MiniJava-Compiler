@@ -53,7 +53,7 @@ public class Attribute extends Variable {
     public String toString() {
         String prefix = StringUtilities.getDashesForDepth(LEVEL);
         String s = prefix + "ATTRIBUTE{"+instanceID+"}: " + getName() + " TYPE: " + type
-                 + " STATIC: " + isStatic + " PRIVACY: " + privacy;
+                 + " STATIC: " + isStatic + " PRIVACY: " + privacy + " OFFSET: " + offset;
 
         return s;
     }

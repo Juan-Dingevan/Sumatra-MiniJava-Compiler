@@ -21,6 +21,8 @@ public class Method extends Unit {
     protected int instanceID;
     protected Type returnType;
     protected boolean isStatic;
+    protected boolean isRedefined;
+
 
     public static void resetID() {
         classID = 0;
@@ -31,6 +33,8 @@ public class Method extends Unit {
 
         instanceID = classID;
         classID++;
+
+        isRedefined = false;
     }
 
     @Override
@@ -116,10 +120,18 @@ public class Method extends Unit {
         return sameParameters && sameType && samePrivacy && sameStaticity && sameName;
     }
 
+    public boolean isRedefined() {
+        return isRedefined;
+    }
+
+    public void setRedefined(boolean redefined) {
+        isRedefined = redefined;
+    }
+
     public String toString() {
         String prefix = StringUtilities.getDashesForDepth(LEVEL);
         String s = prefix + "METHOD{" + instanceID + "}: " + getName() + " RETURN TYPE: " + returnType
-                 + " STATIC: " + isStatic + " PRIVACY: " + privacy + "\n";
+                 + " STATIC: " + isStatic + " PRIVACY: " + privacy + " OFFSET: " + offset + "\n";
         s += prefix + "PARAMETERS:\n";
 
         for(Parameter p : parameterMap.values())

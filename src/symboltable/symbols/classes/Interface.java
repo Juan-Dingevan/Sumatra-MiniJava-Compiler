@@ -11,6 +11,7 @@ import symboltable.table.SymbolTable;
 import token.Token;
 import utility.StringUtilities;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 import static token.TokenConstants.OBJECT_TOKEN;
@@ -77,17 +78,31 @@ public class Interface extends Class {
     public void checkDeclaration() throws CompilerException {
         checkCircularInheritance();
 
+        boolean noParent = inheritsFrom.equals("");
+
         for(Method m : methods.values()) {
             m.checkDeclaration();
+
             if(m.isStatic())
                 throw new StaticMethodInInterfaceException(m.getToken(), getToken());
+
+            if(noParent) {
+                m.setOffset(nextMethodOffset);
+                nextMethodOffset++;
+            }
         }
     }
 
     @Override
     public void consolidate() throws CompilerException {
-        if(hasBeenConsolidated || inheritsFrom.equals(""))
+        if(hasBeenConsolidated)
             return;
+
+        if(inheritsFrom.equals("")) {
+            setOffsets();
+            hasBeenConsolidated = true;
+            return;
+        }
 
         Interface parent = SymbolTable.getInstance().getInterface(inheritsFrom);
         parent.consolidate();
@@ -99,12 +114,45 @@ public class Interface extends Class {
                 addMethod(parentMethod);
             } else {
                 Method childMethod = getMethod(parentMethod.getName());
-                if(!childMethod.hasSameSignature(parentMethod))
+                if(childMethod.hasSameSignature(parentMethod)) {
+                    int parentMethodOffset = parentMethod.getOffset();
+                    childMethod.setOffset(parentMethodOffset);
+                    childMethod.setRedefined(true);
+                } else {
                     throw new IncorrectlyOverwrittenMethodException(childMethod.getToken(), getToken());
+                }
             }
         }
 
+        setOffsets();
+
         hasBeenConsolidated = true;
+    }
+
+    @SuppressWarnings("ReassignedVariable")
+    private void setOffsets() {
+        int nextOffset;
+        if(inheritsFrom.equals("")) {
+            nextOffset = 0;
+        } else {
+            Interface parent = SymbolTable.getInstance().getInterface(inheritsFrom);
+            nextOffset = parent.getNextMethodOffset();
+        }
+
+        for(Method method : getMethods()) {
+            boolean isRedefined = method.isRedefined();
+            boolean isInherited = method.getMemberOf() != this;
+
+            boolean needsOffset = !(isRedefined || isInherited);
+
+            if(needsOffset) {
+                System.out.println("in " + getName() + " adding offset " + nextOffset + " to met " + method.getName());
+                method.setOffset(nextOffset);
+                nextOffset++;
+            }
+        }
+
+        nextMethodOffset = nextOffset;
     }
 
     public String toString() {

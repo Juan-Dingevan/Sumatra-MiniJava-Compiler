@@ -29,6 +29,8 @@ public abstract class Class extends Symbol {
     protected String inheritsFrom;
     protected Unit currentUnit;
     protected boolean hasBeenConsolidated;
+    protected int nextMethodOffset;
+    protected int nextAttributeOffset;
 
     public Class(Token t) {
         super(t);
@@ -41,6 +43,9 @@ public abstract class Class extends Symbol {
         currentUnit = null;
         hasBeenConsolidated = false;
 
+        nextMethodOffset = 0;
+        nextAttributeOffset = 0;
+
         inheritsFrom = "";
     }
 
@@ -50,6 +55,14 @@ public abstract class Class extends Symbol {
 
     public Unit getCurrentUnit() {
         return currentUnit;
+    }
+
+    public int getNextMethodOffset() {
+        return nextMethodOffset;
+    }
+
+    public int getNextAttributeOffset() {
+        return nextAttributeOffset;
     }
 
     protected boolean methodExists(Method m) {
@@ -116,6 +129,12 @@ public abstract class Class extends Symbol {
     protected abstract void checkCircularInheritance() throws SemanticException;
 
     public abstract boolean isDescendantOf(Class c);
+
+    public abstract void consolidate() throws CompilerException;
+
+    /*
+    *   GENERICS
+    */
 
     @SuppressWarnings("ReassignedVariable")
     public boolean referenceTypesAreEquivalentInClass(ReferenceType rt1, ReferenceType rt2) {
@@ -296,6 +315,4 @@ public abstract class Class extends Symbol {
     public void setParentDeclaredGenericTypes(List<String> parentDeclaredGenericTypes) {
         this.parentDeclaredGenericTypes = parentDeclaredGenericTypes;
     }
-
-    public abstract void consolidate() throws CompilerException;
 }
