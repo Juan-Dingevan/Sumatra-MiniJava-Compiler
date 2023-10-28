@@ -6,3 +6,6 @@ out/
 ### Others ###
 *.xml
 *.iml
+
+## Compiler output ##
+*.out
