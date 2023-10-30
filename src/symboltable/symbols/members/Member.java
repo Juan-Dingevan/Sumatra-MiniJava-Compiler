@@ -7,6 +7,10 @@ import token.Token;
 
 public abstract class Member extends Symbol {
     public static final int DEFAULT_OFFSET = Integer.MIN_VALUE;
+    public static final int PARAMETER_MIN_OFFSET = 4;
+    public static final int METHOD_MIN_OFFSET = 0;
+    public static final int ATTRIBUTE_MIN_OFFSET = 1;
+    public static final int LOCAL_VAR_MIN_OFFSET = 0; //?
     protected Privacy privacy;
     protected Class memberOf;
     protected int offset;

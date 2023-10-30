@@ -44,7 +44,7 @@ public class Parameter extends Variable {
 
     public String toString() {
         String prefix = StringUtilities.getDashesForDepth(LEVEL);
-        String s = prefix + "PARAMETER{"+instanceID+"}: " + getName() + " TYPE: " + type;
+        String s = prefix + "PARAMETER{"+instanceID+"}: " + getName() + " TYPE: " + type + " OFFSET: " + offset;
         return s;
     }
 }

@@ -29,6 +29,17 @@ public abstract class Unit extends Member{
     public void checkDeclaration() throws CompilerException {
         for(Parameter p : parameterMap.values())
             p.checkDeclaration();
+
+        int numberOfParameters = parameterList.size();
+        for(int i = 1; i <= numberOfParameters; i++) {
+            int offset = numberOfParameters - i + PARAMETER_MIN_OFFSET;
+            int index = i-1;
+            parameterList.get(index).setOffset(offset);
+        }
+    }
+
+    public int getReturnOffset() {
+        return PARAMETER_MIN_OFFSET + parameterList.size();
     }
 
     public boolean exists(Parameter p) {
