@@ -34,6 +34,8 @@ public abstract class ControlStructureNode extends SentenceNode{
 
         if(!expressionType.equals(new SBoolean()))
             throw new TypesDontConformException(token, new SBoolean(), expressionType);
+
+        sentence.check();
     }
     public String toString() {
         StringBuilder sb = new StringBuilder();

@@ -82,9 +82,10 @@ public class VariableAccessNode extends AccessNode {
         if(p != null)
             return p;
 
-        Variable v = contextUnit.getAST().getLocalVariable(name);
+        Variable v = parentBlock.getLocalVariable(name);
         if(v != null)
             return v;
+
 
         Attribute a = contextClass.getAttribute(name);
         if(a != null)

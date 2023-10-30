@@ -9,7 +9,6 @@ import symboltable.types.Type;
 
 public abstract class AccessNode extends OperandNode {
     protected ChainingNode chainingNode;
-    protected BlockNode parentBlock;
     public ChainingNode getChainingNode() {
         return chainingNode;
     }

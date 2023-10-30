@@ -480,7 +480,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         // RULE <attribute_successor> ::= =<composite_expression>;
         else if(currentTokenIn(new TokenType[]{TokenType.assign_normal})) {
             match(TokenType.assign_normal);
-            compositeExpression();
+            compositeExpression(null);
             match(TokenType.punctuation_semicolon);
         }
         //RULE <attribute_successor> ::= ;
@@ -790,7 +790,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         match(TokenType.reserved_word_while);
         match(TokenType.punctuation_open_parenthesis);
-        ExpressionNode e = expression();
+        ExpressionNode e = expression(parent);
         match(TokenType.punctuation_close_parenthesis);
         SentenceNode s = sentence(parent);
 
@@ -810,7 +810,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         match(TokenType.reserved_word_if);
         match(TokenType.punctuation_open_parenthesis);
-        ExpressionNode e = expression();
+        ExpressionNode e = expression(parent);
         match(TokenType.punctuation_close_parenthesis);
         SentenceNode s = sentence(parent);
         ElseNode elseNode = optionalElse(parent);
@@ -863,7 +863,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         Token returnToken = currentToken;
 
         match(TokenType.reserved_word_return);
-        ExpressionNode e = optionalExpression();
+        ExpressionNode e = optionalExpression(parent);
 
         Unit contextUnit = SymbolTable.getInstance().getCurrentConcreteClass().getCurrentUnit();
 
@@ -884,7 +884,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         match(TokenType.id_method_variable);
         match(TokenType.assign_normal);
-        ExpressionNode ex = compositeExpression();
+        ExpressionNode ex = compositeExpression(parent);
 
         ConcreteClass c = SymbolTable.getInstance().getCurrentConcreteClass();
         Variable v = new Variable(declarationToken, c);
@@ -903,7 +903,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
     private SentenceNode assignmentCall(BlockNode parent) throws CompilerException {
         printIfDebug("->AssignmentCall");
         SentenceNode sn;
-        ExpressionNode e = expression();
+        ExpressionNode e = expression(parent);
 
         if(e.isAssignment()) {
             AssignmentNode an = new AssignmentNode();
@@ -926,7 +926,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         return sn;
     }
 
-    private ExpressionNode optionalExpression() throws CompilerException {
+    private ExpressionNode optionalExpression(BlockNode parent) throws CompilerException {
         printIfDebug("->OptionalExpression");
         TokenType[] expressionFirsts = {
                 TokenType.operand_plus,
@@ -950,7 +950,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         // RULE: <optional_expression> ::= <expression>
         if(currentTokenIn(expressionFirsts)) {
-            e = expression();
+            e = expression(parent);
         }
         // RULE: <optional_expression> ::= epsilon
         else {
@@ -960,21 +960,22 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         return e;
     }
 
-    private ExpressionNode expression() throws CompilerException {
+    private ExpressionNode expression(BlockNode parentBlock) throws CompilerException {
         printIfDebug("->Expression");
-        ExpressionNode possibleLHS = compositeExpression();
-        ExpressionNode finalExpression = expressionSuccessor(possibleLHS);
+        ExpressionNode possibleLHS = compositeExpression(parentBlock);
+        ExpressionNode finalExpression = expressionSuccessor(parentBlock, possibleLHS);
 
         ConcreteClass context = SymbolTable.getInstance().getCurrentConcreteClass();
         finalExpression.setContextClass(context);
+        finalExpression.setParentBlock(parentBlock);
 
         return finalExpression;
     }
 
-    private ExpressionNode compositeExpression() throws CompilerException {
+    private ExpressionNode compositeExpression(BlockNode parent) throws CompilerException {
         printIfDebug("->CompositeExpression");
-        ExpressionNode possibleLHS = basicExpression();
-        ExpressionNode finalExpression = compositeExpressionRecursion(possibleLHS);
+        ExpressionNode possibleLHS = basicExpression(parent);
+        ExpressionNode finalExpression = compositeExpressionRecursion(parent, possibleLHS);
 
         ConcreteClass context = SymbolTable.getInstance().getCurrentConcreteClass();
         finalExpression.setContextClass(context);
@@ -982,7 +983,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         return finalExpression;
     }
 
-    private ExpressionNode basicExpression() throws CompilerException {
+    private ExpressionNode basicExpression(BlockNode parent) throws CompilerException {
         printIfDebug("->BasicExpression");
         TokenType[] unaryOperatorFirsts = {
                 TokenType.operand_plus,
@@ -1009,12 +1010,12 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         if(currentTokenIn(unaryOperatorFirsts)) {
             UnaryExpressionNode uen = unaryOperator();
-            OperandNode on = operand();
+            OperandNode on = operand(parent);
             uen.setOperandExpression(on);
 
             en = uen;
         } else if(currentTokenIn(operandFirsts)) {
-            en = operand();
+            en = operand(parent);
         } else {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
@@ -1037,7 +1038,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         return en;
     }
 
-    private ExpressionNode compositeExpressionRecursion(ExpressionNode possibleLHS) throws CompilerException {
+    private ExpressionNode compositeExpressionRecursion(BlockNode parent, ExpressionNode possibleLHS) throws CompilerException {
         printIfDebug("->CompositeExpressionRecursion");
         TokenType[] binaryOperatorFirsts = {
                 TokenType.operand_or,
@@ -1060,12 +1061,12 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         // RULE: <composite_expression_recursion> ::= <binary_operand><basic_expression><composite_expression_recursion>
         if(currentTokenIn(binaryOperatorFirsts)) {
             BinaryExpressionNode ben = binaryOperator();
-            ExpressionNode rhs = basicExpression();
+            ExpressionNode rhs = basicExpression(parent);
 
             ben.setLHS(possibleLHS);
             ben.setRHS(rhs);
 
-            en = compositeExpressionRecursion(ben);
+            en = compositeExpressionRecursion(parent, ben);
         }// RULE: <composite_expression_recursion> ::= epsilon
         else {
             en = possibleLHS;
@@ -1074,7 +1075,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         return en;
     }
 
-    private ExpressionNode expressionSuccessor(ExpressionNode possibleLHS) throws CompilerException {
+    private ExpressionNode expressionSuccessor(BlockNode parent, ExpressionNode possibleLHS) throws CompilerException {
         printIfDebug("->ExpressionSuccessor");
 
         ExpressionNode en;
@@ -1084,7 +1085,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
             Token declarationToken = currentToken;
 
             match(TokenType.assign_normal);
-            ExpressionNode rhs = expression();
+            ExpressionNode rhs = expression(parent);
 
             //si anda mal, ver composite expression recursion
             BinaryExpressionNode aen = new AssignmentExpressionNode();
@@ -1208,7 +1209,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         return ben;
     }
 
-    private OperandNode operand() throws CompilerException {
+    private OperandNode operand(BlockNode parent) throws CompilerException {
         printIfDebug("->Operand");
 
         OperandNode op;
@@ -1234,7 +1235,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         if(currentTokenIn(literalFirsts)) {
             op = literal();
         } else if(currentTokenIn(accessFirsts)) {
-            op = access();
+            op = access(parent);
         } else {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
@@ -1307,10 +1308,10 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         return ln;
     }
 
-    private AccessNode access() throws CompilerException {
+    private AccessNode access(BlockNode parent) throws CompilerException {
         printIfDebug("->Access");
-        AccessNode an = primary();
-        ChainingNode cn = optionalChaining();
+        AccessNode an = primary(parent);
+        ChainingNode cn = optionalChaining(parent);
 
         an.setChainingNode(cn);
 
@@ -1319,11 +1320,12 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         an.setContextClass(contextClass);
         an.setContextUnit(contextUnit);
+        an.setParentBlock(parent);
 
         return an;
     }
 
-    private AccessNode primary() throws CompilerException {
+    private AccessNode primary(BlockNode parent) throws CompilerException {
         printIfDebug("->Primary");
 
         AccessNode primary;
@@ -1331,13 +1333,13 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         if(currentTokenIn(new TokenType[]{TokenType.reserved_word_this})) {
             primary = thisAccess();
         } else if(currentTokenIn(new TokenType[]{TokenType.id_method_variable})) {
-            primary = methodVariableAccess();
+            primary = methodVariableAccess(parent);
         } else if(currentTokenIn(new TokenType[]{TokenType.reserved_word_new})) {
-            primary = constructorAccess();
+            primary = constructorAccess(parent);
         } else if(currentTokenIn(new TokenType[]{TokenType.id_class})) {
-            primary = staticMethodAccess();
+            primary = staticMethodAccess(parent);
         } else if(currentTokenIn(new TokenType[]{TokenType.punctuation_open_parenthesis})) {
-            primary = parenthesizedExpression();
+            primary = parenthesizedExpression(parent);
         } else {
             int line = currentToken.getLineNumber();
             String lexeme = currentToken.getLexeme();
@@ -1355,11 +1357,11 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         return primary;
     }
 
-    private ParenthesizedExpressionAccessNode parenthesizedExpression() throws CompilerException {
+    private ParenthesizedExpressionAccessNode parenthesizedExpression(BlockNode parent) throws CompilerException {
         printIfDebug("->ParenthesizedExpression");
         Token openToken = currentToken;
         match(TokenType.punctuation_open_parenthesis);
-        ExpressionNode en = expression();
+        ExpressionNode en = expression(parent);
         match(TokenType.punctuation_close_parenthesis);
 
         ParenthesizedExpressionAccessNode pean = new ParenthesizedExpressionAccessNode();
@@ -1369,7 +1371,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         return pean;
     }
 
-    private StaticMethodAccessNode staticMethodAccess() throws CompilerException {
+    private StaticMethodAccessNode staticMethodAccess(BlockNode parent) throws CompilerException {
         printIfDebug("->StaticMethodAccess");
 
         Token classToken = currentToken;
@@ -1380,7 +1382,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         Token declarationToken = currentToken;
 
         match(TokenType.id_method_variable);
-        List<ExpressionNode> actualArgs = actualArguments();
+        List<ExpressionNode> actualArgs = actualArguments(parent);
 
         StaticMethodAccessNode sman = new StaticMethodAccessNode();
         sman.setToken(declarationToken);
@@ -1390,7 +1392,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         return sman;
     }
 
-    private ConstructorAccessNode constructorAccess() throws CompilerException {
+    private ConstructorAccessNode constructorAccess(BlockNode parent) throws CompilerException {
         printIfDebug("->ConstructorAccess");
 
         Token declarationToken = currentToken;
@@ -1402,7 +1404,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         match(TokenType.id_class);
 
         List<String> genericInstantiation = optionalGenericsInstantiation();
-        List<ExpressionNode> actualArguments = actualArguments();
+        List<ExpressionNode> actualArguments = actualArguments(parent);
 
         ConcreteClass context = SymbolTable.getInstance().getCurrentConcreteClass();
 
@@ -1459,18 +1461,18 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         return genericTypes;
     }
 
-    private AccessNode methodVariableAccess() throws CompilerException {
+    private AccessNode methodVariableAccess(BlockNode parent) throws CompilerException {
         printIfDebug("->MethodVariableAccess");
 
         Token declarationToken = currentToken;
 
         match(TokenType.id_method_variable);
-        AccessNode mvan = methodVariableAccessSuccessor(declarationToken);
+        AccessNode mvan = methodVariableAccessSuccessor(parent, declarationToken);
 
         return mvan;
     }
 
-    private AccessNode methodVariableAccessSuccessor(Token declarationToken) throws CompilerException {
+    private AccessNode methodVariableAccessSuccessor(BlockNode parent, Token declarationToken) throws CompilerException {
         printIfDebug("->MethodVariableAccessSuccessor");
 
         AccessNode an;
@@ -1484,7 +1486,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
             man.setToken(declarationToken);
             man.setContextClass(contextClass);
 
-            List<ExpressionNode> actualArguments = actualArguments();
+            List<ExpressionNode> actualArguments = actualArguments(parent);
 
             man.setActualArguments(actualArguments);
 
@@ -1516,17 +1518,17 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         return tan;
     }
 
-    private List<ExpressionNode> actualArguments() throws CompilerException {
+    private List<ExpressionNode> actualArguments(BlockNode parent) throws CompilerException {
         printIfDebug("->ActualArguments");
 
         match(TokenType.punctuation_open_parenthesis);
-        List<ExpressionNode> expressions = optionalExpressionList(new ArrayList<>());
+        List<ExpressionNode> expressions = optionalExpressionList(parent, new ArrayList<>());
         match(TokenType.punctuation_close_parenthesis);
 
         return expressions;
     }
 
-    private List<ExpressionNode> optionalExpressionList(List<ExpressionNode> expressions) throws CompilerException {
+    private List<ExpressionNode> optionalExpressionList(BlockNode parent, List<ExpressionNode> expressions) throws CompilerException {
         printIfDebug("->OptionalExpressionList");
         TokenType[] expressionFirsts = {
                 TokenType.operand_plus,
@@ -1548,7 +1550,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         // Rule: <optional_expression_list> ::= <expression_list>
         if(currentTokenIn(expressionFirsts)) {
-            expressionList(expressions);
+            expressionList(parent, expressions);
         }
 
         // Rule: <optional_expression_list> ::= epsilon
@@ -1557,26 +1559,26 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         return expressions;
     }
 
-    private void expressionList(List<ExpressionNode> expressions) throws CompilerException {
+    private void expressionList(BlockNode parent, List<ExpressionNode> expressions) throws CompilerException {
         printIfDebug("->ExpressionList");
-        ExpressionNode ex = expression();
+        ExpressionNode ex = expression(parent);
         expressions.add(ex);
-        expressionListSuccessor(expressions);
+        expressionListSuccessor(parent, expressions);
     }
 
-    private void expressionListSuccessor(List<ExpressionNode> expressions) throws CompilerException {
+    private void expressionListSuccessor(BlockNode parent, List<ExpressionNode> expressions) throws CompilerException {
         printIfDebug("->ExpressionListSuccessor");
         // Rule: <expression_list_successor> ::= ,<expression_list>
         if(currentTokenIn(new TokenType[]{TokenType.punctuation_comma})) {
             match(TokenType.punctuation_comma);
-            expressionList(expressions);
+            expressionList(parent, expressions);
         }
 
         // Rule: <expression_list_successor> ::= epsilon
         // We do nothing
     }
 
-    private ChainingNode optionalChaining() throws CompilerException {
+    private ChainingNode optionalChaining(BlockNode parent) throws CompilerException {
         printIfDebug("->OptionalChaining");
 
         ChainingNode chainingNode;
@@ -1585,7 +1587,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         // Note: in the grammar, there is no <chaining> non-terminal symbol,
         // we add the method to have a cleaner code
         if(currentTokenIn(new TokenType[]{TokenType.punctuation_colon})) {
-            chainingNode = chaining();
+            chainingNode = chaining(parent);
         } else {
             chainingNode = ChainingNode.NO_CHAINING;
         }
@@ -1595,7 +1597,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         return chainingNode;
     }
 
-    private ChainingNode chaining() throws CompilerException {
+    private ChainingNode chaining(BlockNode parent) throws CompilerException {
         printIfDebug("->Chaining");
         match(TokenType.punctuation_colon);
 
@@ -1603,19 +1605,19 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         match(TokenType.id_method_variable);
 
-        ChainingNode chainingNode = chainingSuccessor(declarationToken);
+        ChainingNode chainingNode = chainingSuccessor(parent, declarationToken);
 
         return chainingNode;
     }
 
-    private ChainingNode chainingSuccessor(Token declarationToken) throws CompilerException {
+    private ChainingNode chainingSuccessor(BlockNode parent, Token declarationToken) throws CompilerException {
         printIfDebug("->ChainingSuccessor");
 
         ChainingNode chainingNode;
 
         if(currentTokenIn(new TokenType[]{TokenType.punctuation_open_parenthesis})) {
-            List<ExpressionNode> actualArgs = actualArguments();
-            ChainingNode chainToChain = optionalChaining();
+            List<ExpressionNode> actualArgs = actualArguments(parent);
+            ChainingNode chainToChain = optionalChaining(parent);
 
             MethodChainingNode methodChainingNode = new MethodChainingNode();
             methodChainingNode.setToken(declarationToken);
@@ -1628,7 +1630,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
              * Lo ponemos en el else, sin chequear primeros porque, si
              * llega a venir epsilon, se lidia con eso en optionalChaining.
              * */
-            ChainingNode chainToChain = optionalChaining();
+            ChainingNode chainToChain = optionalChaining(parent);
 
             chainingNode = new VariableChainingNode();
             chainingNode.setToken(declarationToken);
