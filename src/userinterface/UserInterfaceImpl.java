@@ -1,5 +1,6 @@
 package userinterface;
 
+import codegenerator.CodeGenerator;
 import exceptionhandler.ExceptionHandler;
 import exceptions.general.CompilerException;
 import exceptions.general.UnexpectedErrorException;
@@ -35,9 +36,17 @@ public abstract class UserInterfaceImpl implements UserInterface {
 
         try {
             syntaxAnalyzer.analyze();
+
             SymbolTable.getInstance().checkDeclaration();
             SymbolTable.getInstance().consolidate();
+
             SymbolTable.getInstance().checkSentences();
+
+            CodeGenerator.getInstance().open(CodeGenerator.DEFAULT_OUTPUT_NAME);
+
+            SymbolTable.getInstance().generate();
+
+            CodeGenerator.getInstance().close();
         } catch(LexicalException ex) {
             exceptionHandler.handleLexicalException(ex);
         } catch(SyntaxException ex) {
