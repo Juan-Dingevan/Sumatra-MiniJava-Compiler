@@ -258,11 +258,36 @@ public class ConcreteClass extends Class {
 
     public void generate() throws CompilerException {
         generateVTable();
+        generateAttributes();
         generateMethods();
     }
 
+    private void generateAttributes() throws CompilerException {
+        List<Attribute> staticAttributes = new ArrayList<>();
+        for(Attribute attribute : getAttributes()) {
+            if(attribute.isStatic()) {
+                staticAttributes.add(attribute);
+            }
+        }
+
+        if(staticAttributes.size() > 0)
+            CodeGenerator.getInstance().append(".DATA");
+
+        for(Attribute attribute : staticAttributes) {
+            String tag = CodeGenerator.getAttributeTag(attribute);
+            String instruction = tag + " : DW 0"; //We give them an empty initialization
+            CodeGenerator.getInstance().append(instruction);
+        }
+
+        if(staticAttributes.size() > 0)
+            CodeGenerator.getInstance().addBreakLine();
+    }
+
     private void generateMethods() throws CompilerException {
-        CodeGenerator.getInstance().append(".CODE");
+        Collection<Method> methods = getMethods();
+
+        if(methods.size() > 0)
+            CodeGenerator.getInstance().append(".CODE");
 
         for(Method m : getMethods()) {
             boolean declaredInCurrentClass = m.getMemberOf() == this;

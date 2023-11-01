@@ -4,6 +4,7 @@ import exceptions.general.CompilerException;
 import exceptions.general.UnexpectedErrorException;
 import symboltable.ast.sentencenodes.SentenceNode;
 import symboltable.symbols.classes.ConcreteClass;
+import symboltable.symbols.members.Attribute;
 import symboltable.symbols.members.Constructor;
 import symboltable.symbols.members.Member;
 import symboltable.symbols.members.Method;
@@ -36,6 +37,12 @@ public class CodeGenerator {
         return "VTable@" + c.getName();
     }
 
+    public static String getAttributeTag(Attribute a) {
+        String methodName = a.getName();
+        String className = a.getMemberOf().getName();
+        String tag = methodName + "@" + className;
+        return tag;
+    }
     public static String getSentenceTag(SentenceNode s) {
         String lexeme  = s.getToken().getLexeme();
         String unit    = s.getContextUnit().getName();
