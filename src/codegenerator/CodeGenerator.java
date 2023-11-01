@@ -1,5 +1,6 @@
 package codegenerator;
 
+import exceptions.general.CompilerException;
 import exceptions.general.UnexpectedErrorException;
 
 import java.io.File;
@@ -34,9 +35,13 @@ public class CodeGenerator {
         fileWriter.close();
     }
 
-    public void append(String lineWithoutReturn) throws IOException {
+    public void append(String lineWithoutReturn) throws CompilerException {
         String line = lineWithoutReturn + "\n";
-        fileWriter.write(line);
+        try {
+            fileWriter.write(line);
+        } catch (IOException ex) {
+            throw new UnexpectedErrorException("IO Error while writing to output file.");
+        }
     }
 
 }

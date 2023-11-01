@@ -1,5 +1,6 @@
 package symboltable.ast;
 
+import exceptions.general.CompilerException;
 import symboltable.symbols.classes.Class;
 import symboltable.symbols.classes.ConcreteClass;
 import symboltable.symbols.members.Unit;
@@ -33,6 +34,10 @@ public abstract class Node {
 
     public void setContextUnit(Unit contextUnit) {
         this.contextUnit = contextUnit;
+    }
+
+    public void generate() throws CompilerException {
+        //TODO: make abstract
     }
     protected String tabs() {
         String tab = "\t";
