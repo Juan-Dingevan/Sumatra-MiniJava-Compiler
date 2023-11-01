@@ -13,10 +13,7 @@ import symboltable.types.Type;
 import token.Token;
 import token.TokenType;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static token.TokenConstants.OBJECT_TOKEN;
 
@@ -72,7 +69,7 @@ public abstract class Class extends Symbol {
     public Method getMethod(String name) {
         return methods.get(name);
     }
-    public Iterable<Method> getMethods() {
+    public Collection<Method> getMethods() {
         return methods.values();
     }
 
