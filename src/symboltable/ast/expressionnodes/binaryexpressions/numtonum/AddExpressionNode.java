@@ -6,6 +6,9 @@ import symboltable.ast.expressionnodes.binaryexpressions.NumberToNumberBinaryExp
 import symboltable.types.*;
 
 public class AddExpressionNode extends NumberToNumberBinaryExpressionNode {
+    public AddExpressionNode() {
+        ceiasmOperand = "ADD";
+    }
     @Override
     public Type check() throws CompilerException {
         Type lhsType = lhs.check();

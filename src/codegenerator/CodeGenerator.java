@@ -2,6 +2,9 @@ package codegenerator;
 
 import exceptions.general.CompilerException;
 import exceptions.general.UnexpectedErrorException;
+import symboltable.symbols.members.Constructor;
+import symboltable.symbols.members.Member;
+import symboltable.symbols.members.Method;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -13,7 +16,18 @@ public class CodeGenerator {
     private String fileName;
     private FileWriter fileWriter;
 
-    private CodeGenerator() {}
+    public static String getMethodTag(Method m) {
+        String methodName = m.getName();
+        String className = m.getMemberOf().getName();
+        String tag = methodName + "@" + className;
+        return tag;
+    }
+
+    public static String getConstructorTag(Constructor c) {
+        String className = c.getMemberOf().getName();
+        String tag = "Constructor@" + className;
+        return tag;
+    }
 
     public static CodeGenerator getInstance() {
         if(instance == null)
@@ -25,6 +39,8 @@ public class CodeGenerator {
     public static void resetInstance() {
         instance = null;
     }
+
+    private CodeGenerator() {}
 
     public void open(String fileName) throws IOException {
         this.fileName = fileName;

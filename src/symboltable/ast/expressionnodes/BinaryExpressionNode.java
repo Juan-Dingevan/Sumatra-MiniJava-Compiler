@@ -1,8 +1,12 @@
 package symboltable.ast.expressionnodes;
 
+import codegenerator.CodeGenerator;
+import exceptions.general.CompilerException;
+
 public abstract class BinaryExpressionNode extends ExpressionNode {
     protected ExpressionNode lhs;
     protected ExpressionNode rhs;
+    protected String ceiasmOperand;
 
     public ExpressionNode getLHS() {
         return lhs;
@@ -18,6 +22,12 @@ public abstract class BinaryExpressionNode extends ExpressionNode {
 
     public void setRHS(ExpressionNode rhs) {
         this.rhs = rhs;
+    }
+
+    public void generate() throws CompilerException {
+        lhs.generate();
+        rhs.generate();
+        CodeGenerator.getInstance().append(ceiasmOperand);
     }
 
     public String toString() {
