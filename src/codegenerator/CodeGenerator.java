@@ -2,6 +2,8 @@ package codegenerator;
 
 import exceptions.general.CompilerException;
 import exceptions.general.UnexpectedErrorException;
+import symboltable.ast.sentencenodes.SentenceNode;
+import symboltable.symbols.classes.ConcreteClass;
 import symboltable.symbols.members.Constructor;
 import symboltable.symbols.members.Member;
 import symboltable.symbols.members.Method;
@@ -13,6 +15,7 @@ import java.io.IOException;
 public class CodeGenerator {
     public static final String DEFAULT_OUTPUT_NAME = "a.out"; //we love u, gcc
     private static CodeGenerator instance;
+    private static int lastTagID = 0;
     private String fileName;
     private FileWriter fileWriter;
 
@@ -26,6 +29,22 @@ public class CodeGenerator {
     public static String getConstructorTag(Constructor c) {
         String className = c.getMemberOf().getName();
         String tag = "Constructor@" + className;
+        return tag;
+    }
+
+    public static String getVTableTag(ConcreteClass c) {
+        return "VTable@" + c.getName();
+    }
+
+    public static String getSentenceTag(SentenceNode s) {
+        String lexeme  = s.getToken().getLexeme();
+        String unit    = s.getContextUnit().getName();
+        String context = s.getContextClass().getName();
+
+        String tag = lexeme + "@" + unit + "@" + context + lastTagID;
+
+        lastTagID++;
+
         return tag;
     }
 
