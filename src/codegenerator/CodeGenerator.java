@@ -61,13 +61,21 @@ public class CodeGenerator {
 
     private CodeGenerator() {}
 
-    public void open(String fileName) throws IOException {
-        this.fileName = fileName;
-        fileWriter = new FileWriter(fileName);
+    public void open(String fileName) throws CompilerException {
+        try {
+            this.fileName = fileName;
+            fileWriter = new FileWriter(fileName);
+        } catch(IOException ex) {
+            throw new UnexpectedErrorException("IO Error while opening output file.");
+        }
     }
 
-    public void close() throws IOException {
-        fileWriter.close();
+    public void close() throws CompilerException {
+        try {
+            fileWriter.close();
+        } catch(IOException ex) {
+            throw new UnexpectedErrorException("IO Error while closing output file.");
+        }
     }
 
     public void append(String lineWithoutReturn) throws CompilerException {
@@ -77,6 +85,10 @@ public class CodeGenerator {
         } catch (IOException ex) {
             throw new UnexpectedErrorException("IO Error while writing to output file.");
         }
+    }
+
+    public void addBreakLine() throws CompilerException {
+        append("");
     }
 
 }
