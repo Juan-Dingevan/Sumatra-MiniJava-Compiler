@@ -263,38 +263,54 @@ public class ConcreteClass extends Class {
 
     private void generateMethods() throws CompilerException {
         CodeGenerator.getInstance().append(".CODE");
-        for(Method m : getMethods())
-            m.generate();
+
+        for(Method m : getMethods()) {
+            boolean declaredInCurrentClass = m.getMemberOf() == this;
+            boolean redefined = m.isRedefined();
+            if(declaredInCurrentClass || redefined) {
+                m.generate();
+                CodeGenerator.getInstance().addBreakLine();
+            }
+        }
     }
 
     @SuppressWarnings("ReassignedVariable")
     private void generateVTable() throws CompilerException {
         int numberOfMethods = getMethods().size();
+        int numberOfDynamicMethods = 0;
         String[] tagsInOrder = new String[numberOfMethods];
 
         for(Method m : getMethods()) {
-            int offset = m.getOffset();
-            tagsInOrder[offset] = CodeGenerator.getMethodTag(m);
-            //O(n) sorting ;)
+            if(!m.isStatic()) {
+                int offset = m.getOffset();
+                tagsInOrder[offset] = CodeGenerator.getMethodTag(m);
+                numberOfDynamicMethods++;
+                //O(n) sorting ;)
+            }
         }
 
-        String tag = CodeGenerator.getVTableTag(this);
+        if(numberOfDynamicMethods > 0) {
+            String tag = CodeGenerator.getVTableTag(this);
 
-        StringBuilder sb = new StringBuilder(tag);
-        sb.append(": DW ");
+            StringBuilder sb = new StringBuilder(tag);
+            sb.append(": DW ");
 
-        for(int i = 0; i < tagsInOrder.length; i++) {
-            sb.append(tagsInOrder[i]);
-            sb.append(",");
+            for(int i = 0; i < tagsInOrder.length; i++) {
+                if(tagsInOrder[i] != null) {
+                    sb.append(tagsInOrder[i]);
+                    sb.append(",");
+                }
+            }
+
+            int lastIndexOfComma = sb.lastIndexOf(",");
+            sb.deleteCharAt(lastIndexOfComma);
+
+            String instruction = sb.toString();
+
+            CodeGenerator.getInstance().append(".DATA");
+            CodeGenerator.getInstance().append(instruction);
+            CodeGenerator.getInstance().addBreakLine();
         }
-
-        int lastIndexOfComma = sb.lastIndexOf(",");
-        sb.deleteCharAt(lastIndexOfComma);
-
-        String instruction = sb.toString();
-
-        CodeGenerator.getInstance().append(".DATA");
-        CodeGenerator.getInstance().append(instruction);
     }
 
     public List<String> getInterfaceDeclaredGenericTypes() {
