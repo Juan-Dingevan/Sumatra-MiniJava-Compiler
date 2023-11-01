@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import codegenerator.CodeGenerator;
 import exceptions.general.CompilerException;
 import exceptions.semantical.declaration.ClassAlreadyExistsException;
 import exceptions.semantical.declaration.NoMainMethodInProgramException;
@@ -167,6 +168,21 @@ public class SymbolTable {
     }
 
     public void generate() throws CompilerException {
+        Method main = mainMethods.get(0);
+        String mainMethodTag = CodeGenerator.getMethodTag(main);
+
+        CodeGenerator.getInstance().append(".CODE");
+
+        String c1 = " # We put main method's tag at the top of the stack";
+        CodeGenerator.getInstance().append("PUSH " + mainMethodTag + c1);
+
+        String c2 = " # We jump to main method";
+        CodeGenerator.getInstance().append("CALL"+c2);
+
+        String c3 = " # End of program.";
+        CodeGenerator.getInstance().append("HALT"+c3);
+        CodeGenerator.getInstance().addBreakLine();
+
         for(ConcreteClass cc : classes.values())
             cc.generate();
     }
