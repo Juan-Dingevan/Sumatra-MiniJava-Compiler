@@ -166,6 +166,11 @@ public class SymbolTable {
         }
     }
 
+    public void generate() throws CompilerException {
+        for(ConcreteClass cc : classes.values())
+            cc.generate();
+    }
+
     public void addMainMethod(Method mainMethod) {
         mainMethods.add(mainMethod);
     }
