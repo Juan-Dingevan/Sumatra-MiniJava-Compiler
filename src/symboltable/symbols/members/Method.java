@@ -1,5 +1,6 @@
 package symboltable.symbols.members;
 
+import codegenerator.CodeGenerator;
 import exceptions.general.CompilerException;
 import exceptions.semantical.declaration.GenericsException;
 import exceptions.semantical.declaration.UndeclaredTypeException;
@@ -43,6 +44,11 @@ public class Method extends Unit {
             checkReferenceType(returnType);
 
         super.checkDeclaration();
+    }
+
+    @Override
+    public String getTag() {
+        return CodeGenerator.getMethodTag(this);
     }
 
     protected void checkReferenceType(Type type) throws UndeclaredTypeException, GenericsException {

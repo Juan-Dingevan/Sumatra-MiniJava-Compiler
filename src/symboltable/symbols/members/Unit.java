@@ -1,5 +1,6 @@
 package symboltable.symbols.members;
 
+import codegenerator.CodeGenerator;
 import exceptions.general.CompilerException;
 import exceptions.semantical.declaration.ParameterAlreadyExistsException;
 import symboltable.ast.sentencenodes.BlockNode;
@@ -71,4 +72,30 @@ public abstract class Unit extends Member{
     public void checkSentences() throws CompilerException {
         ast.check();
     }
+
+    public void generate() throws CompilerException {
+        String tag = getTag();
+
+        String c1 = " # We store the dynamic link";
+        CodeGenerator.getInstance().append(tag + " : LOADFP" + c1);
+
+        String c2 = " # We signal were the AR starts";
+        CodeGenerator.getInstance().append("LOADSP" + c2);
+
+        String c3 = " # We signal the AR being built as the current AR";
+        CodeGenerator.getInstance().append("STOREFP" + c3);
+
+        ast.generate();
+
+        String c4 = " # We point FP to caller's AR";
+        CodeGenerator.getInstance().append("STOREFP" + c4);
+
+        int dynamicExtraCell = isStatic() ? 0 : 1;
+        int n = parameterList.size() + dynamicExtraCell;
+
+        String c5 = " # We free up memory cells equal to number of params [+1 if unit is dynamic]";
+        CodeGenerator.getInstance().append("RET " + n + c5);
+    }
+
+    public abstract String getTag();
 }

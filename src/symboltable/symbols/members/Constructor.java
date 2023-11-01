@@ -1,5 +1,6 @@
 package symboltable.symbols.members;
 
+import codegenerator.CodeGenerator;
 import exceptions.general.CompilerException;
 import exceptions.semantical.declaration.IncorrectlyNamedConstructorException;
 import symboltable.ast.sentencenodes.BlockNode;
@@ -51,5 +52,10 @@ public class Constructor extends Unit {
             s += p.toString() + "\n";
 
         return s;
+    }
+
+    @Override
+    public String getTag() {
+        return CodeGenerator.getConstructorTag(this);
     }
 }
