@@ -1,5 +1,6 @@
 package symboltable.symbols.classes;
 
+import codegenerator.CodeGenerator;
 import exceptions.general.CompilerException;
 import exceptions.semantical.SemanticException;
 import exceptions.semantical.declaration.*;
@@ -253,6 +254,47 @@ public class ConcreteClass extends Class {
 
     public Iterable<Attribute> getAttributes() {
         return attributes.values();
+    }
+
+    public void generate() throws CompilerException {
+        generateVTable();
+        generateMethods();
+    }
+
+    private void generateMethods() throws CompilerException {
+        CodeGenerator.getInstance().append(".CODE");
+        for(Method m : getMethods())
+            m.generate();
+    }
+
+    @SuppressWarnings("ReassignedVariable")
+    private void generateVTable() throws CompilerException {
+        int numberOfMethods = getMethods().size();
+        String[] tagsInOrder = new String[numberOfMethods];
+
+        for(Method m : getMethods()) {
+            int offset = m.getOffset();
+            tagsInOrder[offset] = CodeGenerator.getMethodTag(m);
+            //O(n) sorting ;)
+        }
+
+        String tag = CodeGenerator.getVTableTag(this);
+
+        StringBuilder sb = new StringBuilder(tag);
+        sb.append(": DW ");
+
+        for(int i = 0; i < tagsInOrder.length; i++) {
+            sb.append(tagsInOrder[i]);
+            sb.append(",");
+        }
+
+        int lastIndexOfComma = sb.lastIndexOf(",");
+        sb.deleteCharAt(lastIndexOfComma);
+
+        String instruction = sb.toString();
+
+        CodeGenerator.getInstance().append(".DATA");
+        CodeGenerator.getInstance().append(instruction);
     }
 
     public List<String> getInterfaceDeclaredGenericTypes() {
