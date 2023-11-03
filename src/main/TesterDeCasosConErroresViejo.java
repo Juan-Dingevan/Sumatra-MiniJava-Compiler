@@ -13,7 +13,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class TesterDeCasosConErrores {
+public class TesterDeCasosConErroresViejo {
     
     //TODO: el tipo de esta variable init tiene que ser la clase que tiene el main
     private static final Main init = null;
@@ -46,7 +46,7 @@ public class TesterDeCasosConErrores {
     
     private String input;
     
-    public TesterDeCasosConErrores(String input){
+    public TesterDeCasosConErroresViejo(String input){
         this.input = input;
     }
        
