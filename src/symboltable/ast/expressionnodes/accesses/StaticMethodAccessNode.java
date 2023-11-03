@@ -1,5 +1,6 @@
 package symboltable.ast.expressionnodes.accesses;
 
+import codegenerator.CodeGenerator;
 import exceptions.general.CompilerException;
 import exceptions.semantical.declaration.GenericsException;
 import exceptions.semantical.sentence.InvalidDynamicAccessException;
@@ -24,6 +25,7 @@ import java.util.List;
 public class StaticMethodAccessNode extends AccessNode {
     protected Token classToken;
     protected List<ExpressionNode> actualArguments;
+    protected Method method;
 
     public Token getClassToken() {
         return classToken;
@@ -46,7 +48,7 @@ public class StaticMethodAccessNode extends AccessNode {
         if(callerClass == null)
             throw new UndeclaredClassException(classToken);
 
-        Method method = callerClass.getMethod(methodName);
+        method = callerClass.getMethod(methodName);
         if(method == null)
             throw new UnresolvedNameException(token, callerClass.getToken());
 
@@ -93,6 +95,24 @@ public class StaticMethodAccessNode extends AccessNode {
         }
 
         return returnType;
+    }
+
+    public void generate() throws CompilerException {
+        if(!Type.isVoid(method.getReturnType())) {
+            String cRet = " # We reserve a memory cell for the method's return value";
+            CodeGenerator.getInstance().append("RMEM 1" + cRet);
+        }
+
+        for(ExpressionNode argument : actualArguments) {
+            argument.generate();
+        }
+
+        String tag = method.getTag();
+        String cTag = " # We push the static method's tag to the top of the stack";
+        CodeGenerator.getInstance().append("PUSH " + tag + cTag);
+
+        String cCall = " # We make the call.";
+        CodeGenerator.getInstance().append("CALL" + cCall);
     }
 
     @Override
