@@ -1,5 +1,6 @@
 package symboltable.ast.expressionnodes.accesses;
 
+import codegenerator.CodeGenerator;
 import exceptions.general.CompilerException;
 import symboltable.ast.chaining.ChainingNode;
 import symboltable.ast.expressionnodes.AccessNode;
@@ -33,6 +34,11 @@ public class ParenthesizedExpressionAccessNode extends AccessNode {
     @Override
     protected Type accessCheck() throws CompilerException {
         return expression.check();
+    }
+
+    @Override
+    public void generate() throws CompilerException {
+        expression.generate();
     }
 
     /*
