@@ -94,6 +94,11 @@ public class CodeGenerator {
         }
     }
 
+    public void appendIf(String lineWithoutReturn, boolean condition) throws CompilerException {
+        if(condition)
+            append(lineWithoutReturn);
+    }
+
     public void addBreakLine() throws CompilerException {
         append("");
     }
