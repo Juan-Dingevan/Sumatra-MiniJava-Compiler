@@ -116,8 +116,26 @@ public class VariableAccessNode extends AccessNode {
         }
     }
 
-    protected void generateStaticAccess() {
+    protected void generateStaticAccess() throws CompilerException {
+        //TODO: consultar!
 
+        boolean readAccess = !isAssignmentLHS || hasChaining();
+        Attribute attribute = (Attribute) referencedVariable;
+        String tag = CodeGenerator.getAttributeTag(attribute);
+
+        String cPush = " # We put the static attribute's tag at the top of the stack";
+        CodeGenerator.getInstance().append("PUSH " + tag + cPush);
+
+        if(readAccess) {
+            String cRead = " # We read the attributes value from the data using the tag";
+            CodeGenerator.getInstance().append("LOADREF 0" + cRead);
+        } else {
+            String cSwap = " # We swap the tag and what we desire to write into the attribute";
+            CodeGenerator.getInstance().append("SWAP" + cSwap);
+
+            String cWrite = " # We write into the data through the tag";
+            CodeGenerator.getInstance().append("STOREREF 0" + cWrite);
+        }
     }
 
     protected void generateDynamicAccess() throws CompilerException {

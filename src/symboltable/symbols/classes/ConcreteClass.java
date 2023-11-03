@@ -286,7 +286,7 @@ public class ConcreteClass extends Class {
 
         for(Attribute attribute : staticAttributes) {
             String tag = CodeGenerator.getAttributeTag(attribute);
-            String instruction = tag + " : DW 0"; //We give them an empty initialization
+            String instruction = tag + ": DW 0"; //We give them an empty initialization
             CodeGenerator.getInstance().append(instruction);
         }
 
