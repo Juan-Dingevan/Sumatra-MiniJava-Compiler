@@ -1,5 +1,6 @@
 package symboltable.ast.expressionnodes.accesses;
 
+import codegenerator.CodeGenerator;
 import com.sun.security.jgss.GSSUtil;
 import exceptions.general.CompilerException;
 import exceptions.semantical.sentence.DynamicUsageInStaticContextException;
@@ -16,10 +17,16 @@ import symboltable.types.Type;
 
 public class VariableAccessNode extends AccessNode {
     protected Variable referencedVariable;
+    protected boolean isAssignmentLHS;
 
     public VariableAccessNode() {
         super();
         referencedVariable = null;
+        isAssignmentLHS = false;
+    }
+
+    public void setAssignmentLHS(boolean assignmentLHS) {
+        isAssignmentLHS = assignmentLHS;
     }
 
     @Override
@@ -54,8 +61,12 @@ public class VariableAccessNode extends AccessNode {
         int declarationLine = v.getToken().getLineNumber();
         int usageLine = token.getLineNumber();
 
-        if(variableUsedBeforeDeclaration(declarationLine, usageLine))
+        boolean usedBeforeDeclaration = variableUsedBeforeDeclaration(declarationLine, usageLine);
+        boolean attribute = Variable.isAttribute(v);
+
+        if(!attribute && usedBeforeDeclaration) {
             throw new UnresolvedNameException(token, contextClass.getToken());
+        }
 
         Type type = v.getType();
         referencedVariable = v;
@@ -92,5 +103,48 @@ public class VariableAccessNode extends AccessNode {
             return a;
 
         throw new UnresolvedNameException(token, contextClass.getToken());
+    }
+
+    @Override
+    public void generate() throws CompilerException {
+        if(referencedVariable.isStatic()) {
+            generateStaticAccess();
+        } else {
+            generateDynamicAccess();
+        }
+    }
+
+    protected void generateStaticAccess() {
+
+    }
+
+    protected void generateDynamicAccess() throws CompilerException {
+        boolean attribute = Variable.isAttribute(referencedVariable);
+        boolean readAccess = !isAssignmentLHS || hasChaining();
+        int offset = referencedVariable.getOffset();
+
+        if(attribute) {
+            String cThis = " # Accessing a dynamic attribute, we put a reference to 'this' at the top of the stack.";
+            CodeGenerator.getInstance().append("LOAD 3" + cThis);
+
+            if(readAccess) {
+                String cRead = " # We get the variable from the heap through the 'this' reference and its offset";
+                CodeGenerator.getInstance().append("LOADREF " + offset + cRead);
+            } else {
+                String cSwap = " # We swap the 'this' reference and what we desire to write into the attribute";
+                CodeGenerator.getInstance().append("SWAP" + cSwap);
+
+                String cWrite = " # We write into the heap through the 'this' reference and the offset";
+                CodeGenerator.getInstance().append("STOREREF " + offset + cWrite);
+            }
+        } else {
+            if(readAccess) {
+                String cLoad = " # We get the variable from the stack through its offset";
+                CodeGenerator.getInstance().append("LOAD " + offset + cLoad);
+            } else {
+                String cStore = " # We write into the variable in the stack, through its offset";
+                CodeGenerator.getInstance().append("STORE " + offset + cStore);
+            }
+        }
     }
 }

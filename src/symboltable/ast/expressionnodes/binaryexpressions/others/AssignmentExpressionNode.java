@@ -31,6 +31,8 @@ public class AssignmentExpressionNode extends BinaryExpressionNode {
             checkDiamondNotation(lhsType, rhsType);
         }
 
+        ((VariableAccessNode) lhs).setAssignmentLHS(true);
+
         return lhsType;
     }
 
