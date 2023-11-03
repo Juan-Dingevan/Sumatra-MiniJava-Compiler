@@ -23,6 +23,9 @@ public abstract class Type {
     }
 
     public static boolean typesConformInContext(Type t1, Type t2, ConcreteClass context) {
+        if(isNull(t2))
+            return false;
+
         //returns true if t1 conforms to t2
         if(!isReferenceType(t1) && !isReferenceType(t2)) {
             //trivial case: if neither t1 nor t2 are reference types,
