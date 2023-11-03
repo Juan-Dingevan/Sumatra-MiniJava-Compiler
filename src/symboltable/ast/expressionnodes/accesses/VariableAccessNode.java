@@ -54,8 +54,10 @@ public class VariableAccessNode extends AccessNode {
 
         boolean staticContextUnit = contextUnit.isStatic();
         boolean staticReferencedVar = v.isStatic();
+        boolean isParameter = contextUnit.getParameter(v.getName()) != null;
 
-        if(staticContextUnit && !staticReferencedVar)
+        boolean staticityProblems = (staticContextUnit && !staticReferencedVar) && !isParameter;
+        if(staticityProblems)
             throw new DynamicUsageInStaticContextException(token);
 
         int declarationLine = v.getToken().getLineNumber();
@@ -106,7 +108,7 @@ public class VariableAccessNode extends AccessNode {
     }
 
     @Override
-    public void generate() throws CompilerException {
+    public void accessGenerate() throws CompilerException {
         if(referencedVariable.isStatic()) {
             generateStaticAccess();
         } else {

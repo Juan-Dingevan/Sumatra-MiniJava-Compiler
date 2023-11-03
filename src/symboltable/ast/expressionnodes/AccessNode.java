@@ -35,6 +35,16 @@ public abstract class AccessNode extends OperandNode {
     protected abstract Type accessCheck() throws CompilerException;
 
     @Override
+    public final void generate() throws CompilerException {
+        accessGenerate();
+
+        if(hasChaining())
+            chainingNode.generate();
+    }
+
+    protected abstract void accessGenerate() throws CompilerException;
+
+    @Override
     public boolean isValidAsSentence() {
         if(chainingNode != ChainingNode.NO_CHAINING)
             return chainingNode.isCall();

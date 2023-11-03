@@ -20,7 +20,7 @@ public class ThisAccessNode extends AccessNode {
     }
 
     @Override
-    public void generate() throws CompilerException {
+    public void accessGenerate() throws CompilerException {
         String c = " # We put a reference to 'this' at the top of the stack";
         CodeGenerator.getInstance().append("LOAD 3" + c);
     }

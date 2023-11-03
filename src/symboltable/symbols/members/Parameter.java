@@ -42,6 +42,11 @@ public class Parameter extends Variable {
         }
     }
 
+    @Override
+    public boolean isStatic() {
+        return false;
+    }
+
     public String toString() {
         String prefix = StringUtilities.getDashesForDepth(LEVEL);
         String s = prefix + "PARAMETER{"+instanceID+"}: " + getName() + " TYPE: " + type + " OFFSET: " + offset;

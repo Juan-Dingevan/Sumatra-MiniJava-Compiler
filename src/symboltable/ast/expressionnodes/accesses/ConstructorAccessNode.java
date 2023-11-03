@@ -93,6 +93,11 @@ public class ConstructorAccessNode extends AccessNode {
         return rt;
     }
 
+    @Override
+    protected void accessGenerate() throws CompilerException {
+
+    }
+
     private boolean usesDiamondNotation() {
         return genericInstantiation == DIAMOND_NOTATION;
     }

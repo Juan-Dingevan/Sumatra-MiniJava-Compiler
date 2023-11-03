@@ -67,7 +67,7 @@ public class MethodAccessNode extends AccessNode {
         this.actualArguments = actualArguments;
     }
 
-    public void generate() throws CompilerException {
+    public void accessGenerate() throws CompilerException {
         //we partially build the called-method's RA
         //we already have the called-method's reference in method
         if(method.isStatic()) {

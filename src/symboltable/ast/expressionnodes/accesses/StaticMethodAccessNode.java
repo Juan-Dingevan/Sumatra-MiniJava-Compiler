@@ -97,7 +97,7 @@ public class StaticMethodAccessNode extends AccessNode {
         return returnType;
     }
 
-    public void generate() throws CompilerException {
+    public void accessGenerate() throws CompilerException {
         if(!Type.isVoid(method.getReturnType())) {
             String cRet = " # We reserve a memory cell for the method's return value";
             CodeGenerator.getInstance().append("RMEM 1" + cRet);

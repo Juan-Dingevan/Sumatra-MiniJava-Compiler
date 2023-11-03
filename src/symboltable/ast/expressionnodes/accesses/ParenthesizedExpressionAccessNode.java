@@ -37,7 +37,7 @@ public class ParenthesizedExpressionAccessNode extends AccessNode {
     }
 
     @Override
-    public void generate() throws CompilerException {
+    public void accessGenerate() throws CompilerException {
         expression.generate();
     }
 
