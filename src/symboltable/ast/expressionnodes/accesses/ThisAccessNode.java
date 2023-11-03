@@ -1,5 +1,6 @@
 package symboltable.ast.expressionnodes.accesses;
 
+import codegenerator.CodeGenerator;
 import exceptions.general.CompilerException;
 import exceptions.semantical.sentence.ThisAccessInStaticMethodException;
 import symboltable.ast.expressionnodes.AccessNode;
@@ -16,5 +17,11 @@ public class ThisAccessNode extends AccessNode {
         ReferenceType rt = new ReferenceType(name);
 
         return rt;
+    }
+
+    @Override
+    public void generate() throws CompilerException {
+        String c = " # We put a reference to 'this' at the top of the stack";
+        CodeGenerator.getInstance().append("LOAD 3" + c);
     }
 }
