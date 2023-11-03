@@ -25,6 +25,11 @@ public class AssignmentNode extends SentenceNode{
         expression.check();
     }
 
+    @Override
+    public void generate() throws CompilerException {
+        expression.generate();
+    }
+
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(super.toString());

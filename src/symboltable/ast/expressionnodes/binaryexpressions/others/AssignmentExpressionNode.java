@@ -12,7 +12,9 @@ import symboltable.types.Type;
 public class AssignmentExpressionNode extends BinaryExpressionNode {
     @Override
     public void generate() throws CompilerException {
-        //TODO implement!
+        //TODO: Consultar...
+        rhs.generate();
+        lhs.generate();
     }
     @Override
     public boolean isAssignment() {
