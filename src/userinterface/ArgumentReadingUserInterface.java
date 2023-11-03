@@ -6,7 +6,7 @@ import exceptions.general.CompilerException;
 
 public class ArgumentReadingUserInterface extends UserInterfaceImpl {
     protected void validateCall(String[] args) throws CompilerCallException {
-        if(args.length != 1)
+        if(args.length < 1 || args.length > 2)
             throw new CompilerCallException(args.length);
     }
 

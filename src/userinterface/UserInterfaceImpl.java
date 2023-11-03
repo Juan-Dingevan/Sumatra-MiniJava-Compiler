@@ -21,6 +21,14 @@ import java.io.FileNotFoundException;
 public abstract class UserInterfaceImpl implements UserInterface {
     private static final boolean DEBUG = true;
     public void launch(String[] args) {
+        String outputName;
+
+        if(args.length == 2) {
+            outputName = args[1];
+        } else {
+            outputName = CodeGenerator.DEFAULT_OUTPUT_NAME;
+        }
+
         SymbolTable.resetInstance();
 
         SourceManager sourceManager = new SourceManagerImpl();
@@ -42,7 +50,7 @@ public abstract class UserInterfaceImpl implements UserInterface {
 
             SymbolTable.getInstance().checkSentences();
 
-            CodeGenerator.getInstance().open(CodeGenerator.DEFAULT_OUTPUT_NAME);
+            CodeGenerator.getInstance().open(outputName);
 
             SymbolTable.getInstance().generate();
 
