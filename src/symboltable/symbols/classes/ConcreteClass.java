@@ -4,6 +4,7 @@ import codegenerator.CodeGenerator;
 import exceptions.general.CompilerException;
 import exceptions.semantical.SemanticException;
 import exceptions.semantical.declaration.*;
+import symboltable.symbols.Symbol;
 import symboltable.symbols.members.Attribute;
 import symboltable.symbols.members.Constructor;
 import symboltable.symbols.members.Method;
@@ -102,9 +103,9 @@ public class ConcreteClass extends Class {
         String possibleAncestorName = possibleAncestor.getName();
 
         boolean sameClass = getName().equals(possibleAncestorName);
-        boolean directImplementation = implementsInterface.equals(possibleAncestorName);
+        boolean implementation = transitiveImplementation(possibleAncestorName);
 
-        if (sameClass || directImplementation) {
+        if (sameClass || implementation) {
             return true;
         }
 
@@ -115,6 +116,16 @@ public class ConcreteClass extends Class {
         Class parent = SymbolTable.getInstance().getClass(inheritsFrom);
 
         return parent.isDescendantOf(possibleAncestor);
+    }
+
+    protected boolean transitiveImplementation(String interfaceName) {
+        if(implementsInterface.equals(""))
+            return false;
+
+        Interface directImplementation = SymbolTable.getInstance().getInterface(implementsInterface);
+        Interface queriedImplementation = SymbolTable.getInstance().getInterface(interfaceName);
+
+        return directImplementation.isDescendantOf(queriedImplementation);
     }
 
     public void checkDeclaration() throws CompilerException {
