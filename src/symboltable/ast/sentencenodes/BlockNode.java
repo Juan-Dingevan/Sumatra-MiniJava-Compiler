@@ -1,5 +1,6 @@
 package symboltable.ast.sentencenodes;
 
+import codegenerator.CodeGenerator;
 import exceptions.general.CompilerException;
 import exceptions.semantical.sentence.LocalVariableAlreadyExistsException;
 import symboltable.symbols.members.Member;
@@ -102,6 +103,23 @@ public class BlockNode extends SentenceNode{
             variableList.add(v);
         } else {
             throw new LocalVariableAlreadyExistsException(v.getToken());
+        }
+    }
+
+    public void generate() throws CompilerException {
+        int localVarCount = variableList.size();
+
+        if(localVarCount > 0) {
+            String cReserve = " # Reserving space for block local vars";
+            CodeGenerator.getInstance().append("RMEM " + localVarCount + cReserve);
+        }
+
+        for(SentenceNode s : sentences)
+            s.generate();
+
+        if(localVarCount > 0) {
+            String cFree = " # Freeing space reserved for block local vars";
+            CodeGenerator.getInstance().append("FMEM " + localVarCount + cFree);
         }
     }
 
