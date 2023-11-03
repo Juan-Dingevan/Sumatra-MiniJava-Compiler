@@ -31,9 +31,11 @@ public abstract class Unit extends Member{
         for(Parameter p : parameterMap.values())
             p.checkDeclaration();
 
+        int staticBonus = isStatic() ? 0 : 1;
         int numberOfParameters = parameterList.size();
+        int minOffset = PARAMETER_MIN_OFFSET + staticBonus;
         for(int i = 1; i <= numberOfParameters; i++) {
-            int offset = numberOfParameters - i + PARAMETER_MIN_OFFSET;
+            int offset = numberOfParameters - i + minOffset;
             int index = i-1;
             parameterList.get(index).setOffset(offset);
         }
@@ -71,6 +73,7 @@ public abstract class Unit extends Member{
 
     public void checkSentences() throws CompilerException {
         ast.check();
+        ast.giveLocalVariablesOffset();
     }
 
     public void generate() throws CompilerException {
