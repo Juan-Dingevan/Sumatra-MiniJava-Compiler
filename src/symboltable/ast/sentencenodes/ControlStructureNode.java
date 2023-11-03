@@ -8,7 +8,17 @@ import symboltable.types.Type;
 
 public abstract class ControlStructureNode extends SentenceNode{
     protected ExpressionNode expression;
-    protected SentenceNode sentence;
+    protected BlockNode implicitBlock;
+
+    public ControlStructureNode() {
+        implicitBlock = new BlockNode();
+    }
+
+    @Override
+    public void setParentBlock(BlockNode parentBlock) {
+        super.setParentBlock(parentBlock);
+        implicitBlock.setParentBlock(parentBlock);
+    }
 
     public ExpressionNode getExpression() {
         return expression;
@@ -18,24 +28,26 @@ public abstract class ControlStructureNode extends SentenceNode{
         this.expression = expression;
     }
 
-    public SentenceNode getSentence() {
-        return sentence;
+    public BlockNode getImplicitBlock() {
+        return implicitBlock;
     }
 
     public void setSentence(SentenceNode sentence) {
-        this.sentence = sentence;
+        implicitBlock.addSentence(sentence);
+    }
+
+    public void giveLocalVariablesOffset() {
+        implicitBlock.giveLocalVariablesOffset();
     }
 
     @Override
     protected void checkSelf() throws CompilerException {
-        //TODO ver si faltan checks...
-
         Type expressionType = expression.check();
 
         if(!expressionType.equals(new SBoolean()))
             throw new TypesDontConformException(token, new SBoolean(), expressionType);
 
-        sentence.check();
+        implicitBlock.check();
     }
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -55,11 +67,11 @@ public abstract class ControlStructureNode extends SentenceNode{
 
         sb.append("\n");
         sb.append(tabs());
-        sb.append("sentence:\n");
+        sb.append("implicitBlock:\n");
 
-        if(sentence != null) {
-            sentence.stringDepth = stringDepth + 1;
-            sb.append(sentence);
+        if(implicitBlock != null) {
+            implicitBlock.stringDepth = stringDepth + 1;
+            sb.append(implicitBlock);
             sb.append("\n");
         } else {
             sb.append("null\n");

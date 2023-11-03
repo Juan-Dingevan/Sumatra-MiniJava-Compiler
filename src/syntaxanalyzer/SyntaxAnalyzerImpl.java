@@ -788,14 +788,17 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         Token whileToken = currentToken;
 
+        WhileNode w = new WhileNode();
+        w.setParentBlock(parent);
+
+        BlockNode implicitBlock = w.getImplicitBlock();
+
         match(TokenType.reserved_word_while);
         match(TokenType.punctuation_open_parenthesis);
         ExpressionNode e = expression(parent);
         match(TokenType.punctuation_close_parenthesis);
-        SentenceNode s = sentence(parent);
+        SentenceNode s = sentence(implicitBlock);
 
-        WhileNode w = new WhileNode();
-        w.setParentBlock(parent);
         w.setToken(whileToken);
         w.setSentence(s);
         w.setExpression(e);
@@ -808,15 +811,18 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         Token ifToken = currentToken;
 
+        IfNode i = new IfNode();
+        i.setParentBlock(parent);
+
+        BlockNode implicitBlock = i.getImplicitBlock();
+
         match(TokenType.reserved_word_if);
         match(TokenType.punctuation_open_parenthesis);
         ExpressionNode e = expression(parent);
         match(TokenType.punctuation_close_parenthesis);
-        SentenceNode s = sentence(parent);
+        SentenceNode s = sentence(implicitBlock);
         ElseNode elseNode = optionalElse(parent);
 
-        IfNode i = new IfNode();
-        i.setParentBlock(parent);
         i.setToken(ifToken);
         i.setSentence(s);
         i.setElseNode(elseNode);
@@ -846,11 +852,14 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 
         Token elseToken = currentToken;
 
-        match(TokenType.reserved_word_else);
-        SentenceNode s = sentence(parent);
-
         ElseNode e = new ElseNode();
         e.setParentBlock(parent);
+
+        BlockNode implicitBlock = e.getImplicitBlock();
+
+        match(TokenType.reserved_word_else);
+        SentenceNode s = sentence(implicitBlock);
+
         e.setToken(elseToken);
         e.setSentence(s);
 

@@ -1,13 +1,10 @@
 package symboltable.ast.sentencenodes;
 
 import exceptions.general.CompilerException;
-import exceptions.semantical.sentence.TypesDontConformException;
-import symboltable.types.SBoolean;
-import symboltable.types.Type;
 
 public class ElseNode extends SentenceNode {
     public static final ElseNode NULL_ELSE = new ElseNode();
-    protected SentenceNode sentence;
+    protected BlockNode implicitBlock;
 
     public static int classID = 0;
     private final int id = classID;
@@ -16,18 +13,30 @@ public class ElseNode extends SentenceNode {
         return id;
     }
 
-    public SentenceNode getSentence() {
-        return sentence;
+    public ElseNode() {
+        implicitBlock = new BlockNode();
+    }
+
+    @Override
+    public void setParentBlock(BlockNode parentBlock) {
+        super.setParentBlock(parentBlock);
+        implicitBlock.setParentBlock(parentBlock);
+    }
+    public BlockNode getImplicitBlock() {
+        return implicitBlock;
     }
 
     public void setSentence(SentenceNode sentence) {
-        this.sentence = sentence;
+        implicitBlock.addSentence(sentence);
     }
 
     @Override
     protected void checkSelf() throws CompilerException {
-        if(sentence != SEMICOLON_SENTENCE)
-            sentence.check();
+        implicitBlock.check();
+    }
+    @Override
+    public void giveLocalVariablesOffset() {
+        implicitBlock.giveLocalVariablesOffset();
     }
 
     public String toString() {
@@ -36,11 +45,11 @@ public class ElseNode extends SentenceNode {
 
         sb.append("\n");
         sb.append(tabs());
-        sb.append("sentence:\n");
+        sb.append("implicitBlock:\n");
 
-        if(sentence != null) {
-            sentence.stringDepth = stringDepth + 1;
-            sb.append(sentence);
+        if(implicitBlock != null) {
+            implicitBlock.stringDepth = stringDepth + 1;
+            sb.append(implicitBlock);
             sb.append("\n");
         } else {
             sb.append("null\n");

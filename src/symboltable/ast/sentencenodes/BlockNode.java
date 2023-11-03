@@ -2,6 +2,7 @@ package symboltable.ast.sentencenodes;
 
 import exceptions.general.CompilerException;
 import exceptions.semantical.sentence.LocalVariableAlreadyExistsException;
+import symboltable.symbols.members.Member;
 import symboltable.symbols.members.Variable;
 
 import java.util.*;
@@ -12,12 +13,14 @@ public class BlockNode extends SentenceNode{
     private final int id;
     protected List<SentenceNode> sentences;
     protected Map<String, Variable> variables;
-    protected List<Variable> methodVariables;
+    protected List<Variable> variableList;
+    private int offset;
 
     public BlockNode() {
         sentences = new ArrayList<>();
         variables = new HashMap<>();
-        methodVariables = new ArrayList<>();
+        variableList = new ArrayList<>();
+        offset = Member.LOCAL_VAR_MIN_OFFSET;
         id = classID;
         classID++;
     }
@@ -31,21 +34,29 @@ public class BlockNode extends SentenceNode{
     protected void checkSelf() throws CompilerException {
         for(SentenceNode s : sentences)
             s.check();
+    }
 
-        if(parentBlock == NULL_PARENT) {
-            giveMethodVariablesOffset();
-        } else {
-            parentBlock.addChildVariables(methodVariables);
+    public void giveLocalVariablesOffset() {
+        if(parentBlock != NULL_PARENT) {
+            offset = parentBlock.getOffset();
+            System.out.println("Block " + id + " inherits " + offset + " from " + parentBlock.id);
         }
+
+        for(Variable variable : variableList) {
+            variable.setOffset(offset);
+            offset--;
+        }
+
+        for(SentenceNode s : sentences) {
+            System.out.println("In " + id + " calling giveLocal...() of " + s.getClass().getSimpleName() + s.getID());
+            s.giveLocalVariablesOffset();
+        }
+
+        System.out.println("Block " + id + " has offset " + offset);
     }
 
-    public void addChildVariables(List<Variable> childVariables) {
-        System.out.println("In block node id " + id + " adding vars to " + parentBlock.id);
-        methodVariables.addAll(childVariables);
-    }
-
-    public void giveMethodVariablesOffset() {
-        //TODO: implement this!
+    public int getOffset() {
+        return offset;
     }
 
     public List<SentenceNode> getSentences() {
@@ -88,7 +99,7 @@ public class BlockNode extends SentenceNode{
     public void addLocalVariable(Variable v) throws CompilerException {
         if(!existsInScope(v)) {
             variables.put(v.getName(), v);
-            methodVariables.add(v);
+            variableList.add(v);
         } else {
             throw new LocalVariableAlreadyExistsException(v.getToken());
         }
@@ -99,23 +110,6 @@ public class BlockNode extends SentenceNode{
 
         sb.append(super.toString());
 
-        if(parentBlock == NULL_PARENT) {
-            sb.append(tabs());
-            sb.append("all method variables: \n");
-
-            for(Variable v : methodVariables) {
-                sb.append(tabs());
-                sb.append("\t");
-
-                sb.append(v.getName());
-                sb.append(" OFFSET: ");
-                sb.append("DEFAULT"); //sb.append(v.getOffset());
-                sb.append("\n");
-            }
-
-            sb.append("\n");
-        }
-
         if(variables.size() > 0) {
             sb.append(tabs());
             sb.append("variables: \n");
@@ -124,7 +118,9 @@ public class BlockNode extends SentenceNode{
 
             for(Variable v : getVariables()) {
                 sb.append(v.getName());
-                sb.append(" ");
+                sb.append(" [");
+                sb.append(v.getOffset());
+                sb.append("] ");
             }
 
             sb.append("\n");

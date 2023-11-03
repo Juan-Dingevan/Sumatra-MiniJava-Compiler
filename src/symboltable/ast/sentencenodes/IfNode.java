@@ -29,6 +29,13 @@ public class IfNode extends ControlStructureNode {
             elseNode.check();
     }
 
+    @Override
+    public void giveLocalVariablesOffset() {
+        super.giveLocalVariablesOffset();
+        if(elseNode != ElseNode.NULL_ELSE)
+            elseNode.giveLocalVariablesOffset();
+    }
+
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(super.toString());

@@ -11,6 +11,10 @@ public abstract class SentenceNode extends Node {
     protected boolean hasBeenChecked;
     protected abstract int getID();
 
+    public static boolean isBlock(SentenceNode s) {
+        return s instanceof BlockNode;
+    }
+
     public SentenceNode() {
         super();
         hasBeenChecked = false;
@@ -22,6 +26,8 @@ public abstract class SentenceNode extends Node {
     public void setParentBlock(BlockNode parentBlock) {
         this.parentBlock = parentBlock;
     }
+
+    public void giveLocalVariablesOffset() {}
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
