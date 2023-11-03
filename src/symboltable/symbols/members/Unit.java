@@ -80,7 +80,7 @@ public abstract class Unit extends Member{
         String tag = getTag();
 
         String c1 = " # We store the dynamic link";
-        CodeGenerator.getInstance().append(tag + " : LOADFP" + c1);
+        CodeGenerator.getInstance().append(tag + ": LOADFP" + c1);
 
         String c2 = " # We signal were the AR starts";
         CodeGenerator.getInstance().append("LOADSP" + c2);

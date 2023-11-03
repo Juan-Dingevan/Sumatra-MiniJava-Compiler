@@ -23,7 +23,7 @@ public class CodeGenerator {
     public static String getMethodTag(Method m) {
         String methodName = m.getName();
         String className = m.getMemberOf().getName();
-        String tag = methodName + "@" + className;
+        String tag = "m_" + methodName + "@" + className;
         return tag;
     }
 
