@@ -1,5 +1,6 @@
 package symboltable.ast.sentencenodes;
 
+import codegenerator.CodeGenerator;
 import exceptions.general.CompilerException;
 import exceptions.semantical.sentence.TypesDontConformException;
 import symboltable.types.SBoolean;
@@ -34,6 +35,36 @@ public class IfNode extends ControlStructureNode {
         super.giveLocalVariablesOffset();
         if(elseNode != ElseNode.NULL_ELSE)
             elseNode.giveLocalVariablesOffset();
+    }
+
+    @Override
+    public void generate() throws CompilerException {
+        if(elseNode == ElseNode.NULL_ELSE)
+            generateIfThen();
+        else
+            generateIfThenElse();
+    }
+
+    private void generateIfThenElse() throws CompilerException {
+        String tagOut  = "out_if_" + id;
+        String tagElse = "else_if_" + id;
+
+        expression.generate();
+        CodeGenerator.getInstance().append("BF " + tagElse);
+        implicitBlock.generate();
+        CodeGenerator.getInstance().append("JUMP " + tagOut);
+        CodeGenerator.getInstance().append(tagElse + ": NOP");
+        elseNode.generate();
+        CodeGenerator.getInstance().append(tagOut + ": NOP");
+    }
+
+    private void generateIfThen() throws CompilerException {
+        String tag = "out_if_" + id;
+
+        expression.generate();
+        CodeGenerator.getInstance().append("BF " + tag);
+        implicitBlock.generate();
+        CodeGenerator.getInstance().append(tag + ": NOP");
     }
 
     public String toString() {

@@ -35,6 +35,12 @@ public class ElseNode extends SentenceNode {
     protected void checkSelf() throws CompilerException {
         implicitBlock.check();
     }
+
+    @Override
+    public void generate() throws CompilerException {
+        implicitBlock.generate();
+    }
+
     @Override
     public void giveLocalVariablesOffset() {
         implicitBlock.giveLocalVariablesOffset();
