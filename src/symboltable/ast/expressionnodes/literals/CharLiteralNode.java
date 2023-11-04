@@ -16,6 +16,11 @@ public class CharLiteralNode extends LiteralNode {
         String lexeme = token.getLexeme();
         String lexemeWithoutQuotes = lexeme.substring(1, lexeme.length()-1);
         char charLiteral = lexemeWithoutQuotes.charAt(0);
+
+        if(charLiteral == '\\') {
+            charLiteral = lexemeWithoutQuotes.charAt(1);
+        }
+
         int characterAsNumber = charLiteral;
 
         CodeGenerator.getInstance().append("PUSH " + characterAsNumber);

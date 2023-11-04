@@ -15,11 +15,5 @@ public class PrintLineIntBlockNode extends DefaultMethodBlockNode {
 
         String c3 = " # We print the carriage return";
         CodeGenerator.getInstance().append("PRNLN" + c3);
-
-        /**String c4 = " # We point FP to caller's AR";
-        CodeGenerator.getInstance().append("STOREFP" + c4);
-
-        String c5 = " # We return from printIln, we free 1 (hard-coded) because theres 1 param and no reference to 'this'";
-        CodeGenerator.getInstance().append("RET 1" + c5);**/
     }
 }

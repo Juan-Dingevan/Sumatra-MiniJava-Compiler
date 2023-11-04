@@ -16,6 +16,6 @@ public class StringLiteralNode extends LiteralNode {
         String lexeme = token.getLexeme();
         String lexemeWithoutQuotes = lexeme.substring(1, lexeme.length()-1);
 
-        CodeGenerator.getInstance().append("DW " + lexemeWithoutQuotes + ",0");
+        CodeGenerator.getInstance().append("DW " + lexeme + ",0");
     }
 }
