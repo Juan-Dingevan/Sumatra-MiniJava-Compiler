@@ -1,5 +1,6 @@
 package symboltable.ast.sentencenodes;
 
+import codegenerator.CodeGenerator;
 import exceptions.general.CompilerException;
 import exceptions.semantical.declaration.GenericsException;
 import exceptions.semantical.sentence.LocalVarAndParameterShareNameException;
@@ -58,6 +59,14 @@ public class LocalVariableNode extends SentenceNode {
         return contextUnit.getParameter(token.getLexeme()) != null;
     }
 
+    @Override
+    public void generate() throws CompilerException {
+        expression.generate();
+
+        int offset = variable.getOffset();
+        String c = " # We store what's on top of the pile in the stack through localvar's offset";
+        CodeGenerator.getInstance().append("STORE " + offset + c);
+    }
 
     public String toString() {
         StringBuilder sb = new StringBuilder();

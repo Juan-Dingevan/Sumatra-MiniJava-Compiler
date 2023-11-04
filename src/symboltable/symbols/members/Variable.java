@@ -19,7 +19,7 @@ public class Variable extends TypedEntity {
     }
 
     public boolean isStatic() {
-        return true;
+        return false;
     }
 
     @Override

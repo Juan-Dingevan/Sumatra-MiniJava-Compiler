@@ -43,6 +43,8 @@ public class VariableAccessNode extends AccessNode {
         String name = token.getLexeme();
         Variable v = resolveName(name);
 
+        boolean isAttribute = Variable.isAttribute(v);
+
         Privacy privacy = v.getPrivacy();
 
         boolean accessedFromDeclaringClass = contextClass == v.getMemberOf();
@@ -54,9 +56,8 @@ public class VariableAccessNode extends AccessNode {
 
         boolean staticContextUnit = contextUnit.isStatic();
         boolean staticReferencedVar = v.isStatic();
-        boolean isParameter = contextUnit.getParameter(v.getName()) != null;
+        boolean staticityProblems = (staticContextUnit && !staticReferencedVar) && isAttribute;
 
-        boolean staticityProblems = (staticContextUnit && !staticReferencedVar) && !isParameter;
         if(staticityProblems)
             throw new DynamicUsageInStaticContextException(token);
 
@@ -110,6 +111,9 @@ public class VariableAccessNode extends AccessNode {
     @Override
     public void accessGenerate() throws CompilerException {
         if(referencedVariable.isStatic()) {
+            // hacer que si es local var static devuelva falso
+            // y despues hacer lo mismo que hice con los parametros
+            // para evitar el static conflict!
             generateStaticAccess();
         } else {
             generateDynamicAccess();
