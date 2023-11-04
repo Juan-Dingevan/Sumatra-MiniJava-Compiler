@@ -10,6 +10,10 @@ import token.Token;
 public abstract class ChainingNode extends Node {
     public static final ChainingNode NO_CHAINING = null;
     protected ChainingNode chainingNode;
+    protected boolean isAssignmentLHS;
+    public ChainingNode() {
+        isAssignmentLHS = false;
+    }
 
     public ChainingNode getChainingNode() {
         return chainingNode;
@@ -21,6 +25,13 @@ public abstract class ChainingNode extends Node {
 
     public boolean hasChaining() {
         return chainingNode != NO_CHAINING;
+    }
+
+    public void setAssignmentLHS(boolean assignmentLHS) {
+        isAssignmentLHS = assignmentLHS;
+
+        if(hasChaining())
+            chainingNode.setAssignmentLHS(assignmentLHS);
     }
 
     public Type check(Type callerType, Token callerToken) throws CompilerException {

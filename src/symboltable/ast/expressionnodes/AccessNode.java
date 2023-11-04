@@ -12,6 +12,11 @@ public abstract class AccessNode extends OperandNode {
     public ChainingNode getChainingNode() {
         return chainingNode;
     }
+    protected boolean isAssignmentLHS;
+
+    public AccessNode() {
+        isAssignmentLHS = false;
+    }
 
     public void setChainingNode(ChainingNode chainingNode) {
         this.chainingNode = chainingNode;
@@ -30,6 +35,13 @@ public abstract class AccessNode extends OperandNode {
         } else {
             return accessType;
         }
+    }
+
+    public void setAssignmentLHS(boolean assignmentLHS) {
+        isAssignmentLHS = assignmentLHS;
+
+        if(hasChaining())
+            chainingNode.setAssignmentLHS(assignmentLHS);
     }
 
     protected abstract Type accessCheck() throws CompilerException;

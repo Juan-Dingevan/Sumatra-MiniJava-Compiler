@@ -3,6 +3,7 @@ package symboltable.ast.expressionnodes.binaryexpressions.others;
 import exceptions.general.CompilerException;
 import exceptions.semantical.sentence.NonAssignableExpressionException;
 import exceptions.semantical.sentence.TypesDontConformException;
+import symboltable.ast.expressionnodes.AccessNode;
 import symboltable.ast.expressionnodes.BinaryExpressionNode;
 import symboltable.ast.expressionnodes.accesses.VariableAccessNode;
 import symboltable.symbols.members.Variable;
@@ -33,7 +34,7 @@ public class AssignmentExpressionNode extends BinaryExpressionNode {
             checkDiamondNotation(lhsType, rhsType);
         }
 
-        ((VariableAccessNode) lhs).setAssignmentLHS(true);
+        ((AccessNode) lhs).setAssignmentLHS(true);
 
         return lhsType;
     }

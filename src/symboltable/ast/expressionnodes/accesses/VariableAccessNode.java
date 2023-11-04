@@ -17,16 +17,10 @@ import symboltable.types.Type;
 
 public class VariableAccessNode extends AccessNode {
     protected Variable referencedVariable;
-    protected boolean isAssignmentLHS;
 
     public VariableAccessNode() {
         super();
         referencedVariable = null;
-        isAssignmentLHS = false;
-    }
-
-    public void setAssignmentLHS(boolean assignmentLHS) {
-        isAssignmentLHS = assignmentLHS;
     }
 
     @Override

@@ -122,6 +122,9 @@ public class ConcreteClass extends Class {
         if(implementsInterface.equals(""))
             return false;
 
+        if(!SymbolTable.getInstance().interfaceExists(interfaceName))
+            return false;
+
         Interface directImplementation = SymbolTable.getInstance().getInterface(implementsInterface);
         Interface queriedImplementation = SymbolTable.getInstance().getInterface(interfaceName);
 

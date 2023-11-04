@@ -27,7 +27,8 @@ public class ElseNode extends SentenceNode {
     }
 
     public void setSentence(SentenceNode sentence) {
-        implicitBlock.addSentence(sentence);
+        if(sentence != SEMICOLON_SENTENCE)
+            implicitBlock.addSentence(sentence);
     }
 
     @Override

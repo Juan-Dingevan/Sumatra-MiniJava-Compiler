@@ -33,7 +33,8 @@ public abstract class ControlStructureNode extends SentenceNode{
     }
 
     public void setSentence(SentenceNode sentence) {
-        implicitBlock.addSentence(sentence);
+        if(sentence != SEMICOLON_SENTENCE)
+            implicitBlock.addSentence(sentence);
     }
 
     public void giveLocalVariablesOffset() {
