@@ -98,6 +98,8 @@ public abstract class Unit extends Member{
 
         String c5 = " # We free up memory cells equal to number of params [+1 if unit is dynamic]";
         CodeGenerator.getInstance().append("RET " + n + c5);
+
+        CodeGenerator.getInstance().addBreakLine();
     }
 
     public abstract String getTag();

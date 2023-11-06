@@ -105,9 +105,6 @@ public class VariableAccessNode extends AccessNode {
     @Override
     public void accessGenerate() throws CompilerException {
         if(referencedVariable.isStatic()) {
-            // hacer que si es local var static devuelva falso
-            // y despues hacer lo mismo que hice con los parametros
-            // para evitar el static conflict!
             generateStaticAccess();
         } else {
             generateDynamicAccess();
