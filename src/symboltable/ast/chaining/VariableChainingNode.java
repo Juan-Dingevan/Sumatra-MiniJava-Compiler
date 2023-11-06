@@ -32,6 +32,9 @@ public class VariableChainingNode extends ChainingNode {
         boolean readAccess = !isAssignmentLHS || hasChaining();
         String tag = CodeGenerator.getAttributeTag(attribute);
 
+        String cPop = " # We consume the 'this' reference from the 'chainee' that's on top of the stack, since we won't use it";
+        CodeGenerator.getInstance().append("POP" + cPop);
+
         String cPush = " # We put the static attribute's tag at the top of the stack";
         CodeGenerator.getInstance().append("PUSH " + tag + cPush);
 
