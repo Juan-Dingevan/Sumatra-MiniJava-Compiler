@@ -1,5 +1,6 @@
 package symboltable.ast.expressionnodes.accesses;
 
+import codegenerator.CodeGenerator;
 import exceptions.general.CompilerException;
 import exceptions.semantical.declaration.GenericsException;
 import exceptions.semantical.sentence.PrivateMemberAccessException;
@@ -9,6 +10,7 @@ import symboltable.ast.expressionnodes.AccessNode;
 import symboltable.ast.expressionnodes.ExpressionNode;
 import symboltable.privacy.Privacy;
 import symboltable.symbols.classes.ConcreteClass;
+import symboltable.symbols.members.Attribute;
 import symboltable.symbols.members.Constructor;
 import symboltable.table.SymbolTable;
 import symboltable.types.ReferenceType;
@@ -23,7 +25,8 @@ public class ConstructorAccessNode extends AccessNode {
     public static final List<String> NO_GENERIC_TYPES = new ArrayList<>();
     public static final List<String> DIAMOND_NOTATION = new ArrayList<>();
     protected Token classToken;
-
+    protected ConcreteClass classConstructed;
+    protected Constructor constructor;
     protected List<ExpressionNode> actualArguments;
     protected List<String> genericInstantiation;
 
@@ -38,13 +41,13 @@ public class ConstructorAccessNode extends AccessNode {
     @Override
     protected Type accessCheck() throws CompilerException {
         String referenceName = classToken.getLexeme();
-        ConcreteClass classConstructed = SymbolTable.getInstance().getClass(referenceName);
+        classConstructed = SymbolTable.getInstance().getClass(referenceName);
 
         boolean classExists = classConstructed != null;
         if(!classExists)
             throw new UndeclaredClassException(classToken);
 
-        Constructor constructor = classConstructed.getConstructor();
+        constructor = classConstructed.getConstructor();
 
         Privacy privacy = constructor.getPrivacy();
 
@@ -95,7 +98,59 @@ public class ConstructorAccessNode extends AccessNode {
 
     @Override
     protected void accessGenerate() throws CompilerException {
+        String cReserve = " # We reserve a memory cell to store the pointer to the constructed object";
+        CodeGenerator.getInstance().append("RMEM 1" + cReserve);
 
+        int instanceVariableCounter = 0;
+        for(Attribute attribute : classConstructed.getAttributes()) {
+            if(!attribute.isStatic())
+                instanceVariableCounter++;
+        }
+        int vTableSpace = 1;
+        int reservedCells = instanceVariableCounter + vTableSpace;
+
+        String c2 = " # We load malloc's parameter: the number of cells to reserve for the constructed object";
+        CodeGenerator.getInstance().append("PUSH " + reservedCells + c2);
+
+        String mallocTag = CodeGenerator.getMallocTag();
+
+        String c3 = " # We put malloc's tag on top of the stack";
+        CodeGenerator.getInstance().append("PUSH " + mallocTag + c3);
+
+        String c4 = " # We make the call";
+        CodeGenerator.getInstance().append("CALL" + c4);
+
+        //Now, we must link the VTable of the class of the object that's being constructed to its CIR
+
+        String c5 = " # We duplicate malloc's return so we don't lose it on our next instr.";
+        CodeGenerator.getInstance().append("DUP" + c5);
+
+        String vTableTag = CodeGenerator.getVTableTag(classConstructed);
+
+        String c6 = " # We push the VTable's tag so we can link it to the CIR.";
+        CodeGenerator.getInstance().append("PUSH " + vTableTag + c6);
+
+        String c7 = " # We store the reference (tag) to the VTable in the CIR of the constructed object (the offset is hard-coded)";
+        CodeGenerator.getInstance().append("STOREREF 0" + c7);
+
+        //Now, we must make the call to the constructor itself.
+
+        String c8 = " # We duplicate malloc's return and we use it as the 'this' reference for the constructor";
+        CodeGenerator.getInstance().append("DUP" + c8);
+
+        String c9 = " # We swap to keep the 'this' reference at the top of the stack";
+        for(ExpressionNode argument : actualArguments) {
+            argument.generate();
+            CodeGenerator.getInstance().append("SWAP " + c9);
+        }
+
+        String constructorTag = CodeGenerator.getConstructorTag(constructor);
+
+        String c10 = " # We put the constructor's tag on top of the stack";
+        CodeGenerator.getInstance().append("PUSH " + constructorTag + c10);
+
+        String c11 = " # We make the call";
+        CodeGenerator.getInstance().append("CALL" + c11);
     }
 
     private boolean usesDiamondNotation() {
