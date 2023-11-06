@@ -168,6 +168,14 @@ public class SymbolTable {
     }
 
     public void generate() throws CompilerException {
+        generateMainMethod();
+        generateMalloc();
+
+        for(ConcreteClass cc : classes.values())
+            cc.generate();
+    }
+
+    private void generateMainMethod() throws CompilerException {
         Method main = mainMethods.get(0);
         String mainMethodTag = CodeGenerator.getMethodTag(main);
 
@@ -182,9 +190,26 @@ public class SymbolTable {
         String c3 = " # End of program.";
         CodeGenerator.getInstance().append("HALT"+c3);
         CodeGenerator.getInstance().addBreakLine();
+    }
 
-        for(ConcreteClass cc : classes.values())
-            cc.generate();
+    private void generateMalloc() throws CompilerException {
+        String tag = CodeGenerator.getMallocTag();
+
+        CodeGenerator.getInstance().append(tag + ": LOADFP");
+        CodeGenerator.getInstance().append("LOADSP");
+        CodeGenerator.getInstance().append("STOREFP");
+        CodeGenerator.getInstance().append("LOAD HL");
+        CodeGenerator.getInstance().append("DUP");
+        CodeGenerator.getInstance().append("PUSH 1");
+        CodeGenerator.getInstance().append("ADD");
+        CodeGenerator.getInstance().append("STORE 4");
+        CodeGenerator.getInstance().append("LOAD 3");
+        CodeGenerator.getInstance().append("ADD");
+        CodeGenerator.getInstance().append("STOREHL");
+        CodeGenerator.getInstance().append("STOREFP");
+        CodeGenerator.getInstance().append("RET 1");
+
+        CodeGenerator.getInstance().addBreakLine();
     }
 
     public void addMainMethod(Method mainMethod) {

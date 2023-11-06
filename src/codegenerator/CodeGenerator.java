@@ -55,6 +55,10 @@ public class CodeGenerator {
         return tag;
     }
 
+    public static String getMallocTag() {
+        return "malloc";
+    }
+
     public static CodeGenerator getInstance() {
         if(instance == null)
             instance = new CodeGenerator();
