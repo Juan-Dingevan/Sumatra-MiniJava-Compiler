@@ -168,14 +168,14 @@ public class SymbolTable {
     }
 
     public void generate() throws CompilerException {
-        generateMainMethod();
+        generateMainMethodCall();
         generateMalloc();
 
         for(ConcreteClass cc : classes.values())
             cc.generate();
     }
 
-    private void generateMainMethod() throws CompilerException {
+    private void generateMainMethodCall() throws CompilerException {
         Method main = mainMethods.get(0);
         String mainMethodTag = CodeGenerator.getMethodTag(main);
 
@@ -198,7 +198,7 @@ public class SymbolTable {
         CodeGenerator.getInstance().append(tag + ": LOADFP");
         CodeGenerator.getInstance().append("LOADSP");
         CodeGenerator.getInstance().append("STOREFP");
-        CodeGenerator.getInstance().append("LOAD HL");
+        CodeGenerator.getInstance().append("LOADHL");
         CodeGenerator.getInstance().append("DUP");
         CodeGenerator.getInstance().append("PUSH 1");
         CodeGenerator.getInstance().append("ADD");

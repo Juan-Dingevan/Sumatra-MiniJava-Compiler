@@ -274,6 +274,11 @@ public class ConcreteClass extends Class {
         generateVTable();
         generateAttributes();
         generateMethods();
+        generateConstructor();
+    }
+
+    private void generateConstructor() throws CompilerException {
+        constructor.generate();
     }
 
     private void generateAttributes() throws CompilerException {
@@ -328,10 +333,11 @@ public class ConcreteClass extends Class {
             }
         }
 
-        if(numberOfDynamicMethods > 0) {
-            String tag = CodeGenerator.getVTableTag(this);
+        String tag = CodeGenerator.getVTableTag(this);
 
-            StringBuilder sb = new StringBuilder(tag);
+        StringBuilder sb = new StringBuilder(tag);
+
+        if(numberOfDynamicMethods > 0) {
             sb.append(": DW ");
 
             for(int i = 0; i < tagsInOrder.length; i++) {
@@ -343,13 +349,17 @@ public class ConcreteClass extends Class {
 
             int lastIndexOfComma = sb.lastIndexOf(",");
             sb.deleteCharAt(lastIndexOfComma);
-
-            String instruction = sb.toString();
-
-            CodeGenerator.getInstance().append(".DATA");
-            CodeGenerator.getInstance().append(instruction);
-            CodeGenerator.getInstance().addBreakLine();
+        } else {
+            String cNop = " # This class doesnt have any dynamic methods";
+            sb.append(": NOP");
+            sb.append(cNop);
         }
+
+        String instruction = sb.toString();
+
+        CodeGenerator.getInstance().append(".DATA");
+        CodeGenerator.getInstance().append(instruction);
+        CodeGenerator.getInstance().addBreakLine();
     }
 
     public List<String> getInterfaceDeclaredGenericTypes() {
