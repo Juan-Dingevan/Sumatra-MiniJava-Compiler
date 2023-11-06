@@ -62,6 +62,16 @@ public abstract class ChainingNode extends Node {
             return selfCanBeAssigned();
     }
 
+    @Override
+    public void generate() throws CompilerException {
+        selfGenerate();
+
+        if(hasChaining())
+            chainingNode.generate();
+    }
+
+    protected abstract void selfGenerate() throws CompilerException;
+
     protected abstract boolean selfCanBeAssigned();
 
     protected abstract Type checkSelf(Type callerType, Token callerToken) throws CompilerException;

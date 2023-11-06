@@ -21,6 +21,11 @@ public class MethodChainingNode extends ChainingNode{
     }
 
     @Override
+    protected void selfGenerate() {
+
+    }
+
+    @Override
     protected boolean selfCanBeAssigned() {
         return false;
     }
