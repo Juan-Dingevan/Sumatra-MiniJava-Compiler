@@ -1,16 +1,16 @@
 package symboltable.ast.sentencenodes;
 
+import codegenerator.CodeGenerator;
 import exceptions.general.CompilerException;
 import exceptions.semantical.sentence.ExpressionInVoidOrConstructorReturn;
 import exceptions.semantical.sentence.NoExpressionInTypedMethodReturnException;
 import exceptions.semantical.sentence.TypesDontConformException;
 import symboltable.ast.expressionnodes.ExpressionNode;
-import symboltable.ast.expressionnodes.accesses.VariableAccessNode;
+import symboltable.symbols.members.Member;
 import symboltable.symbols.members.Method;
 import symboltable.symbols.members.Unit;
 import symboltable.types.ReferenceType;
 import symboltable.types.Type;
-import symboltable.types.Void;
 
 public class ReturnNode extends SentenceNode{
     public static int classID = 0;
@@ -67,6 +67,56 @@ public class ReturnNode extends SentenceNode{
     private void checkConstructorOrVoidReturn() throws ExpressionInVoidOrConstructorReturn {
         if(expression != null)
             throw new ExpressionInVoidOrConstructorReturn(token, contextUnit.getToken());
+    }
+
+    @Override
+    public void generate() throws CompilerException {
+        if (Unit.isConstructor(contextUnit)) {
+            generateUnitExit();
+        } else {
+            Method m = (Method) contextUnit;
+            Type type = m.getReturnType();
+
+            if(Type.isVoid(type))
+                generateUnitExit();
+            else
+                generateExpressionReturn();
+        }
+    }
+
+    private void generateExpressionReturn() throws CompilerException {
+        int parameterCount = contextUnit.getParameters().size();
+        int dynamicBonus = contextUnit.isStatic() ? 0 : 1;
+
+        int returnCellOffset = Member.PARAMETER_MIN_OFFSET + parameterCount + dynamicBonus;
+
+        expression.generate();
+
+        String cReturn = " # We save the return value in the space reserved for it";
+        CodeGenerator.getInstance().append("STORE " + returnCellOffset + cReturn);
+
+        generateUnitExit();
+    }
+
+    private void generateUnitExit() throws CompilerException {
+        int parentBlockLastOffset = parentBlock.getOffset();
+        int localVarCount = -parentBlockLastOffset;
+
+        int parameterCount = contextUnit.getParameters().size();
+        int dynamicBonus = contextUnit.isStatic() ? 0 : 1;
+
+        int retParameter = parameterCount + dynamicBonus;
+
+        if(localVarCount > 0) {
+            String cFree = " # On return: We free the space used by local vars";
+            CodeGenerator.getInstance().append("FMEM " + localVarCount + cFree);
+        }
+
+        String cStoreFP = " # On return: We point FP to caller's AR";
+        CodeGenerator.getInstance().append("STOREFP" + cStoreFP);
+
+        String cRet = " # On return: We free up memory cells equal to number of params [+1 if unit is dynamic]";
+        CodeGenerator.getInstance().append("RET " + retParameter + cRet);
     }
 
     private void checkExpressionReturn(Type expectedType) throws CompilerException {
