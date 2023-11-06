@@ -5,6 +5,7 @@ import exceptions.semantical.*;
 import exceptions.semantical.declaration.GenericsException;
 import exceptions.semantical.declaration.MethodAlreadyExistsException;
 import symboltable.symbols.Symbol;
+import symboltable.symbols.members.Member;
 import symboltable.symbols.members.Method;
 import symboltable.symbols.members.Unit;
 import symboltable.table.SymbolTable;
@@ -40,8 +41,8 @@ public abstract class Class extends Symbol {
         currentUnit = null;
         hasBeenConsolidated = false;
 
-        nextMethodOffset = 0;
-        nextAttributeOffset = 0;
+        nextMethodOffset = Member.METHOD_MIN_OFFSET;
+        nextAttributeOffset = Member.ATTRIBUTE_MIN_OFFSET;
 
         inheritsFrom = "";
     }

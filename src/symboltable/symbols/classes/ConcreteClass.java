@@ -197,7 +197,7 @@ public class ConcreteClass extends Class {
             boolean needsOffset = !(isStatic || isInherited);
 
             if(needsOffset) {
-                System.out.println("in " + getName() + " adding offset " + nextAttributeOffset + " to met " + attribute.getName());
+                System.out.println("in " + getName() + " adding offset " + nextAttributeOffset + " to att " + attribute.getName());
                 attribute.setOffset(nextAttributeOffset);
                 nextAttributeOffset++;
             }
