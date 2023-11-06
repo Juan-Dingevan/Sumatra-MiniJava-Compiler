@@ -75,9 +75,6 @@ public class MethodAccessNode extends AccessNode {
         } else {
             generateDynamicCall();
         }
-
-        if(hasChaining())
-            chainingNode.generate();
     }
 
     protected void generateDynamicCall() throws CompilerException {
