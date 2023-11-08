@@ -283,6 +283,7 @@ public class ConcreteClass extends Class {
 
     private void generateAttributes() throws CompilerException {
         List<Attribute> staticAttributes = new ArrayList<>();
+
         for(Attribute attribute : getAttributes()) {
             if(attribute.isStatic()) {
                 staticAttributes.add(attribute);
@@ -293,9 +294,12 @@ public class ConcreteClass extends Class {
             CodeGenerator.getInstance().append(".DATA");
 
         for(Attribute attribute : staticAttributes) {
-            String tag = CodeGenerator.getAttributeTag(attribute);
-            String instruction = tag + ": DW 0"; //We give them an empty initialization
-            CodeGenerator.getInstance().append(instruction);
+            boolean declaredInCurrentClass = attribute.getMemberOf() == this;
+            if(declaredInCurrentClass) {
+                String tag = CodeGenerator.getAttributeTag(attribute);
+                String instruction = tag + ": DW 0"; //We give them an empty initialization
+                CodeGenerator.getInstance().append(instruction);
+            }
         }
 
         if(staticAttributes.size() > 0)

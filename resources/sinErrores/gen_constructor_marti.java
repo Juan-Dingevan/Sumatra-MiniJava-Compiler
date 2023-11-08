@@ -9,6 +9,6 @@ class A {
 
 class Init{
     static void main() {
-        var a = new A(1234);
+        new A(1234);
     }
 }
