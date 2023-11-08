@@ -1,12 +1,15 @@
 package symboltable.ast.sentencenodes;
 
+import codegenerator.CodeGenerator;
 import exceptions.general.CompilerException;
 import symboltable.ast.expressionnodes.ExpressionNode;
+import symboltable.types.Type;
 
 public class CallNode extends SentenceNode{
     public static int classID = 0;
     private final int id = classID;
     protected ExpressionNode expression;
+    protected Type type;
     @Override
     protected int getID() {
         return id;
@@ -22,13 +25,17 @@ public class CallNode extends SentenceNode{
 
     @Override
     protected void checkSelf() throws CompilerException {
-        //TODO: fijarse si hay que hacer algun check extra.
-        expression.check();
+        type = expression.check();
     }
 
     @Override
     public void generate() throws CompilerException {
         expression.generate();
+
+        if(!Type.isVoid(type)) {
+            String cPop = " # We made a call to a return-giving method, but we won't use the result, so we pop it.";
+            CodeGenerator.getInstance().append("POP" + cPop);
+        }
     }
 
     public String toString() {
