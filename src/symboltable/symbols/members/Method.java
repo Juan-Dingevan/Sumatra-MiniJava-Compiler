@@ -137,7 +137,9 @@ public class Method extends Unit {
     public String toString() {
         String prefix = StringUtilities.getDashesForDepth(LEVEL);
         String s = prefix + "METHOD{" + instanceID + "}: " + getName() + " RETURN TYPE: " + returnType
-                 + " STATIC: " + isStatic + " PRIVACY: " + privacy + " OFFSET: " + offset + "\n";
+                 + " STATIC: " + isStatic + " PRIVACY: " + privacy + " OFFSET: " + offset
+                 + " REDEFINED: " + isRedefined + " MEMBER OF: " + memberOf.getName() + "\n";
+
         s += prefix + "PARAMETERS:\n";
 
         for(Parameter p : parameterMap.values())

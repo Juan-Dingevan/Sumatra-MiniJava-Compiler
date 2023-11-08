@@ -310,8 +310,8 @@ public class ConcreteClass extends Class {
 
         for(Method m : getMethods()) {
             boolean declaredInCurrentClass = m.getMemberOf() == this;
-            boolean redefined = m.isRedefined();
-            if(declaredInCurrentClass || redefined) {
+            //boolean redefined = m.isRedefined();
+            if(declaredInCurrentClass) {
                 m.generate();
                 CodeGenerator.getInstance().addBreakLine();
             }

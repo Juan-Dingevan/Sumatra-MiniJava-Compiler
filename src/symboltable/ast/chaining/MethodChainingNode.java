@@ -5,6 +5,7 @@ import exceptions.general.CompilerException;
 import exceptions.semantical.sentence.*;
 import symboltable.ast.expressionnodes.ExpressionNode;
 import symboltable.privacy.Privacy;
+import symboltable.symbols.classes.Class;
 import symboltable.symbols.classes.ConcreteClass;
 import symboltable.symbols.members.Method;
 import symboltable.table.SymbolTable;
@@ -95,7 +96,7 @@ public class MethodChainingNode extends ChainingNode{
         String className = rt.getReferenceName();
         String methodName = token.getLexeme();
 
-        ConcreteClass referencedClass = SymbolTable.getInstance().getClass(className);
+        Class referencedClass = SymbolTable.getInstance().getClassOrInterface(className);
         method = referencedClass.getMethod(methodName);
 
         if(method == null)
