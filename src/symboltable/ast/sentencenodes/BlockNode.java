@@ -18,10 +18,14 @@ public class BlockNode extends SentenceNode{
     private int offset;
 
     public BlockNode() {
+        super();
+
         sentences = new ArrayList<>();
         variables = new HashMap<>();
         variableList = new ArrayList<>();
+
         offset = Member.LOCAL_VAR_MIN_OFFSET;
+
         id = classID;
         classID++;
     }

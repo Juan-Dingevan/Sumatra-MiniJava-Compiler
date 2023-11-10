@@ -11,6 +11,7 @@ public abstract class ControlStructureNode extends SentenceNode{
     protected BlockNode implicitBlock;
 
     public ControlStructureNode() {
+        super();
         implicitBlock = new BlockNode();
     }
 

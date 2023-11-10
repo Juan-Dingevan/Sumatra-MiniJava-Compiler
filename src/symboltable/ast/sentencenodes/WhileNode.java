@@ -5,7 +5,14 @@ import exceptions.general.CompilerException;
 
 public class WhileNode extends ControlStructureNode {
     public static int classID = 0;
-    private final int id = classID;
+    private final int id;
+
+    public WhileNode() {
+        super();
+        id = classID;
+        classID++;
+    }
+
     @Override
     protected int getID() {
         return id;

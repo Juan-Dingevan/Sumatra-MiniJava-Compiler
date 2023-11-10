@@ -14,8 +14,14 @@ import symboltable.types.Type;
 
 public class ReturnNode extends SentenceNode{
     public static int classID = 0;
-    private final int id = classID;
+    private final int id;
     protected ExpressionNode expression;
+
+    public ReturnNode() {
+        super();
+        id = classID;
+        classID++;
+    }
 
     public ExpressionNode getExpression() {
         return expression;

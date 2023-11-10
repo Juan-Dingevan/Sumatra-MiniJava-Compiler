@@ -7,14 +7,17 @@ public class ElseNode extends SentenceNode {
     protected BlockNode implicitBlock;
 
     public static int classID = 0;
-    private final int id = classID;
+    private final int id;
     @Override
     protected int getID() {
         return id;
     }
 
     public ElseNode() {
+        super();
         implicitBlock = new BlockNode();
+        id = classID;
+        classID++;
     }
 
     @Override

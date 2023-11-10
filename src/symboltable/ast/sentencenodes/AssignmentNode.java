@@ -5,9 +5,15 @@ import symboltable.ast.expressionnodes.ExpressionNode;
 
 public class AssignmentNode extends SentenceNode{
     public static int classID = 0;
-    private final int id = classID;
+    private final int id;
 
     protected ExpressionNode expression;
+
+    public AssignmentNode() {
+        super();
+        id = classID;
+        classID++;
+    }
     @Override
     protected int getID() {
         return id;

@@ -8,8 +8,15 @@ import symboltable.types.Type;
 
 public class IfNode extends ControlStructureNode {
     public static int classID = 0;
-    private final int id = classID;
+    private final int id;
     protected ElseNode elseNode;
+
+    public IfNode() {
+        super();
+        id = classID;
+        classID++;
+    }
+
     @Override
     protected int getID() {
         return id;

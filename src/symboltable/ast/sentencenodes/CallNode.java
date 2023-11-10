@@ -7,9 +7,16 @@ import symboltable.types.Type;
 
 public class CallNode extends SentenceNode{
     public static int classID = 0;
-    private final int id = classID;
+    private final int id;
     protected ExpressionNode expression;
     protected Type type;
+
+    public CallNode() {
+        super();
+        id = classID;
+        classID++;
+    }
+
     @Override
     protected int getID() {
         return id;
