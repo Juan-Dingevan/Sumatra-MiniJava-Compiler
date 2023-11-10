@@ -15,6 +15,7 @@ import java.io.IOException;
 
 public class CodeGenerator {
     public static final String DEFAULT_OUTPUT_NAME = "a.out"; //we love u, gcc
+    public static String EMPTY_STRING_TAG = "str_empty";
     private static CodeGenerator instance;
     private static int lastTagID = 0;
     private String fileName;

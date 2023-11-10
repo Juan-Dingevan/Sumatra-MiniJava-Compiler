@@ -170,9 +170,16 @@ public class SymbolTable {
     public void generate() throws CompilerException {
         generateMainMethodCall();
         generateMalloc();
+        generateEmptyStringTag();
 
         for(ConcreteClass cc : classes.values())
             cc.generate();
+    }
+
+    private static void generateEmptyStringTag() throws CompilerException {
+        CodeGenerator.getInstance().append(".DATA");
+        CodeGenerator.getInstance().append(CodeGenerator.EMPTY_STRING_TAG + ": DW 0");
+        CodeGenerator.getInstance().addBreakLine();
     }
 
     private void generateMainMethodCall() throws CompilerException {

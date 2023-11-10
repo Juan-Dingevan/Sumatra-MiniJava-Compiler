@@ -157,10 +157,21 @@ public abstract class DefaultClassesSetUpHandler {
     }
 
     public static ConcreteClass getString() {
-        ConcreteClass string = new ConcreteClass(STRING_TOKEN);
-        string.setInheritance(OBJECT_TOKEN);
+        try {
+            ConcreteClass string = new ConcreteClass(STRING_TOKEN);
+            string.setInheritance(OBJECT_TOKEN);
 
-        return string;
+            Constructor stringConstructor = new Constructor(STRING_TOKEN, string);
+            stringConstructor.setAST(new StringConstructorBlockNode());
+            stringConstructor.setPrivacy(publicS);
+
+            string.setConstructor(stringConstructor);
+
+            return string;
+        } catch (CompilerException e) {
+            //this will never happen
+            return null;
+        }
     }
 
 }

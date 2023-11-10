@@ -107,7 +107,15 @@ public class ConstructorAccessNode extends AccessNode {
                 instanceVariableCounter++;
         }
         int vTableSpace = 1;
-        int reservedCells = instanceVariableCounter + vTableSpace;
+        int reservedCells;
+
+        if(classConstructed.getName().equals("String")) {
+            //string doesnt have "true" attributes but we need to consider one for it.
+            //note, this may be better done by giving it a private attribute.
+            reservedCells = 1 + vTableSpace;
+        } else {
+            reservedCells = instanceVariableCounter + vTableSpace;
+        }
 
         String c2 = " # We load malloc's parameter: the number of cells to reserve for the constructed object";
         CodeGenerator.getInstance().append("PUSH " + reservedCells + c2);
