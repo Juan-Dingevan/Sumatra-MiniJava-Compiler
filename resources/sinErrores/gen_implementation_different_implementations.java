@@ -1,11 +1,9 @@
 ///meow&woof&moo&exitosamente
-class Animal {
-    public String sound() {
-        return " ";
-    }
+interface Animal {
+    String sound();
 }
 
-class Cat extends Animal {
+class Cat implements Animal {
     public void playWithYarn() {}
 
     public String sound() {
@@ -14,7 +12,7 @@ class Cat extends Animal {
 }
 
 
-class Dog extends Animal {
+class Dog implements Animal {
     public void nap() {}
 
     public String sound() {
@@ -25,7 +23,7 @@ class Dog extends Animal {
 }
 
 
-class Cow extends Animal {
+class Cow implements Animal {
     public void waveTail() {}
     public void eatGrass() {}
     public String sound() {
@@ -36,10 +34,10 @@ class Cow extends Animal {
 }
 
 class Init {
-    public static void main() {
-        var animal = new Animal();
-        var i = 0;
+    private static Animal animal;
 
+    public static void main() {
+        var i = 0;
         while(i < 3) {
 
             if(i == 0) {
