@@ -10,8 +10,9 @@ import symboltable.types.ReferenceType;
 import symboltable.types.Type;
 
 public class StringLiteralNode extends LiteralNode {
+    private static final String EMPTY_STRING = "\"\"";
     private static int classID = 0;
-    private int id;
+    private final int id;
 
     public StringLiteralNode() {
         id = classID;
@@ -30,7 +31,7 @@ public class StringLiteralNode extends LiteralNode {
         String lexemeWithoutBackwardsBars = token.getLexeme().replace("\\", "");
         String tag;
 
-        if(lexemeWithoutBackwardsBars.equals("")) {
+        if(lexemeWithoutBackwardsBars.equals(EMPTY_STRING)) {
             tag = CodeGenerator.EMPTY_STRING_TAG;
         } else {
             tag = "str_" + id;
