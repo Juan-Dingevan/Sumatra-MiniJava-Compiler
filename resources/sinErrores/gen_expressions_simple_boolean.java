@@ -1,9 +1,10 @@
-///true&false&true&false&false&false&true&true&true&false&true&false&true&false&true&false&true&false&exitosamente
+///true&false&true&false&false&false&true&true&true&false&true&false&true&false&true&false&true&false&true&false&true&false&true&true&false&false&true&true&false&false&true&false&true&false&true&false&false&true&true&false&false&true&true&false&exitosamente
 class Main {
     public static void main() {
         simpleUnaryBoolean();
         simpleBinaryBooleanBoolean();
         simpleBinaryNumericBoolean();
+        simpleOthersBoolean();
     }
 
     public static void simpleUnaryBoolean() {
@@ -72,6 +73,84 @@ class Main {
 
         System.printBln(le1);
         System.printBln(le2);
+        System.println();
+    }
+
+    public static void simpleOthersBoolean() {
+        var e1 = 1 == 1; //true
+        var e2 = 1 == 2; //false
+
+        var e3 = 'c' == 'c'; //true
+        var e4 = 'c' == 'd'; //false
+
+        var e5 = true == true; //true
+        var e6 = false == false; //true
+        var e7 = true == false; //false
+        var e8 = false == true; //true
+
+        var s = "";
+        var o = new Object();
+
+        var e9 = s == s; //true
+        var e10 = o == o; //true
+        var e11 = o == s; //false
+        var e12 = s == o; //false
+
+        o = s;
+
+        var e13 = s == o; //true
+
+        System.printBln(e1);
+        System.printBln(e2);
+        System.printBln(e3);
+        System.printBln(e4);
+        System.printBln(e5);
+        System.printBln(e6);
+        System.printBln(e7);
+        System.printBln(e8);
+        System.printBln(e9);
+        System.printBln(e10);
+        System.printBln(e11);
+        System.printBln(e12);
+        System.printBln(e13);
+        System.println();
+
+        e1 = 1 != 1; //false
+        e2 = 1 != 2; //true
+
+        e3 = 'c' != 'c'; //false
+        e4 = 'c' != 'd'; //true
+
+        e5 = true != true; //false
+        e6 = false != false; //false
+        e7 = true != false; //true
+        e8 = false != true; //true
+
+        s = "";
+        o = new Object();
+
+        e9 = s != s; //false
+        e10 = o != o; //false
+        e11 = o != s; //true
+        e12 = s != o; //true
+
+        o = s;
+
+        e13 = s != o; //false
+
+        System.printBln(e1);
+        System.printBln(e2);
+        System.printBln(e3);
+        System.printBln(e4);
+        System.printBln(e5);
+        System.printBln(e6);
+        System.printBln(e7);
+        System.printBln(e8);
+        System.printBln(e9);
+        System.printBln(e10);
+        System.printBln(e11);
+        System.printBln(e12);
+        System.printBln(e13);
         System.println();
     }
 }
