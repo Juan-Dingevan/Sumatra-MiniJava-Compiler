@@ -27,15 +27,15 @@ public class StringLiteralNode extends LiteralNode {
     public void generate() throws CompilerException {
         ConcreteClass classConstructed = SymbolTable.getInstance().getClass("String");
 
-        String lexeme = token.getLexeme();
+        String lexemeWithoutBackwardsBars = token.getLexeme().replace("\\", "");
         String tag;
 
-        if(lexeme.equals("")) {
+        if(lexemeWithoutBackwardsBars.equals("")) {
             tag = CodeGenerator.EMPTY_STRING_TAG;
         } else {
             tag = "str_" + id;
             CodeGenerator.getInstance().append(".DATA");
-            CodeGenerator.getInstance().append(tag + ": DW " + lexeme + ",0");
+            CodeGenerator.getInstance().append(tag + ": DW " + lexemeWithoutBackwardsBars + ",0");
         }
 
         //We're doing an implicit constructor access here!
