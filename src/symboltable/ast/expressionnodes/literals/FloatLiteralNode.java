@@ -10,4 +10,7 @@ public class FloatLiteralNode extends LiteralNode {
     public Type check() throws CompilerException {
         return new SFloat();
     }
+
+    @Override
+    public void generate() throws CompilerException {}
 }

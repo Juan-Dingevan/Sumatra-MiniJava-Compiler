@@ -36,9 +36,7 @@ public abstract class Node {
         this.contextUnit = contextUnit;
     }
 
-    public void generate() throws CompilerException {
-        //TODO: make abstract
-    }
+    public abstract void generate() throws CompilerException;
     protected String tabs() {
         String tab = "\t";
         return tab.repeat(stringDepth);
