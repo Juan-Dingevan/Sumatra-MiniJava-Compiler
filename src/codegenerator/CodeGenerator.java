@@ -39,9 +39,9 @@ public class CodeGenerator {
     }
 
     public static String getAttributeTag(Attribute a) {
-        String methodName = a.getName();
+        String attributeName = a.getName();
         String className = a.getMemberOf().getName();
-        String tag = methodName + "@" + className;
+        String tag = "attr_" + attributeName + "@" + className;
         return tag;
     }
     public static String getSentenceTag(SentenceNode s) {
