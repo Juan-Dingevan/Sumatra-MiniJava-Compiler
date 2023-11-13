@@ -44,7 +44,6 @@ public class BlockNode extends SentenceNode{
     public void giveLocalVariablesOffset() {
         if(parentBlock != NULL_PARENT) {
             offset = parentBlock.getOffset();
-            System.out.println("Block " + id + " inherits " + offset + " from " + parentBlock.id);
         }
 
         for(Variable variable : variableList) {
@@ -53,11 +52,8 @@ public class BlockNode extends SentenceNode{
         }
 
         for(SentenceNode s : sentences) {
-            System.out.println("In " + id + " calling giveLocal...() of " + s.getClass().getSimpleName() + s.getID());
             s.giveLocalVariablesOffset();
         }
-
-        System.out.println("Block " + id + " has offset " + offset);
     }
 
     public int getOffset() {
