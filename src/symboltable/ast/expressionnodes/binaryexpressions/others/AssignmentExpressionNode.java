@@ -1,5 +1,6 @@
 package symboltable.ast.expressionnodes.binaryexpressions.others;
 
+import codegenerator.CodeGenerator;
 import exceptions.general.CompilerException;
 import exceptions.semantical.sentence.NonAssignableExpressionException;
 import exceptions.semantical.sentence.TypesDontConformException;
@@ -13,8 +14,10 @@ import symboltable.types.Type;
 public class AssignmentExpressionNode extends BinaryExpressionNode {
     @Override
     public void generate() throws CompilerException {
-        //TODO: Consultar...
+        //TODO: Consultar... y agregar comentario!
         rhs.generate();
+        String cDup = " # We duplicate the assigned value, to assure we'll be able to use it in other expressions.";
+        CodeGenerator.getInstance().append("DUP" + cDup);
         lhs.generate();
     }
     @Override

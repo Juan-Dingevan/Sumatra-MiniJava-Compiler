@@ -1,5 +1,6 @@
 package symboltable.ast.sentencenodes;
 
+import codegenerator.CodeGenerator;
 import exceptions.general.CompilerException;
 import symboltable.ast.expressionnodes.ExpressionNode;
 
@@ -34,6 +35,8 @@ public class AssignmentNode extends SentenceNode{
     @Override
     public void generate() throws CompilerException {
         expression.generate();
+        String cPop = " # We consume the value pushed on the top of the stack by the assignment";
+        CodeGenerator.getInstance().append("POP" + cPop);
     }
 
     public String toString() {
